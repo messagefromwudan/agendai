@@ -65,35 +65,32 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
               return (
                 <div key={date} className="aspect-square flex items-center justify-center">
                   {status?.streak ? (
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="w-full h-full"
-                      style={{ filter: 'drop-shadow(0 2px 4px rgba(251, 146, 60, 0.3))' }}
-                    >
-                      <defs>
-                        <linearGradient id={`flameGradient-${date}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" style={{ stopColor: '#FBBF24', stopOpacity: 1 }} />
-                          <stop offset="50%" style={{ stopColor: '#FB923C', stopOpacity: 1 }} />
-                          <stop offset="100%" style={{ stopColor: '#F97316', stopOpacity: 1 }} />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M12 2C12 2 8 6 8 10C8 13 10 15 12 15C14 15 16 13 16 10C16 6 12 2 12 2Z M12 15C12 15 9 17 9 19.5C9 21.5 10.3 23 12 23C13.7 23 15 21.5 15 19.5C15 17 12 15 12 15Z"
-                        fill={`url(#flameGradient-${date})`}
-                        stroke="#FB923C"
-                        strokeWidth="0.5"
-                      />
-                      <text
-                        x="12"
-                        y="13"
-                        textAnchor="middle"
-                        fill="white"
-                        fontSize="7"
-                        fontWeight="bold"
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-full h-full"
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(251, 146, 60, 0.3))' }}
                       >
-                        {date}
-                      </text>
-                    </svg>
+                        <defs>
+                          <linearGradient id={`flameGradient-${date}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style={{ stopColor: '#FBBF24', stopOpacity: 1 }} />
+                            <stop offset="50%" style={{ stopColor: '#FB923C', stopOpacity: 1 }} />
+                            <stop offset="100%" style={{ stopColor: '#F97316', stopOpacity: 1 }} />
+                          </linearGradient>
+                        </defs>
+                        <path
+                          d="M12 2C12 2 8 6 8 10C8 13 10 15 12 15C14 15 16 13 16 10C16 6 12 2 12 2Z M12 15C12 15 9 17 9 19.5C9 21.5 10.3 23 12 23C13.7 23 15 21.5 15 19.5C15 17 12 15 12 15Z"
+                          fill={`url(#flameGradient-${date})`}
+                          stroke="#FB923C"
+                          strokeWidth="0.5"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-white font-bold text-sm" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                          {date}
+                        </span>
+                      </div>
+                    </div>
                   ) : status?.studied ? (
                     <div className="w-full h-full rounded-full bg-green-500 flex items-center justify-center text-white text-sm font-medium shadow-sm">
                       {date}

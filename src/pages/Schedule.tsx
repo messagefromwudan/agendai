@@ -119,7 +119,7 @@ export default function Schedule() {
       </div>
 
       {viewMode === 'week' ? (
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-5 gap-4 items-start">
           {weekDays.map((day, index) => {
             const isToday = index === 4;
             const dayClasses = weekSchedule[index] || [];
@@ -130,18 +130,18 @@ export default function Schedule() {
                   setSelectedDay(index);
                   setViewMode('day');
                 }}
-                className={`p-4 rounded-xl transition-all text-left ${
+                className={`p-4 rounded-xl transition-all text-left flex flex-col h-full ${
                   isToday
                     ? 'bg-[#164B2E] text-[#F1F5F9] shadow-lg'
                     : 'bg-white border border-gray-200 text-gray-700 hover:shadow-md'
                 }`}
               >
-                <div className="mb-3">
+                <div className="mb-3 flex-shrink-0">
                   <p className={`text-xs mb-1 ${isToday ? 'text-[#F1F5F9]/70' : 'text-gray-500'}`}>{day}</p>
                   <p className="text-2xl font-bold">{dates[index]}</p>
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 flex-1 overflow-y-auto max-h-96">
                   {dayClasses.map((classEvent) => {
                     const colorClasses = getColorClasses(classEvent.color);
                     return (
