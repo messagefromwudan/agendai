@@ -79,10 +79,12 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
                           </linearGradient>
                         </defs>
                         <path
-                          d="M12 2C12 2 8 6 8 10C8 13 10 15 12 15C14 15 16 13 16 10C16 6 12 2 12 2Z M12 15C12 15 9 17 9 19.5C9 21.5 10.3 23 12 23C13.7 23 15 21.5 15 19.5C15 17 12 15 12 15Z"
+                          d="M12 2 L14.5 8 L18 6 C18 6 16 12 12 18 C8 12 6 6 6 6 L9.5 8 Z"
                           fill={`url(#flameGradient-${date})`}
-                          stroke="#FB923C"
-                          strokeWidth="0.5"
+                          stroke="#D97706"
+                          strokeWidth="0.8"
+                          strokeLinejoin="round"
+                          strokeLinecap="round"
                         />
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
