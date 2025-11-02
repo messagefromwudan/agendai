@@ -1,6 +1,10 @@
-import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon } from 'lucide-react';
 
 export default function Schedule() {
+  const [viewMode, setViewMode] = useState<'week' | 'day'>('week');
+  const [selectedDay, setSelectedDay] = useState(4);
+
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
   const dates = ['28', '29', '30', '31', '1'];
 
@@ -59,14 +63,38 @@ export default function Schedule() {
         <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Smart Schedule
         </h1>
-        <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
-          </button>
-          <span className="font-semibold text-gray-900 px-4">Week of Oct 28 - Nov 1</span>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <ChevronRight className="w-5 h-5 text-gray-600" />
-          </button>
+        <div className="flex items-center gap-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-1 flex gap-1">
+            <button
+              onClick={() => setViewMode('week')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                viewMode === 'week'
+                  ? 'bg-[#164B2E] text-white shadow-sm'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Week View
+            </button>
+            <button
+              onClick={() => setViewMode('day')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                viewMode === 'day'
+                  ? 'bg-[#164B2E] text-white shadow-sm'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Day View
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <span className="font-semibold text-gray-900 px-4">Week of Oct 28 - Nov 1</span>
+            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -87,27 +115,43 @@ export default function Schedule() {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-2 mb-6">
-        {weekDays.map((day, index) => {
-          const isToday = index === 4;
-          return (
+      {viewMode === 'week' ? (
+        <div className="grid grid-cols-5 gap-2">
+          {weekDays.map((day, index) => {
+            const isToday = index === 4;
+            return (
+              <button
+                key={day}
+                onClick={() => {
+                  setSelectedDay(index);
+                  setViewMode('day');
+                }}
+                className={`p-4 rounded-xl transition-all ${
+                  isToday
+                    ? 'bg-[#164B2E] text-[#F1F5F9] shadow-lg'
+                    : 'bg-white border border-gray-200 text-gray-700 hover:shadow-md'
+                }`}
+              >
+                <p className={`text-xs mb-1 ${isToday ? 'text-[#F1F5F9]/70' : 'text-gray-500'}`}>{day}</p>
+                <p className="text-2xl font-bold">{dates[index]}</p>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">
+              {weekDays[selectedDay]}, {dates[selectedDay]} - Detailed Schedule
+            </h2>
             <button
-              key={day}
-              className={`p-4 rounded-xl transition-all ${
-                isToday
-                  ? 'bg-[#164B2E] text-[#F1F5F9] shadow-lg'
-                  : 'bg-white border border-gray-200 text-gray-700 hover:shadow-md'
-              }`}
+              onClick={() => setViewMode('week')}
+              className="flex items-center gap-2 text-[#164B2E] hover:bg-green-50 px-4 py-2 rounded-lg transition-colors"
             >
-              <p className={`text-xs mb-1 ${isToday ? 'text-[#F1F5F9]/70' : 'text-gray-500'}`}>{day}</p>
-              <p className="text-2xl font-bold">{dates[index]}</p>
+              <CalendarIcon className="w-4 h-4" />
+              <span className="text-sm font-medium">Back to Week</span>
             </button>
-          );
-        })}
-      </div>
-
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Today's Schedule - Friday, Nov 1</h2>
+          </div>
         <div className="space-y-4">
           {events.map((event) => {
             const colorClasses = getColorClasses(event.color);
@@ -141,7 +185,8 @@ export default function Schedule() {
             );
           })}
         </div>
-      </div>
+        </div>
+      )}
 
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
         <div className="flex items-start gap-3">

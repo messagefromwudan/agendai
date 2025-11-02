@@ -1,7 +1,19 @@
+import { useState } from 'react';
 import { Plus, Star, Calendar, CheckCircle2, Circle } from 'lucide-react';
 
+type HomeworkItem = {
+  id: number;
+  title: string;
+  subject: string;
+  difficulty: number;
+  dueDate: string;
+  completed: boolean;
+  aiSuggestion: string;
+  color: string;
+};
+
 export default function Homework() {
-  const homework = [
+  const [homework, setHomework] = useState<HomeworkItem[]>([
     {
       id: 1,
       title: 'Quadratic Equations Problem Set',
@@ -42,7 +54,15 @@ export default function Homework() {
       aiSuggestion: 'Excellent understanding of balancing equations!',
       color: 'orange',
     },
-  ];
+  ]);
+
+  const toggleCompletion = (id: number) => {
+    setHomework((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    );
+  };
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; border: string; text: string; light: string }> = {
@@ -106,7 +126,10 @@ export default function Homework() {
                 className={`bg-white border ${colorClasses.border} rounded-xl p-6 hover:shadow-lg transition-all group`}
               >
                 <div className="flex items-start gap-4">
-                  <button className="mt-1 group-hover:scale-110 transition-transform">
+                  <button
+                    onClick={() => toggleCompletion(item.id)}
+                    className="mt-1 group-hover:scale-110 transition-transform"
+                  >
                     <Circle className="w-6 h-6 text-gray-400 hover:text-[#164B2E]" />
                   </button>
 
@@ -160,7 +183,12 @@ export default function Homework() {
                 className={`bg-white border ${colorClasses.border} rounded-xl p-6 opacity-60`}
               >
                 <div className="flex items-start gap-4">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
+                  <button
+                    onClick={() => toggleCompletion(item.id)}
+                    className="mt-1 hover:scale-110 transition-transform"
+                  >
+                    <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  </button>
 
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-3">

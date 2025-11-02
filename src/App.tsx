@@ -9,6 +9,7 @@ import Homework from './pages/Homework';
 import Schedule from './pages/Schedule';
 import Progress from './pages/Progress';
 import Messages from './pages/Messages';
+import Settings from './pages/Settings';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -31,6 +32,8 @@ function App() {
         return <Progress />;
       case 'messages':
         return <Messages />;
+      case 'settings':
+        return <Settings />;
       default:
         return <Dashboard />;
     }
@@ -42,7 +45,7 @@ function App() {
       <div className="ml-64 p-8">
         {renderPage()}
       </div>
-      <FloatingAI />
+      {currentPage !== 'ai-tutor' && <FloatingAI />}
     </div>
   );
 }

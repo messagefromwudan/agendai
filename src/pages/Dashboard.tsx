@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { BookOpen, Brain, Calendar, Backpack, TrendingUp, Award, Flame } from 'lucide-react';
+import StreakCalendar from '../components/StreakCalendar';
 
 export default function Dashboard() {
+  const [showStreakCalendar, setShowStreakCalendar] = useState(false);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -11,13 +15,18 @@ export default function Dashboard() {
           <p className="text-gray-600 mt-1">Let's make today productive!</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-xl">
+          <button
+            onClick={() => setShowStreakCalendar(true)}
+            className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-xl hover:bg-orange-100 transition-all hover:scale-105 cursor-pointer"
+          >
             <Flame className="w-5 h-5 text-orange-500" />
             <span className="text-sm font-semibold text-orange-700">7 day streak</span>
-          </div>
+          </button>
           <div className="w-14 h-14 bg-gradient-to-br from-[#164B2E] to-[#0d2819] rounded-full border-4 border-white shadow-lg"></div>
         </div>
       </div>
+
+      <StreakCalendar isOpen={showStreakCalendar} onClose={() => setShowStreakCalendar(false)} />
 
       <div className="bg-gradient-to-br from-[#164B2E] to-[#0d2819] rounded-2xl p-6 text-[#F1F5F9] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>

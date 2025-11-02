@@ -1,6 +1,17 @@
 import { TrendingUp, Award, Target, Zap } from 'lucide-react';
+import GPAChart from '../components/GPAChart';
 
 export default function Progress() {
+  const gpaData = [
+    { label: 'Sep', value: 8.9 },
+    { label: 'Oct 1', value: 9.0 },
+    { label: 'Oct 8', value: 9.1 },
+    { label: 'Oct 15', value: 9.15 },
+    { label: 'Oct 22', value: 9.2 },
+    { label: 'Oct 29', value: 9.3 },
+    { label: 'Nov 1', value: 9.37 },
+  ];
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -9,28 +20,9 @@ export default function Progress() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="font-semibold text-lg mb-6 text-gray-900">GPA Trend</h3>
-          <div className="relative h-64">
-            <div className="absolute inset-0 flex items-end justify-between gap-2">
-              {[8.9, 9.0, 9.1, 9.15, 9.2, 9.3, 9.37].map((value, index) => {
-                const height = ((value - 8.5) / (10 - 8.5)) * 100;
-                return (
-                  <div key={index} className="flex-1 flex flex-col items-center">
-                    <div
-                      className="w-full bg-gradient-to-t from-[#164B2E] to-[#2a7d4f] rounded-t-lg transition-all hover:opacity-80 cursor-pointer relative group"
-                      style={{ height: `${height}%` }}
-                    >
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-2 py-1 rounded text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        {value}
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                      {['Sep', 'Oct 1', 'Oct 8', 'Oct 15', 'Oct 22', 'Oct 29', 'Nov 1'][index]}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900">GPA Trend</h3>
+          <div className="flex justify-center">
+            <GPAChart data={gpaData} />
           </div>
           <div className="mt-4 flex items-center justify-center gap-2 text-green-600">
             <TrendingUp className="w-5 h-5" />

@@ -1,8 +1,9 @@
 import { TrendingUp, TrendingDown, Minus, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import SubjectInsights from '../components/SubjectInsights';
 
 export default function Grades() {
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
 
   const subjects = [
     { id: 1, name: 'Mathematics', grade: 9.5, average: 9.4, trend: 'up', teacher: 'Ms. Johnson', color: 'blue' },
@@ -12,6 +13,8 @@ export default function Grades() {
     { id: 5, name: 'History', grade: 9.3, average: 9.1, trend: 'up', teacher: 'Mrs. Davis', color: 'red' },
     { id: 6, name: 'English', grade: 8.7, average: 8.8, trend: 'stable', teacher: 'Ms. Wilson', color: 'teal' },
   ];
+
+  const selectedSubject = subjects.find((s) => s.id === selectedSubjectId) || null;
 
   const getTrendIcon = (trend: string) => {
     if (trend === 'up') return <TrendingUp className="w-4 h-4 text-green-500" />;
@@ -43,13 +46,19 @@ export default function Grades() {
         </div>
       </div>
 
+      <SubjectInsights
+        isOpen={selectedSubjectId !== null}
+        onClose={() => setSelectedSubjectId(null)}
+        subject={selectedSubject}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {subjects.map((subject) => {
           const colorClasses = getColorClasses(subject.color);
           return (
             <div
               key={subject.id}
-              onClick={() => setSelectedSubject(subject.id.toString())}
+              onClick={() => setSelectedSubjectId(subject.id)}
               className={`bg-white border ${colorClasses.border} rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer group`}
             >
               <div className="flex items-start justify-between mb-4">
