@@ -1,9 +1,21 @@
-import { Search, Send, Circle } from 'lucide-react';
-import { useState } from 'react';
+import { Search, Send, Circle, Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Messages() {
   const [selectedChat, setSelectedChat] = useState(1);
   const [message, setMessage] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem('messagesSidebarOpen');
+    if (savedState !== null) {
+      setIsSidebarOpen(savedState === 'true');
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('messagesSidebarOpen', String(isSidebarOpen));
+  }, [isSidebarOpen]);
 
   const conversations = [
     {
@@ -71,51 +83,92 @@ export default function Messages() {
   return (
     <div className="h-[calc(100vh-8rem)]">
       <div className="flex gap-6 h-full">
-        <div className="w-80 bg-white rounded-2xl border border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Messages
-            </h1>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search messages..."
-                className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm"
-              />
+        <div
+          className={`bg-white rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 ${
+            isSidebarOpen ? 'w-80' : 'w-16'
+          }`}
+        >
+          <div className={`p-4 border-b border-gray-200 ${!isSidebarOpen ? 'flex items-center justify-center' : ''}`}>
+            <div className="flex items-center justify-between mb-4">
+              {isSidebarOpen && (
+                <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Messages
+                </h1>
+              )}
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className={`p-2 hover:bg-gray-100 rounded-lg transition-colors ${!isSidebarOpen ? 'mx-auto' : ''}`}
+                title={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+              >
+                {isSidebarOpen ? (
+                  <X className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <Menu className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
             </div>
+            {isSidebarOpen && (
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search messages..."
+                  className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto">
             {conversations.map((conv) => (
               <button
                 key={conv.id}
-                onClick={() => setSelectedChat(conv.id)}
+                onClick={() => {
+                  setSelectedChat(conv.id);
+                  if (!isSidebarOpen) {
+                    setIsSidebarOpen(true);
+                  }
+                }}
                 className={`w-full p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors text-left ${
                   selectedChat === conv.id ? 'bg-blue-50' : ''
                 }`}
+                title={!isSidebarOpen ? conv.name : ''}
               >
-                <div className="flex items-start gap-3">
-                  <div className="relative">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#164B2E] to-[#0d2819] rounded-full"></div>
-                    {conv.online && (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+                {isSidebarOpen ? (
+                  <div className="flex items-start gap-3">
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-gradient-to-br from-[#164B2E] to-[#0d2819] rounded-full"></div>
+                      {conv.online && (
+                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-semibold text-gray-900 truncate">{conv.name}</p>
+                        <span className="text-xs text-gray-500">{conv.time}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 mb-1">{conv.role}</p>
+                      <p className="text-sm text-gray-600 truncate">{conv.lastMessage}</p>
+                    </div>
+                    {conv.unread > 0 && (
+                      <div className="w-6 h-6 bg-[#164B2E] rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs text-[#F1F5F9] font-semibold">{conv.unread}</span>
+                      </div>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="font-semibold text-gray-900 truncate">{conv.name}</p>
-                      <span className="text-xs text-gray-500">{conv.time}</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mb-1">{conv.role}</p>
-                    <p className="text-sm text-gray-600 truncate">{conv.lastMessage}</p>
+                ) : (
+                  <div className="flex justify-center relative">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#164B2E] to-[#0d2819] rounded-full"></div>
+                    {conv.online && (
+                      <div className="absolute bottom-0 right-1 w-2 h-2 bg-green-400 rounded-full border border-white"></div>
+                    )}
+                    {conv.unread > 0 && (
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#164B2E] rounded-full flex items-center justify-center">
+                        <span className="text-xs text-[#F1F5F9] font-semibold">{conv.unread}</span>
+                      </div>
+                    )}
                   </div>
-                  {conv.unread > 0 && (
-                    <div className="w-6 h-6 bg-[#164B2E] rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs text-[#F1F5F9] font-semibold">{conv.unread}</span>
-                    </div>
-                  )}
-                </div>
+                )}
               </button>
             ))}
           </div>

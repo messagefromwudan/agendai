@@ -1,4 +1,4 @@
-import { User, Award, Clock, BookOpen, Trophy, Zap, Target } from 'lucide-react';
+import { Award, Clock, BookOpen, Trophy, Zap, Target } from 'lucide-react';
 
 export default function Profile() {
   const badges = [

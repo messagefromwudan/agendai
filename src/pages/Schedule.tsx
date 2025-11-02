@@ -1,5 +1,20 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Circle } from 'lucide-react';
+
+type ClassEvent = {
+  id: number;
+  title: string;
+  time: string;
+  location: string;
+  teacher: string;
+  type: string;
+  color: string;
+  homeworkCompleted: boolean;
+};
+
+type DaySchedule = {
+  [key: number]: ClassEvent[];
+};
 
 export default function Schedule() {
   const [viewMode, setViewMode] = useState<'week' | 'day'>('week');
@@ -8,44 +23,30 @@ export default function Schedule() {
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
   const dates = ['28', '29', '30', '31', '1'];
 
-  const events = [
-    {
-      id: 1,
-      title: 'Mathematics',
-      time: '08:00 - 09:30',
-      location: 'Room 204',
-      teacher: 'Ms. Johnson',
-      type: 'class',
-      color: 'blue',
-    },
-    {
-      id: 2,
-      title: 'Physics Lab',
-      time: '10:00 - 12:00',
-      location: 'Lab 3',
-      teacher: 'Dr. Smith',
-      type: 'class',
-      color: 'green',
-    },
-    {
-      id: 3,
-      title: 'Literature',
-      time: '13:00 - 14:00',
-      location: 'Room 101',
-      teacher: 'Mr. Anderson',
-      type: 'class',
-      color: 'purple',
-    },
-    {
-      id: 4,
-      title: 'Study Session',
-      time: '15:00 - 16:00',
-      location: 'Library',
-      teacher: '',
-      type: 'study',
-      color: 'orange',
-    },
-  ];
+  const weekSchedule: DaySchedule = {
+    0: [
+      { id: 1, title: 'Mathematics', time: '08:00 - 09:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true },
+      { id: 2, title: 'Physics', time: '10:00 - 11:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false },
+      { id: 3, title: 'Literature', time: '13:00 - 14:00', location: 'Room 101', teacher: 'Mr. Anderson', type: 'class', color: 'purple', homeworkCompleted: true },
+    ],
+    1: [
+      { id: 4, title: 'Chemistry', time: '09:00 - 10:30', location: 'Lab 2', teacher: 'Dr. Brown', type: 'class', color: 'orange', homeworkCompleted: true },
+      { id: 5, title: 'History', time: '11:00 - 12:00', location: 'Room 305', teacher: 'Mrs. Davis', type: 'class', color: 'red', homeworkCompleted: false },
+    ],
+    2: [
+      { id: 6, title: 'English', time: '08:00 - 09:00', location: 'Room 210', teacher: 'Ms. Wilson', type: 'class', color: 'teal', homeworkCompleted: true },
+      { id: 7, title: 'Mathematics', time: '10:00 - 11:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true },
+    ],
+    3: [
+      { id: 8, title: 'Physics Lab', time: '09:00 - 11:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false },
+      { id: 9, title: 'Chemistry', time: '13:00 - 14:00', location: 'Lab 2', teacher: 'Dr. Brown', type: 'class', color: 'orange', homeworkCompleted: true },
+    ],
+    4: [
+      { id: 10, title: 'Mathematics', time: '08:00 - 09:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true },
+      { id: 11, title: 'Physics Lab', time: '10:00 - 12:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false },
+      { id: 12, title: 'Literature', time: '13:00 - 14:00', location: 'Room 101', teacher: 'Mr. Anderson', type: 'class', color: 'purple', homeworkCompleted: true },
+    ],
+  };
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; border: string; text: string; light: string }> = {
@@ -53,6 +54,8 @@ export default function Schedule() {
       green: { bg: 'bg-green-500', border: 'border-green-500', text: 'text-green-700', light: 'bg-green-50' },
       purple: { bg: 'bg-purple-500', border: 'border-purple-500', text: 'text-purple-700', light: 'bg-purple-50' },
       orange: { bg: 'bg-orange-500', border: 'border-orange-500', text: 'text-orange-700', light: 'bg-orange-50' },
+      red: { bg: 'bg-red-500', border: 'border-red-500', text: 'text-red-700', light: 'bg-red-50' },
+      teal: { bg: 'bg-teal-500', border: 'border-teal-500', text: 'text-teal-700', light: 'bg-teal-50' },
     };
     return colors[color] || colors.blue;
   };
@@ -116,9 +119,10 @@ export default function Schedule() {
       </div>
 
       {viewMode === 'week' ? (
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-5 gap-4">
           {weekDays.map((day, index) => {
             const isToday = index === 4;
+            const dayClasses = weekSchedule[index] || [];
             return (
               <button
                 key={day}
@@ -126,14 +130,42 @@ export default function Schedule() {
                   setSelectedDay(index);
                   setViewMode('day');
                 }}
-                className={`p-4 rounded-xl transition-all ${
+                className={`p-4 rounded-xl transition-all text-left ${
                   isToday
                     ? 'bg-[#164B2E] text-[#F1F5F9] shadow-lg'
                     : 'bg-white border border-gray-200 text-gray-700 hover:shadow-md'
                 }`}
               >
-                <p className={`text-xs mb-1 ${isToday ? 'text-[#F1F5F9]/70' : 'text-gray-500'}`}>{day}</p>
-                <p className="text-2xl font-bold">{dates[index]}</p>
+                <div className="mb-3">
+                  <p className={`text-xs mb-1 ${isToday ? 'text-[#F1F5F9]/70' : 'text-gray-500'}`}>{day}</p>
+                  <p className="text-2xl font-bold">{dates[index]}</p>
+                </div>
+
+                <div className="space-y-2">
+                  {dayClasses.map((classEvent) => {
+                    const colorClasses = getColorClasses(classEvent.color);
+                    return (
+                      <div
+                        key={classEvent.id}
+                        className={`${isToday ? 'bg-white/10 border-white/20' : `${colorClasses.light} border ${colorClasses.border}`} border rounded-lg p-2 transition-all hover:scale-105`}
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <p className={`text-xs font-semibold truncate ${isToday ? 'text-[#F1F5F9]' : colorClasses.text}`}>
+                            {classEvent.title}
+                          </p>
+                          {classEvent.homeworkCompleted ? (
+                            <CheckCircle2 className={`w-3 h-3 flex-shrink-0 ${isToday ? 'text-green-300' : 'text-green-600'}`} />
+                          ) : (
+                            <Circle className={`w-3 h-3 flex-shrink-0 ${isToday ? 'text-red-300' : 'text-red-600'}`} />
+                          )}
+                        </div>
+                        <p className={`text-xs ${isToday ? 'text-[#F1F5F9]/70' : 'text-gray-500'}`}>
+                          {classEvent.time.split(' - ')[0]}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
               </button>
             );
           })}
@@ -152,39 +184,58 @@ export default function Schedule() {
               <span className="text-sm font-medium">Back to Week</span>
             </button>
           </div>
-        <div className="space-y-4">
-          {events.map((event) => {
-            const colorClasses = getColorClasses(event.color);
-            return (
-              <div
-                key={event.id}
-                className={`border-l-4 ${colorClasses.border} ${colorClasses.light} rounded-r-xl p-4 hover:shadow-md transition-all cursor-pointer group`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="text-center min-w-[80px]">
-                    <p className="text-xs text-gray-500 mb-1">Time</p>
-                    <p className="font-semibold text-gray-900 text-sm">{event.time}</p>
-                  </div>
-                  <div className={`w-1 ${colorClasses.bg} rounded-full self-stretch`}></div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1 group-hover:text-[#164B2E] transition-colors">
-                      {event.title}
-                    </h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>{event.location}</span>
-                      {event.teacher && <span>• {event.teacher}</span>}
+          <div className="space-y-4">
+            {(weekSchedule[selectedDay] || []).map((event) => {
+              const colorClasses = getColorClasses(event.color);
+              return (
+                <div
+                  key={event.id}
+                  className={`border-l-4 ${colorClasses.border} ${colorClasses.light} rounded-r-xl p-4 hover:shadow-md transition-all cursor-pointer group`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="text-center min-w-[80px]">
+                      <p className="text-xs text-gray-500 mb-1">Time</p>
+                      <p className="font-semibold text-gray-900 text-sm">{event.time}</p>
+                    </div>
+                    <div className={`w-1 ${colorClasses.bg} rounded-full self-stretch`}></div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg text-gray-900 mb-1 group-hover:text-[#164B2E] transition-colors">
+                        {event.title}
+                      </h3>
+                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <span>{event.location}</span>
+                        {event.teacher && <span>• {event.teacher}</span>}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <div className={`px-3 py-1 ${colorClasses.light} border ${colorClasses.border} rounded-lg`}>
+                        <span className={`text-xs font-medium ${colorClasses.text} capitalize`}>
+                          {event.type}
+                        </span>
+                      </div>
+                      <div className={`flex items-center gap-1 px-3 py-1 rounded-lg ${
+                        event.homeworkCompleted
+                          ? 'bg-green-50 border border-green-200'
+                          : 'bg-red-50 border border-red-200'
+                      }`}>
+                        {event.homeworkCompleted ? (
+                          <>
+                            <CheckCircle2 className="w-3 h-3 text-green-600" />
+                            <span className="text-xs font-medium text-green-700">Homework Done</span>
+                          </>
+                        ) : (
+                          <>
+                            <Circle className="w-3 h-3 text-red-600" />
+                            <span className="text-xs font-medium text-red-700">Homework Pending</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className={`px-3 py-1 ${colorClasses.light} border ${colorClasses.border} rounded-lg`}>
-                    <span className={`text-xs font-medium ${colorClasses.text} capitalize`}>
-                      {event.type}
-                    </span>
-                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { BookOpen, Brain, Calendar, Backpack, TrendingUp, Award, Flame } from 'lucide-react';
 import StreakCalendar from '../components/StreakCalendar';
 
-export default function Dashboard() {
+type DashboardProps = {
+  onNavigate?: (page: string) => void;
+};
+
+export default function Dashboard({ onNavigate }: DashboardProps = {}) {
   const [showStreakCalendar, setShowStreakCalendar] = useState(false);
 
   return (
@@ -49,7 +53,10 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group">
+        <div
+          onClick={() => onNavigate?.('grades')}
+          className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <BookOpen className="w-6 h-6 text-blue-600" />
@@ -60,7 +67,10 @@ export default function Dashboard() {
           <p className="text-sm text-gray-500">All on track</p>
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group">
+        <div
+          onClick={() => onNavigate?.('ai-tutor')}
+          className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Brain className="w-6 h-6 text-purple-600" />
@@ -71,7 +81,10 @@ export default function Dashboard() {
           <p className="text-sm text-gray-500">This week</p>
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group">
+        <div
+          onClick={() => onNavigate?.('homework')}
+          className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Backpack className="w-6 h-6 text-green-600" />
@@ -82,14 +95,17 @@ export default function Dashboard() {
           <p className="text-sm text-gray-500">Due this week</p>
         </div>
 
-        <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group">
+        <div
+          onClick={() => onNavigate?.('schedule')}
+          className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer group"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Calendar className="w-6 h-6 text-orange-600" />
             </div>
             <span className="text-2xl font-bold text-gray-900">3</span>
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Events Today</h3>
+          <h3 className="font-semibold text-gray-900 mb-1">Classes Today</h3>
           <p className="text-sm text-gray-500">Next in 45 min</p>
         </div>
       </div>
