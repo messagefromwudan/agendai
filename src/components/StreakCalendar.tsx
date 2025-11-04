@@ -65,58 +65,76 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
               return (
                 <div key={date} className="aspect-square flex items-center justify-center">
                   {status?.streak ? (
-                    <div className="relative w-full h-full flex items-center justify-center p-1">
+                    <div className="relative w-full h-full flex items-center justify-center">
                       <svg
-                        viewBox="0 0 64 80"
+                        viewBox="0 0 100 140"
                         className="w-full h-full"
                         style={{
-                          filter: 'drop-shadow(0 4px 12px rgba(251, 146, 60, 0.6)) drop-shadow(0 0 8px rgba(251, 146, 60, 0.4))',
+                          filter: 'drop-shadow(0 6px 16px rgba(251, 146, 60, 0.7))',
                         }}
                       >
                         <defs>
                           <linearGradient id={`flameGradient-${date}`} x1="50%" y1="0%" x2="50%" y2="100%">
-                            <stop offset="0%" style={{ stopColor: '#FCD34D', stopOpacity: 1 }} />
-                            <stop offset="40%" style={{ stopColor: '#FBBF24', stopOpacity: 1 }} />
+                            <stop offset="0%" style={{ stopColor: '#FEF08A', stopOpacity: 1 }} />
+                            <stop offset="20%" style={{ stopColor: '#FCD34D', stopOpacity: 1 }} />
+                            <stop offset="45%" style={{ stopColor: '#FBBF24', stopOpacity: 1 }} />
                             <stop offset="70%" style={{ stopColor: '#FB923C', stopOpacity: 1 }} />
                             <stop offset="100%" style={{ stopColor: '#EA580C', stopOpacity: 1 }} />
                           </linearGradient>
                         </defs>
 
                         <path
-                          d="M 32 4
-                             C 28 4, 22 12, 20 24
-                             C 18 36, 20 48, 28 60
-                             C 32 68, 36 72, 40 60
-                             C 48 48, 50 36, 48 24
-                             C 46 12, 40 4, 36 4
-                             C 35 8, 34 12, 34 16
-                             C 34 20, 35 24, 36 28
-                             C 33 24, 31 20, 30 16
-                             C 30 12, 31 8, 32 4 Z"
+                          d="M 50 8
+                             C 65 15, 75 28, 78 42
+                             C 80 52, 78 62, 72 72
+                             C 68 80, 60 88, 50 92
+                             C 40 88, 32 80, 28 72
+                             C 22 62, 20 52, 22 42
+                             C 25 28, 35 15, 50 8
+                             M 50 20
+                             C 52 18, 58 22, 62 32
+                             C 65 42, 64 52, 60 60
+                             C 56 54, 52 48, 50 40
+                             C 48 48, 44 54, 40 60
+                             C 36 52, 35 42, 38 32
+                             C 42 22, 48 18, 50 20"
                           fill={`url(#flameGradient-${date})`}
-                          stroke="#D97706"
-                          strokeWidth="0.5"
-                          strokeLinejoin="round"
                         />
 
                         <path
-                          d="M 32 12
-                             C 29 18, 28 26, 30 34
-                             C 32 42, 36 48, 40 48
-                             C 44 48, 48 42, 50 34
-                             C 52 26, 51 18, 48 12
-                             C 45 16, 40 18, 36 18
-                             C 32 18, 28 16, 25 12"
-                          fill="rgba(253, 224, 71, 0.5)"
-                          opacity="0.6"
+                          d="M 50 8
+                             C 50 8, 68 18, 75 35
+                             C 78 42, 78 52, 75 62
+                             C 72 70, 65 80, 50 92
+                             C 35 80, 28 70, 25 62
+                             C 22 52, 22 42, 25 35
+                             C 32 18, 50 8, 50 8
+                             Z"
+                          fill={`url(#flameGradient-${date})`}
+                        />
+
+                        <path
+                          d="M 50 12
+                             C 58 18, 68 28, 72 40
+                             C 75 48, 74 58, 70 66
+                             C 66 74, 60 82, 50 88
+                             C 40 82, 34 74, 30 66
+                             C 26 58, 25 48, 28 40
+                             C 32 28, 42 18, 50 12
+                             Z"
+                          fill={`url(#flameGradient-${date})`}
+                          stroke="#C2410C"
+                          strokeWidth="1"
+                          strokeLinejoin="round"
                         />
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <span
-                          className="text-white font-bold text-sm leading-none"
+                          className="text-white font-bold text-base leading-none"
                           style={{
-                            textShadow: '0 1px 3px rgba(0,0,0,0.6), 0 0 6px rgba(210, 100, 0, 0.8)',
+                            textShadow: '0 2px 4px rgba(0,0,0,0.7), 0 0 8px rgba(180, 83, 9, 0.9)',
                             fontFamily: 'Poppins, sans-serif',
+                            letterSpacing: '-0.5px',
                           }}
                         >
                           {date}
@@ -160,34 +178,33 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
           </div>
           <div className="flex items-center gap-2">
             <svg
-              viewBox="0 0 64 80"
+              viewBox="0 0 100 140"
               className="w-5 h-5"
               style={{
-                filter: 'drop-shadow(0 2px 6px rgba(251, 146, 60, 0.5))',
+                filter: 'drop-shadow(0 2px 8px rgba(251, 146, 60, 0.6))',
               }}
             >
               <defs>
                 <linearGradient id="legendFlame" x1="50%" y1="0%" x2="50%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#FCD34D', stopOpacity: 1 }} />
-                  <stop offset="40%" style={{ stopColor: '#FBBF24', stopOpacity: 1 }} />
+                  <stop offset="0%" style={{ stopColor: '#FEF08A', stopOpacity: 1 }} />
+                  <stop offset="20%" style={{ stopColor: '#FCD34D', stopOpacity: 1 }} />
+                  <stop offset="45%" style={{ stopColor: '#FBBF24', stopOpacity: 1 }} />
                   <stop offset="70%" style={{ stopColor: '#FB923C', stopOpacity: 1 }} />
                   <stop offset="100%" style={{ stopColor: '#EA580C', stopOpacity: 1 }} />
                 </linearGradient>
               </defs>
               <path
-                d="M 32 4
-                   C 28 4, 22 12, 20 24
-                   C 18 36, 20 48, 28 60
-                   C 32 68, 36 72, 40 60
-                   C 48 48, 50 36, 48 24
-                   C 46 12, 40 4, 36 4
-                   C 35 8, 34 12, 34 16
-                   C 34 20, 35 24, 36 28
-                   C 33 24, 31 20, 30 16
-                   C 30 12, 31 8, 32 4 Z"
+                d="M 50 12
+                   C 58 18, 68 28, 72 40
+                   C 75 48, 74 58, 70 66
+                   C 66 74, 60 82, 50 88
+                   C 40 82, 34 74, 30 66
+                   C 26 58, 25 48, 28 40
+                   C 32 28, 42 18, 50 12
+                   Z"
                 fill="url(#legendFlame)"
-                stroke="#D97706"
-                strokeWidth="0.5"
+                stroke="#C2410C"
+                strokeWidth="1"
                 strokeLinejoin="round"
               />
             </svg>
