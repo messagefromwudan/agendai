@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Circle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Circle, Coffee, Brain, BookOpen, Target } from 'lucide-react';
+import ClassDetailModal from '../components/ClassDetailModal';
+import WeekPickerCalendar from '../components/WeekPickerCalendar';
 
 type ClassEvent = {
   id: number;
@@ -10,42 +12,206 @@ type ClassEvent = {
   type: string;
   color: string;
   homeworkCompleted: boolean;
+  description?: string;
+  notes?: string;
 };
 
 type DaySchedule = {
   [key: number]: ClassEvent[];
 };
 
+type ClassStatus = 'upcoming' | 'in-progress' | 'finished';
+
+type AITip = {
+  type: 'focus' | 'break' | 'recap' | 'test_prep';
+  icon: any;
+  color: string;
+  title: string;
+  content: string;
+  action: string;
+};
+
 export default function Schedule() {
-  const [viewMode, setViewMode] = useState<'week' | 'day'>('week');
+  const [viewMode, setViewMode] = useState<'week' | 'day'>(() => {
+    return (localStorage.getItem('scheduleViewMode') as 'week' | 'day') || 'week';
+  });
   const [selectedDay, setSelectedDay] = useState(4);
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<ClassEvent | null>(null);
+  const [showClassModal, setShowClassModal] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTip, setCurrentTip] = useState(0);
 
   const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
   const dates = ['28', '29', '30', '31', '1'];
 
   const weekSchedule: DaySchedule = {
     0: [
-      { id: 1, title: 'Mathematics', time: '08:00 - 09:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true },
-      { id: 2, title: 'Physics', time: '10:00 - 11:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false },
-      { id: 3, title: 'Literature', time: '13:00 - 14:00', location: 'Room 101', teacher: 'Mr. Anderson', type: 'class', color: 'purple', homeworkCompleted: true },
+      { id: 1, title: 'Mathematics', time: '08:00 - 09:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true, description: 'Advanced Calculus - Derivatives and integrals', notes: 'Remember to review the homework from last week' },
+      { id: 2, title: 'Physics', time: '10:00 - 11:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false, description: 'Newton\'s Laws - Practical applications' },
+      { id: 3, title: 'Literature', time: '13:00 - 14:00', location: 'Room 101', teacher: 'Mr. Anderson', type: 'class', color: 'purple', homeworkCompleted: true, description: 'Romantic Poetry Analysis' },
     ],
     1: [
-      { id: 4, title: 'Chemistry', time: '09:00 - 10:30', location: 'Lab 2', teacher: 'Dr. Brown', type: 'class', color: 'orange', homeworkCompleted: true },
-      { id: 5, title: 'History', time: '11:00 - 12:00', location: 'Room 305', teacher: 'Mrs. Davis', type: 'class', color: 'red', homeworkCompleted: false },
+      { id: 4, title: 'Chemistry', time: '09:00 - 10:30', location: 'Lab 2', teacher: 'Dr. Brown', type: 'class', color: 'orange', homeworkCompleted: true, description: 'Chemical reactions and balancing equations' },
+      { id: 5, title: 'History', time: '11:00 - 12:00', location: 'Room 305', teacher: 'Mrs. Davis', type: 'class', color: 'red', homeworkCompleted: false, description: 'World War II - Key events and outcomes' },
     ],
     2: [
-      { id: 6, title: 'English', time: '08:00 - 09:00', location: 'Room 210', teacher: 'Ms. Wilson', type: 'class', color: 'teal', homeworkCompleted: true },
-      { id: 7, title: 'Mathematics', time: '10:00 - 11:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true },
+      { id: 6, title: 'English', time: '08:00 - 09:00', location: 'Room 210', teacher: 'Ms. Wilson', type: 'class', color: 'teal', homeworkCompleted: true, description: 'Grammar and composition' },
+      { id: 7, title: 'Mathematics', time: '10:00 - 11:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true, description: 'Problem-solving session' },
     ],
     3: [
-      { id: 8, title: 'Physics Lab', time: '09:00 - 11:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false },
-      { id: 9, title: 'Chemistry', time: '13:00 - 14:00', location: 'Lab 2', teacher: 'Dr. Brown', type: 'class', color: 'orange', homeworkCompleted: true },
+      { id: 8, title: 'Physics Lab', time: '09:00 - 11:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false, description: 'Hands-on experiments with motion and force' },
+      { id: 9, title: 'Chemistry', time: '13:00 - 14:00', location: 'Lab 2', teacher: 'Dr. Brown', type: 'class', color: 'orange', homeworkCompleted: true, description: 'Lab report review session' },
     ],
     4: [
-      { id: 10, title: 'Mathematics', time: '08:00 - 09:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true },
-      { id: 11, title: 'Physics Lab', time: '10:00 - 12:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false },
-      { id: 12, title: 'Literature', time: '13:00 - 14:00', location: 'Room 101', teacher: 'Mr. Anderson', type: 'class', color: 'purple', homeworkCompleted: true },
+      { id: 10, title: 'Mathematics', time: '08:00 - 09:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true, description: 'Quiz on derivatives' },
+      { id: 11, title: 'Physics Lab', time: '10:00 - 12:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false, description: 'Final lab project presentation' },
+      { id: 12, title: 'Literature', time: '13:00 - 14:00', location: 'Room 101', teacher: 'Mr. Anderson', type: 'class', color: 'purple', homeworkCompleted: true, description: 'Group discussion on assigned reading' },
     ],
+  };
+
+  const aiTips: AITip[] = [
+    {
+      type: 'focus',
+      icon: Brain,
+      color: 'blue',
+      title: 'Focus Session Recommendation',
+      content: 'You have a 30-minute gap before your study session. Would you like to schedule a quick focus session for Physics test preparation?',
+      action: 'Schedule now',
+    },
+    {
+      type: 'break',
+      icon: Coffee,
+      color: 'orange',
+      title: 'Break Reminder',
+      content: 'You\'ve been studying for 2 hours straight. Take a 15-minute break to recharge and improve retention.',
+      action: 'Set break timer',
+    },
+    {
+      type: 'recap',
+      icon: BookOpen,
+      color: 'purple',
+      title: 'Recap Session',
+      content: 'Your Mathematics class ended 1 hour ago. A quick 10-minute recap now will boost long-term retention by 40%.',
+      action: 'Start recap',
+    },
+    {
+      type: 'test_prep',
+      icon: Target,
+      color: 'green',
+      title: 'Test Preparation Tip',
+      content: 'Your Physics test is in 2 days. Based on your schedule, the best time to review is tomorrow at 3 PM. Want me to block that time?',
+      action: 'Block time',
+    },
+  ];
+
+  useEffect(() => {
+    localStorage.setItem('scheduleViewMode', viewMode);
+  }, [viewMode]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const tipTimer = setInterval(() => {
+      setCurrentTip((prev) => (prev + 1) % aiTips.length);
+    }, 86400000);
+    return () => clearInterval(tipTimer);
+  }, []);
+
+  const getWeekRange = (offset: number) => {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const diff = currentDay === 0 ? -6 : 1 - currentDay;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diff + offset * 7);
+
+    const friday = new Date(monday);
+    friday.setDate(monday.getDate() + 4);
+
+    const formatDate = (date: Date) => {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${months[date.getMonth()]} ${date.getDate()}`;
+    };
+
+    return `Week of ${formatDate(monday)} - ${formatDate(friday)}`;
+  };
+
+  const getNextClass = () => {
+    const now = currentTime;
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+
+    const todayClasses = weekSchedule[4] || [];
+
+    for (const classEvent of todayClasses) {
+      const startTime = classEvent.time.split(' - ')[0];
+      if (startTime > currentTimeStr) {
+        return classEvent;
+      }
+    }
+
+    return weekSchedule[4]?.[0] || null;
+  };
+
+  const getClassStatus = (classEvent: ClassEvent): ClassStatus => {
+    const now = currentTime;
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeStr = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+
+    const [startTime, endTime] = classEvent.time.split(' - ');
+
+    if (currentTimeStr < startTime) {
+      return 'upcoming';
+    } else if (currentTimeStr >= startTime && currentTimeStr < endTime) {
+      return 'in-progress';
+    } else {
+      return 'finished';
+    }
+  };
+
+  const getMinutesUntilStart = (classEvent: ClassEvent) => {
+    const now = currentTime;
+    const [hours, minutes] = classEvent.time.split(' - ')[0].split(':').map(Number);
+    const classTime = new Date(now);
+    classTime.setHours(hours, minutes, 0);
+
+    const diff = classTime.getTime() - now.getTime();
+    const minutesDiff = Math.floor(diff / 60000);
+
+    if (minutesDiff < 0) return 0;
+    return minutesDiff;
+  };
+
+  const nextClass = getNextClass();
+  const nextClassStatus = nextClass ? getClassStatus(nextClass) : 'upcoming';
+  const minutesUntil = nextClass ? getMinutesUntilStart(nextClass) : 0;
+
+  const getStatusChip = (status: ClassStatus) => {
+    const configs = {
+      upcoming: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Upcoming' },
+      'in-progress': { bg: 'bg-green-100', text: 'text-green-700', label: 'In Progress' },
+      finished: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Finished' },
+    };
+    const config = configs[status];
+    return (
+      <div className={`${config.bg} ${config.text} px-3 py-1 rounded-lg text-sm font-medium`}>
+        {config.label}
+      </div>
+    );
+  };
+
+  const getCurrentDayIndex = () => {
+    const today = new Date();
+    const day = today.getDay();
+    return day === 0 ? -1 : day - 1;
   };
 
   const getColorClasses = (color: string) => {
@@ -59,6 +225,28 @@ export default function Schedule() {
     };
     return colors[color] || colors.blue;
   };
+
+  const handleClassClick = (classEvent: ClassEvent, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedClass(classEvent);
+    setShowClassModal(true);
+  };
+
+  const handleSaveNotes = (notes: string) => {
+    console.log('Saving notes:', notes);
+  };
+
+  const currentDayIndex = getCurrentDayIndex();
+  const activeTip = aiTips[currentTip];
+  const TipIcon = activeTip.icon;
+
+  const tipColorMap: Record<string, { bg: string; border: string; icon: string }> = {
+    blue: { bg: 'bg-blue-50', border: 'border-blue-200', icon: 'bg-blue-500' },
+    orange: { bg: 'bg-orange-50', border: 'border-orange-200', icon: 'bg-orange-500' },
+    purple: { bg: 'bg-purple-50', border: 'border-purple-200', icon: 'bg-purple-500' },
+    green: { bg: 'bg-green-50', border: 'border-green-200', icon: 'bg-green-500' },
+  };
+  const tipColors = tipColorMap[activeTip.color];
 
   return (
     <div className="space-y-6">
@@ -90,38 +278,70 @@ export default function Schedule() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              onClick={() => setWeekOffset(weekOffset - 1)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </button>
-            <span className="font-semibold text-gray-900 px-4">Week of Oct 28 - Nov 1</span>
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <button
+              onClick={() => setShowCalendar(true)}
+              className="font-semibold text-gray-900 px-4 hover:bg-gray-100 rounded-lg transition-colors py-2"
+            >
+              {getWeekRange(weekOffset)}
+            </button>
+            <button
+              onClick={() => setWeekOffset(weekOffset + 1)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
               <ChevronRight className="w-5 h-5 text-gray-600" />
             </button>
           </div>
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-[#164B2E] to-[#0d2819] rounded-2xl p-6 text-[#F1F5F9]">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[#F1F5F9]/70 text-sm mb-2">Next Class</p>
-            <h2 className="text-2xl font-bold mb-1">Mathematics</h2>
-            <p className="text-[#F1F5F9]/90">Room 204 • Ms. Johnson</p>
-          </div>
-          <div className="text-center">
-            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm mb-2">
-              <Clock className="w-10 h-10 text-[#F1F5F9]" />
+      {nextClass && (
+        <div className="bg-gradient-to-r from-[#164B2E] to-[#0d2819] rounded-2xl p-6 text-[#F1F5F9]">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <p className="text-[#F1F5F9]/70 text-sm">Next Class</p>
+                {getStatusChip(nextClassStatus)}
+              </div>
+              <h2 className="text-2xl font-bold mb-1">{nextClass.title}</h2>
+              <p className="text-[#F1F5F9]/90">{nextClass.location} • {nextClass.teacher}</p>
             </div>
-            <p className="text-2xl font-bold">45m</p>
-            <p className="text-sm text-[#F1F5F9]/70">until start</p>
+            <div className="text-center">
+              <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm mb-2">
+                <Clock className="w-10 h-10 text-[#F1F5F9]" />
+              </div>
+              {nextClassStatus === 'upcoming' && (
+                <>
+                  <p className="text-2xl font-bold">{minutesUntil}m</p>
+                  <p className="text-sm text-[#F1F5F9]/70">until start</p>
+                </>
+              )}
+              {nextClassStatus === 'in-progress' && (
+                <>
+                  <p className="text-lg font-bold">Now</p>
+                  <p className="text-sm text-[#F1F5F9]/70">in progress</p>
+                </>
+              )}
+              {nextClassStatus === 'finished' && (
+                <>
+                  <p className="text-lg font-bold">Done</p>
+                  <p className="text-sm text-[#F1F5F9]/70">finished</p>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {viewMode === 'week' ? (
         <div className="grid grid-cols-5 gap-4 items-start">
           {weekDays.map((day, index) => {
-            const isToday = index === 4;
+            const isToday = index === currentDayIndex;
             const dayClasses = weekSchedule[index] || [];
             return (
               <button
@@ -132,7 +352,7 @@ export default function Schedule() {
                 }}
                 className={`p-4 rounded-xl transition-all text-left flex flex-col h-full ${
                   isToday
-                    ? 'bg-[#164B2E] text-[#F1F5F9] shadow-lg'
+                    ? 'bg-[#164B2E] text-[#F1F5F9] shadow-lg ring-4 ring-[#164B2E]/20'
                     : 'bg-white border border-gray-200 text-gray-700 hover:shadow-md'
                 }`}
               >
@@ -147,7 +367,8 @@ export default function Schedule() {
                     return (
                       <div
                         key={classEvent.id}
-                        className={`${isToday ? 'bg-white/10 border-white/20' : `${colorClasses.light} border ${colorClasses.border}`} border rounded-lg p-2 transition-all hover:scale-105`}
+                        onClick={(e) => handleClassClick(classEvent, e)}
+                        className={`${isToday ? 'bg-white/10 border-white/20' : `${colorClasses.light} border ${colorClasses.border}`} border rounded-lg p-2 transition-all hover:scale-105 cursor-pointer`}
                       >
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <p className={`text-xs font-semibold truncate ${isToday ? 'text-[#F1F5F9]' : colorClasses.text}`}>
@@ -190,6 +411,7 @@ export default function Schedule() {
               return (
                 <div
                   key={event.id}
+                  onClick={(e) => handleClassClick(event, e)}
                   className={`border-l-4 ${colorClasses.border} ${colorClasses.light} rounded-r-xl p-4 hover:shadow-md transition-all cursor-pointer group`}
                 >
                   <div className="flex items-start gap-4">
@@ -239,22 +461,36 @@ export default function Schedule() {
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+      <div className={`${tipColors.bg} border ${tipColors.border} rounded-xl p-4`}>
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-            <Clock className="w-4 h-4 text-white" />
+          <div className={`w-8 h-8 ${tipColors.icon} rounded-full flex items-center justify-center flex-shrink-0`}>
+            <TipIcon className="w-4 h-4 text-white" />
           </div>
-          <div>
-            <p className="font-semibold text-blue-900 mb-1">AI Scheduling Tip</p>
-            <p className="text-sm text-blue-700">
-              You have a 30-minute gap before your study session. Would you like to schedule a quick focus session for Physics test preparation?
+          <div className="flex-1">
+            <p className="font-semibold text-gray-900 mb-1">{activeTip.title}</p>
+            <p className="text-sm text-gray-700">
+              {activeTip.content}
             </p>
             <button className="mt-2 text-sm font-semibold text-[#164B2E] hover:underline">
-              Schedule now →
+              {activeTip.action} →
             </button>
           </div>
         </div>
       </div>
+
+      <WeekPickerCalendar
+        isOpen={showCalendar}
+        onClose={() => setShowCalendar(false)}
+        currentWeekOffset={weekOffset}
+        onSelectWeek={setWeekOffset}
+      />
+
+      <ClassDetailModal
+        isOpen={showClassModal}
+        onClose={() => setShowClassModal(false)}
+        classEvent={selectedClass}
+        onSaveNotes={handleSaveNotes}
+      />
     </div>
   );
 }
