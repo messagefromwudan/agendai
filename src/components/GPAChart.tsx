@@ -1,11 +1,19 @@
 import { useState } from 'react';
 
 type GPAChartProps = {
-  data: { label: string; value: number }[];
+  data: { label: string; value: number; date: string }[];
+  interval: 'month' | 'semester' | 'year';
 };
 
-export default function GPAChart({ data }: GPAChartProps) {
+export default function GPAChart({ data, interval }: GPAChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [animationProgress, setAnimationProgress] = useState(0);
+
+  useState(() => {
+    setAnimationProgress(0);
+    const timer = setTimeout(() => setAnimationProgress(100), 50);
+    return () => clearTimeout(timer);
+  });
 
   const maxValue = 10;
   const minValue = 8.5;
@@ -28,6 +36,7 @@ export default function GPAChart({ data }: GPAChartProps) {
     y: getY(item.value),
     label: item.label,
     value: item.value,
+    date: item.date,
   }));
 
   const pathData = points.map((point, index) => {
@@ -52,7 +61,13 @@ export default function GPAChart({ data }: GPAChartProps) {
           </linearGradient>
         </defs>
 
-        <path d={areaPathData} fill="url(#areaGradient)" />
+        <path
+          d={areaPathData}
+          fill="url(#areaGradient)"
+          style={{
+            transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+        />
 
         <path
           d={pathData}
@@ -61,6 +76,11 @@ export default function GPAChart({ data }: GPAChartProps) {
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
+          style={{
+            strokeDasharray: 1000,
+            strokeDashoffset: 1000 - (1000 * animationProgress / 100),
+            transition: 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
         />
 
         {points.map((point, index) => (
@@ -79,23 +99,33 @@ export default function GPAChart({ data }: GPAChartProps) {
             {hoveredIndex === index && (
               <>
                 <rect
-                  x={point.x - 35}
-                  y={point.y - 40}
-                  width="70"
-                  height="30"
-                  rx="6"
+                  x={point.x - 40}
+                  y={point.y - 55}
+                  width="80"
+                  height="45"
+                  rx="8"
                   fill="#164B2E"
                   className="animate-scale-in"
                 />
                 <text
                   x={point.x}
-                  y={point.y - 21}
+                  y={point.y - 38}
                   textAnchor="middle"
                   fill="white"
-                  fontSize="14"
+                  fontSize="12"
+                  fontWeight="500"
+                >
+                  {point.date}
+                </text>
+                <text
+                  x={point.x}
+                  y={point.y - 20}
+                  textAnchor="middle"
+                  fill="white"
+                  fontSize="16"
                   fontWeight="bold"
                 >
-                  {point.value}
+                  {point.value.toFixed(2)}
                 </text>
               </>
             )}

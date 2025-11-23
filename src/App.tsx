@@ -29,7 +29,7 @@ function App() {
       case 'schedule':
         return <Schedule />;
       case 'progress':
-        return <Progress />;
+        return <Progress onNavigate={setCurrentPage} />;
       case 'messages':
         return <Messages />;
       case 'settings':
