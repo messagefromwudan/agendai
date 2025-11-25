@@ -66,7 +66,7 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
                 <div key={date} className="aspect-square flex items-center justify-center">
                   {status?.streak ? (
                     <div
-                      className="w-full h-full rounded-full bg-gradient-to-br from-yellow-400 via-orange-500 to-orange-600 flex items-center justify-center text-white font-bold text-base shadow-lg"
+                      className="w-full h-full rounded-lg bg-gradient-to-br from-yellow-400 via-orange-500 to-orange-600 flex items-center justify-center text-white font-bold text-base shadow-lg"
                       style={{
                         filter: 'drop-shadow(0 8px 20px rgba(251, 146, 60, 0.6)) drop-shadow(0 4px 12px rgba(249, 115, 22, 0.4))',
                         fontFamily: 'Poppins, sans-serif',
