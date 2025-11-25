@@ -112,37 +112,9 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
             <span className="text-gray-600 font-medium">Study day</span>
           </div>
           <div className="flex items-center gap-2">
-            <svg
-              viewBox="0 0 100 140"
-              className="w-5 h-5"
-              style={{
-                filter: 'drop-shadow(0 2px 8px rgba(251, 146, 60, 0.6))',
-              }}
-            >
-              <defs>
-                <linearGradient id="legendFlame" x1="50%" y1="0%" x2="50%" y2="100%">
-                  <stop offset="0%" style={{ stopColor: '#FEF08A', stopOpacity: 1 }} />
-                  <stop offset="20%" style={{ stopColor: '#FCD34D', stopOpacity: 1 }} />
-                  <stop offset="45%" style={{ stopColor: '#FBBF24', stopOpacity: 1 }} />
-                  <stop offset="70%" style={{ stopColor: '#FB923C', stopOpacity: 1 }} />
-                  <stop offset="100%" style={{ stopColor: '#EA580C', stopOpacity: 1 }} />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 50 12
-                   C 58 18, 68 28, 72 40
-                   C 75 48, 74 58, 70 66
-                   C 66 74, 60 82, 50 88
-                   C 40 82, 34 74, 30 66
-                   C 26 58, 25 48, 28 40
-                   C 32 28, 42 18, 50 12
-                   Z"
-                fill="url(#legendFlame)"
-                stroke="#C2410C"
-                strokeWidth="1"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <div className="w-5 h-5 bg-gradient-to-br from-yellow-400 via-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-sm">
+              <Flame className="w-3 h-3 text-white" />
+            </div>
             <span className="text-gray-600 font-medium">Streak day</span>
           </div>
         </div>
