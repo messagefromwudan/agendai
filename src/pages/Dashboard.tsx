@@ -49,10 +49,10 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
         if (diff > 0) {
           const minutesLeft = Math.floor(diff / 60000);
           if (minutesLeft < 60) {
-            updated[idx] = `În ${minutesLeft} min`;
+            updated[idx] = `În ${minutesLeft} minute`;
           } else {
             const hoursLeft = Math.floor(minutesLeft / 60);
-            updated[idx] = `În ${hoursLeft}h`;
+            updated[idx] = `În ${hoursLeft} ore`;
           }
         } else {
           updated[idx] = 'A început';
@@ -76,17 +76,17 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
     if (mockData.upcomingEvents.length > 0) {
       const event = mockData.upcomingEvents[0];
       if (event.daysUntil === 1) {
-        return `${event.type === 'test' ? 'Test mare' : 'Eveniment mare'} mâine – hai să ne concentrăm pe ${event.subject} astăzi.`;
+        return `Mâine ai un test important – hai să ne concentrăm azi pe fizică.`;
       }
     }
-    return "Hai să facem ziua de astăzi productivă!";
+    return "Hai să facem ziua de azi una productivă!";
   };
 
   const getSubjectStatus = () => {
     if (mockData.activeSubjects.needingAttention === 0) {
       return 'Toate la zi';
     } else if (mockData.activeSubjects.needingAttention <= 2) {
-      return `${mockData.activeSubjects.needingAttention} necesită atenție`;
+      return `${mockData.activeSubjects.needingAttention} Necesită atenție`;
     }
     return 'Necesită focalizare';
   };
@@ -124,7 +124,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-xl hover:bg-orange-100 transition-all hover:scale-105 cursor-pointer"
           >
             <Flame className="w-5 h-5 text-orange-500" />
-            <span className="text-sm font-semibold text-orange-700">Șir de 7 zile</span>
+            <span className="text-sm font-semibold text-orange-700">Streak de 7 zile</span>
           </button>
           <div className="w-14 h-14 bg-gradient-to-br from-[#164B2E] to-[#0d2819] rounded-full border-4 border-white shadow-lg"></div>
         </div>
@@ -139,7 +139,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <p className="text-[#F1F5F9]/70 text-sm">Medie semestru</p>
+                <p className="text-[#F1F5F9]/70 text-sm">Media semestrială</p>
                 <button
                   onMouseEnter={handleInfoHover}
                   onMouseLeave={() => setTooltip({ ...tooltip, visible: false })}
@@ -149,14 +149,14 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   {tooltip.visible && (
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 pointer-events-none">
                       <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
-                        Media este calculată din toate notele ponderate după credite și importanța materiei.
+                        Media este calculată pe baza tuturor notelor, ponderate în funcție de credite și importanța materiei.
                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                       </div>
                     </div>
                   )}
                 </button>
               </div>
-              <p className="text-xs text-[#F1F5F9]/50 mb-4">Media generală disponibilă în Profil</p>
+              <p className="text-xs text-[#F1F5F9]/50 mb-4">Media generală este disponibilă în Profil.</p>
               <h2 className="text-5xl font-bold mb-4">{mockData.gpa}</h2>
               <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm">
                 <TrendingUp className="w-4 h-4 text-green-300" />
@@ -211,9 +211,9 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
           </div>
           <h3 className="font-semibold text-gray-900 mb-1">Teme</h3>
           <div className="space-y-1">
-            <p className="text-sm text-gray-500">Scadență săptămâna aceasta</p>
+            <p className="text-sm text-gray-500">Termen în această săptămână</p>
             {mockData.homework.dueTomorrow > 0 && (
-              <p className="text-xs text-orange-600 font-medium">{mockData.homework.dueTomorrow} scad mâine</p>
+              <p className="text-xs text-orange-600 font-medium">{mockData.homework.dueTomorrow} termen mâine</p>
             )}
           </div>
         </div>
@@ -228,14 +228,14 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             </div>
             <span className="text-2xl font-bold text-gray-900">{mockData.classesToday.length}</span>
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Ore astăzi</h3>
+          <h3 className="font-semibold text-gray-900 mb-1">Orele de azi</h3>
           <p className="text-sm text-gray-500">{countdown[0] || 'Următoarea în 45 min'}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="font-semibold text-lg mb-4 text-gray-900">Flux informații AI</h3>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900">Recomandări AI</h3>
           <div className="space-y-3">
             <button
               onClick={() => handleInsightClick('physics-test')}
@@ -248,7 +248,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-gray-900 font-medium">Testul la fizică e mâine</p>
-                    <p className="text-xs text-gray-600 mt-1">Revizuiește cu un test de 5 min!</p>
+                    <p className="text-xs text-gray-600 mt-1">Repetă cu un test de 5 minute!</p>
                   </div>
                 </div>
               </div>
@@ -300,7 +300,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   onClick={(e) => e.stopPropagation()}
                   className="inline-flex items-center gap-1 text-gray-600 hover:text-gray-900 text-xs font-medium transition-colors"
                 >
-                  Vezi cum te-ai îmbunătățit
+                  Vezi progresul tău
                   <ChevronRight className="w-3 h-3" />
                 </button>
               </div>
@@ -309,7 +309,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="font-semibold text-lg mb-4 text-gray-900">Orar următor</h3>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900">Orarul următor</h3>
           <div className="space-y-3">
             {mockData.classesToday.slice(0, 3).map((cls, idx) => (
               <div
