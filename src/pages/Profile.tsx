@@ -44,39 +44,39 @@ export default function Profile() {
   const badges: AchievementBadge[] = [
     {
       id: 1,
-      name: 'Focus Hero',
+      name: 'Erou al Concentrării',
       icon: Target,
       color: 'blue',
       earned: true,
-      description: 'You earned this badge by maintaining focus during 50+ study sessions.',
-      howToGet: 'Continue dedicating focused time to your studies without distractions.',
+      description: 'Ai câștigat această insignă prin menținerea concentrării în 50+ sesiuni de studiu.',
+      howToGet: 'Continuă să dedici timp concentrat studiilor fără distrații.'
     },
     {
       id: 2,
-      name: 'Math Whiz',
+      name: 'Expert Matematic',
       icon: Trophy,
       color: 'yellow',
       earned: true,
-      description: 'You earned this badge for consistently high performance in Mathematics.',
-      howToGet: 'Keep your Math average above 9.0 to maintain this achievement.',
+      description: 'Ai câștigat această insignă pentru performanță constantă ridicată la Matematică.',
+      howToGet: 'Menține media ta la Matematică peste 9.0 pentru a păstra această realizare.'
     },
     {
       id: 3,
-      name: 'Perfect Week',
+      name: 'Săptămână Perfectă',
       icon: Award,
       color: 'green',
       earned: true,
-      description: 'You completed all homework and attended all classes this week.',
-      howToGet: 'Maintain perfect attendance and complete all assignments each week.',
+      description: 'Ai completat toate temele și ai participat la toate clasele săptămâna aceasta.',
+      howToGet: 'Menține prezența perfectă și completează toate sarcinile fiecare săptămână.'
     },
     {
       id: 4,
-      name: 'Quick Learner',
+      name: 'Elev Rapid',
       icon: Zap,
       color: 'purple',
       earned: false,
-      description: 'Master a new topic in less than 3 study sessions.',
-      howToGet: 'Efficiently learn new concepts in a short timeframe.',
+      description: 'Stăpânește o temă nouă în mai puțin de 3 sesiuni de studiu.',
+      howToGet: 'Învață eficient concepte noi într-un interval scurt de timp.'
     },
   ];
 
@@ -101,7 +101,7 @@ export default function Profile() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-        Student Profile
+        Profilul Studentului
       </h1>
 
       <BadgeDetailsModal
@@ -129,7 +129,7 @@ export default function Profile() {
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center gap-1">
                       <Camera className="w-5 h-5 text-white" />
-                      <span className="text-xs text-white font-medium">Change photo</span>
+                      <span className="text-xs text-white font-medium">Schimbă poza</span>
                     </div>
                   </div>
                 </div>
@@ -153,7 +153,7 @@ export default function Profile() {
                     onClick={() => setShowAdditionalBadges(!showAdditionalBadges)}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-gray-900 transition-colors bg-gray-50 px-2 py-1 rounded-full"
                   >
-                    +{mockStudentProfile.additionalBadges.length} more
+                    +{mockStudentProfile.additionalBadges.length} mai mult
                   </button>
                   {showAdditionalBadges && (
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white border border-gray-200 rounded-lg p-2 shadow-lg z-10 whitespace-nowrap">
@@ -172,7 +172,7 @@ export default function Profile() {
             <p className="text-gray-500 mb-4">{mockStudentProfile.class}</p>
 
             <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <p className="text-xs text-gray-500 mb-1">Student ID</p>
+              <p className="text-xs text-gray-500 mb-1">ID Student</p>
               <div className="flex items-center justify-center gap-2">
                 <span className="font-mono font-bold text-gray-900">{mockStudentProfile.studentId}</span>
                 <div className="w-8 h-8 bg-[#164B2E] rounded flex items-center justify-center">
@@ -183,11 +183,11 @@ export default function Profile() {
 
             <div className="space-y-2 text-left">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Institution</span>
+                <span className="text-sm text-gray-600">Instituție</span>
                 <span className="text-sm font-semibold text-gray-900">{mockStudentProfile.institution}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Academic Year</span>
+                <span className="text-sm text-gray-600">Anul Academic</span>
                 <span className="text-sm font-semibold text-gray-900">{mockStudentProfile.academicYear}</span>
               </div>
             </div>
@@ -197,40 +197,40 @@ export default function Profile() {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-lg text-gray-900">Learning Statistics</h3>
+              <h3 className="font-semibold text-lg text-gray-900">Statistici de Învățare</h3>
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 text-center relative group">
                 <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <SimpleTooltip text="A subject is considered mastered when your performance stays above the set threshold over time." />
+                  <SimpleTooltip text="O materie este considerată stăpânită atunci când performanța ta rămâne peste pragul stabilit în timp." />
                 </div>
                 <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-blue-900">8</p>
-                <p className="text-xs text-blue-700">Subjects Mastered</p>
+                <p className="text-xs text-blue-700">Materii Stăpânite</p>
               </div>
 
               <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 text-center relative group">
                 <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <SimpleTooltip text="Total focused study time tracked in AgendAI." />
+                  <SimpleTooltip text="Timp total de studiu concentrat urmărit în AgendAI." />
                 </div>
                 <Clock className="w-8 h-8 text-green-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-green-900">42h</p>
-                <p className="text-xs text-green-700">Study Time (Week)</p>
+                <p className="text-xs text-green-700">Timp de Studiu (Săptămână)</p>
               </div>
 
               <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 text-center relative group">
                 <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <SimpleTooltip text="Points earned for completing lessons, homework and AI practice sessions." />
+                  <SimpleTooltip text="Puncte câștigate pentru completarea lecțiilor, temelor și sesiunilor de practică AI." />
                 </div>
                 <Award className="w-8 h-8 text-purple-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-purple-900">1,247</p>
-                <p className="text-xs text-purple-700">Knowledge Points</p>
+                <p className="text-xs text-purple-700">Puncte de Cunoaștere</p>
               </div>
             </div>
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
-            <h3 className="font-semibold text-lg mb-4 text-gray-900">Achievements & Badges</h3>
+            <h3 className="font-semibold text-lg mb-4 text-gray-900">Realizări și Insigne</h3>
             <div className="grid grid-cols-2 gap-4">
               {badges.map((badge) => {
                 const Icon = badge.icon;
@@ -258,7 +258,7 @@ export default function Profile() {
                     </div>
                     <p className="font-semibold text-sm text-gray-900">{badge.name}</p>
                     {badge.earned && (
-                      <p className="text-xs text-gray-500 mt-1">Earned</p>
+                      <p className="text-xs text-gray-500 mt-1">Obținută</p>
                     )}
                   </button>
                 );
@@ -267,7 +267,7 @@ export default function Profile() {
           </div>
 
           <div className="bg-white rounded-2xl p-6 border border-gray-200">
-            <h3 className="font-semibold text-lg mb-4 text-gray-900">Subject Strengths</h3>
+            <h3 className="font-semibold text-lg mb-4 text-gray-900">Puncte Forte la Materii</h3>
             <div className="space-y-3">
               {[
                 { name: 'Mathematics', score: 95 },
@@ -287,7 +287,7 @@ export default function Profile() {
                         <span className="text-sm font-bold text-gray-900">{subject.score}%</span>
                         {!isStrong && (
                           <span className="inline-flex items-center gap-1 text-xs text-orange-600 font-medium bg-orange-50 px-2 py-0.5 rounded">
-                            Needs focus
+                            Necesită atenție
                           </span>
                         )}
                       </div>
