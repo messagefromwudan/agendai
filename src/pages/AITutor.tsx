@@ -6,9 +6,9 @@ export default function AITutor() {
   const [mode, setMode] = useState<'explain' | 'quiz' | 'homework'>('explain');
 
   const modes = [
-    { id: 'explain', label: 'Explain', icon: Lightbulb },
-    { id: 'quiz', label: 'Quiz Me', icon: BookOpen },
-    { id: 'homework', label: 'Homework Help', icon: Calculator },
+    { id: 'explain', label: 'Explică', icon: Lightbulb },
+    { id: 'quiz', label: 'Test', icon: BookOpen },
+    { id: 'homework', label: 'Ajutor Teme', icon: Calculator },
   ];
 
   return (
@@ -22,14 +22,14 @@ export default function AITutor() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-[#F1F5F9]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  AI Learning Companion
+                  Asistent Învățare AI
                 </h1>
-                <p className="text-[#F1F5F9]/70 text-sm">Your personal mentor, available 24/7</p>
+                <p className="text-[#F1F5F9]/70 text-sm">Mentorul tău personal, disponibil 24/7</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-[#F1F5F9] text-sm font-medium">Active</span>
+              <span className="text-[#F1F5F9] text-sm font-medium">Activ</span>
             </div>
           </div>
 
@@ -62,17 +62,17 @@ export default function AITutor() {
               </div>
               <div className="bg-white rounded-2xl rounded-tl-none p-6 shadow-sm max-w-[80%]">
                 <p className="text-gray-900 mb-4">
-                  Hello Bianca! I'm your AI learning companion. I'm here to help you understand concepts, prepare for tests, and complete your homework. What would you like to explore today?
+                  Salut Bianca! Sunt asistentul tău de învățare AI. Sunt aici pentru a te ajuta să înțelegi conceptele, să te pregătești pentru teste și să-ți completezi temele. Ce ai vrea să explorezi astazi?
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <button className="bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-2 rounded-lg text-sm transition-colors">
-                    Explain photosynthesis
+                    Explică fotosinteza
                   </button>
                   <button className="bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm transition-colors">
-                    Quiz me on algebra
+                    Testează-mă la algebră
                   </button>
                   <button className="bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-2 rounded-lg text-sm transition-colors">
-                    Help with essay structure
+                    Ajutor cu structura eseului
                   </button>
                 </div>
               </div>
@@ -80,7 +80,7 @@ export default function AITutor() {
 
             <div className="flex gap-4 justify-end">
               <div className="bg-[#164B2E] text-[#F1F5F9] rounded-2xl rounded-tr-none p-6 shadow-sm max-w-[80%]">
-                <p>Can you help me understand quadratic equations?</p>
+                <p>Mă poți ajuta să înțeleg ecuațiile pătratice?</p>
               </div>
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0"></div>
             </div>
@@ -90,27 +90,27 @@ export default function AITutor() {
                 <Sparkles className="w-5 h-5 text-[#F1F5F9]" />
               </div>
               <div className="bg-white rounded-2xl rounded-tl-none p-6 shadow-sm max-w-[80%]">
-                <p className="text-gray-900 mb-4 font-semibold">Let's explore quadratic equations together!</p>
+                <p className="text-gray-900 mb-4 font-semibold">Să explorăm ecuațiile pătratice împreună!</p>
                 <p className="text-gray-900 mb-4">
-                  A quadratic equation has the form: <span className="font-mono bg-gray-100 px-2 py-1 rounded">ax² + bx + c = 0</span>
+                  O ecuație pătratică are forma: <span className="font-mono bg-gray-100 px-2 py-1 rounded">ax² + bx + c = 0</span>
                 </p>
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
-                  <p className="text-sm font-semibold text-blue-900 mb-2">Key Components:</p>
+                  <p className="text-sm font-semibold text-blue-900 mb-2">Componente principale:</p>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• a, b, and c are constants</li>
-                    <li>• x is the variable we're solving for</li>
-                    <li>• The highest power of x is 2 (that's what makes it quadratic)</li>
+                    <li>• a, b și c sunt constante</li>
+                    <li>• x este variabila pe care o rezolvăm</li>
+                    <li>• Cea mai mare putere a lui x este 2 (asta o face pătratică)</li>
                   </ul>
                 </div>
                 <p className="text-gray-900 mb-4">
-                  Would you like me to show you how to solve one with an example, or would you prefer to try a practice problem first?
+                  Vrei ca te arăt cum să o rezolvi cu un exemplu, sau preferi să încerci mai întâi o problemă de practică?
                 </p>
                 <div className="flex gap-2">
                   <button className="bg-[#164B2E] hover:bg-[#0d2819] text-[#F1F5F9] px-4 py-2 rounded-lg text-sm transition-colors">
-                    Show me an example
+                    Arată-mi un exemplu
                   </button>
                   <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm transition-colors">
-                    Give me a practice problem
+                    Dă-mi o problemă de practică
                   </button>
                 </div>
               </div>
@@ -122,8 +122,8 @@ export default function AITutor() {
                   <Sparkles className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-green-900">Lesson Progress</p>
-                  <p className="text-sm text-green-700">You've earned 25 Knowledge Points in this session!</p>
+                  <p className="font-semibold text-green-900">Progresul Lecției</p>
+                  <p className="text-sm text-green-700">Ai câștigat 25 Puncte de Cunoaștere în această sesiune!</p>
                 </div>
               </div>
             </div>
@@ -143,12 +143,12 @@ export default function AITutor() {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ask me anything about your studies..."
+                placeholder="Întreabă-mă orice despre studiile tale..."
                 className="flex-1 px-6 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm"
               />
               <button className="bg-[#164B2E] hover:bg-[#0d2819] text-[#F1F5F9] px-6 py-3 rounded-xl transition-colors flex items-center gap-2">
                 <Send className="w-5 h-5" />
-                <span className="font-medium">Send</span>
+                <span className="font-medium">Trimite</span>
               </button>
             </div>
           </div>
