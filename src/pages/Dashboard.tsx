@@ -49,13 +49,13 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
         if (diff > 0) {
           const minutesLeft = Math.floor(diff / 60000);
           if (minutesLeft < 60) {
-            updated[idx] = `Next in ${minutesLeft} min`;
+            updated[idx] = `În ${minutesLeft} min`;
           } else {
             const hoursLeft = Math.floor(minutesLeft / 60);
-            updated[idx] = `Next in ${hoursLeft}h`;
+            updated[idx] = `În ${hoursLeft}h`;
           }
         } else {
-          updated[idx] = 'Started';
+          updated[idx] = 'A început';
         }
       });
 
@@ -76,19 +76,19 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
     if (mockData.upcomingEvents.length > 0) {
       const event = mockData.upcomingEvents[0];
       if (event.daysUntil === 1) {
-        return `Big ${event.type} tomorrow – let's focus on ${event.subject} today.`;
+        return `${event.type === 'test' ? 'Test mare' : 'Eveniment mare'} mâine – hai să ne concentrăm pe ${event.subject} astăzi.`;
       }
     }
-    return "Let's make today productive!";
+    return "Hai să facem ziua de astăzi productivă!";
   };
 
   const getSubjectStatus = () => {
     if (mockData.activeSubjects.needingAttention === 0) {
-      return 'All on track';
+      return 'Toate la zi';
     } else if (mockData.activeSubjects.needingAttention <= 2) {
-      return `${mockData.activeSubjects.needingAttention} need attention`;
+      return `${mockData.activeSubjects.needingAttention} necesită atenție`;
     }
-    return 'Needs focus';
+    return 'Necesită focalizare';
   };
 
   const handleInfoHover = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -114,7 +114,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            Welcome back, {mockData.user.name}
+            Bine ai revenit, {mockData.user.name}
           </h1>
           <p className="text-gray-600 mt-1">{getSubheadline()}</p>
         </div>
@@ -124,7 +124,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             className="flex items-center gap-2 bg-orange-50 px-4 py-2 rounded-xl hover:bg-orange-100 transition-all hover:scale-105 cursor-pointer"
           >
             <Flame className="w-5 h-5 text-orange-500" />
-            <span className="text-sm font-semibold text-orange-700">7 day streak</span>
+            <span className="text-sm font-semibold text-orange-700">Șir de 7 zile</span>
           </button>
           <div className="w-14 h-14 bg-gradient-to-br from-[#164B2E] to-[#0d2819] rounded-full border-4 border-white shadow-lg"></div>
         </div>
@@ -139,7 +139,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <p className="text-[#F1F5F9]/70 text-sm">Semester GPA</p>
+                <p className="text-[#F1F5F9]/70 text-sm">Medie semestru</p>
                 <button
                   onMouseEnter={handleInfoHover}
                   onMouseLeave={() => setTooltip({ ...tooltip, visible: false })}
@@ -149,14 +149,14 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   {tooltip.visible && (
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50 pointer-events-none">
                       <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap">
-                        GPA is calculated from all grades weighted by credits and subject importance.
+                        Media este calculată din toate notele ponderate după credite și importanța materiei.
                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                       </div>
                     </div>
                   )}
                 </button>
               </div>
-              <p className="text-xs text-[#F1F5F9]/50 mb-4">Overall GPA available in Profile</p>
+              <p className="text-xs text-[#F1F5F9]/50 mb-4">Media generală disponibilă în Profil</p>
               <h2 className="text-5xl font-bold mb-4">{mockData.gpa}</h2>
               <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm">
                 <TrendingUp className="w-4 h-4 text-green-300" />
@@ -181,7 +181,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             </div>
             <span className="text-2xl font-bold text-gray-900">{mockData.activeSubjects.total}</span>
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Active Subjects</h3>
+          <h3 className="font-semibold text-gray-900 mb-1">Materii active</h3>
           <p className="text-sm text-gray-500">{getSubjectStatus()}</p>
         </div>
 
@@ -195,8 +195,8 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             </div>
             <span className="text-2xl font-bold text-gray-900">{mockData.aiSessions.thisWeek}</span>
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">AI Sessions</h3>
-          <p className="text-sm text-gray-500">Avg. {mockData.aiSessions.avgPerDay.toFixed(1)}/day</p>
+          <h3 className="font-semibold text-gray-900 mb-1">Sesiuni AI</h3>
+          <p className="text-sm text-gray-500">Medie {mockData.aiSessions.avgPerDay.toFixed(1)}/zi</p>
         </div>
 
         <div
@@ -209,11 +209,11 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             </div>
             <span className="text-2xl font-bold text-gray-900">{mockData.homework.completed}/{mockData.homework.total}</span>
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Homework</h3>
+          <h3 className="font-semibold text-gray-900 mb-1">Teme</h3>
           <div className="space-y-1">
-            <p className="text-sm text-gray-500">Due this week</p>
+            <p className="text-sm text-gray-500">Scadență săptămâna aceasta</p>
             {mockData.homework.dueTomorrow > 0 && (
-              <p className="text-xs text-orange-600 font-medium">{mockData.homework.dueTomorrow} due tomorrow</p>
+              <p className="text-xs text-orange-600 font-medium">{mockData.homework.dueTomorrow} scad mâine</p>
             )}
           </div>
         </div>
@@ -228,14 +228,14 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             </div>
             <span className="text-2xl font-bold text-gray-900">{mockData.classesToday.length}</span>
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Classes Today</h3>
-          <p className="text-sm text-gray-500">{countdown[0] || 'Next in 45 min'}</p>
+          <h3 className="font-semibold text-gray-900 mb-1">Ore astăzi</h3>
+          <p className="text-sm text-gray-500">{countdown[0] || 'Următoarea în 45 min'}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="font-semibold text-lg mb-4 text-gray-900">AI Insights Feed</h3>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900">Flux informații AI</h3>
           <div className="space-y-3">
             <button
               onClick={() => handleInsightClick('physics-test')}
@@ -247,8 +247,8 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                     <Brain className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900 font-medium">Your physics test is tomorrow</p>
-                    <p className="text-xs text-gray-600 mt-1">Revise with a 5-min quiz!</p>
+                    <p className="text-sm text-gray-900 font-medium">Testul la fizică e mâine</p>
+                    <p className="text-xs text-gray-600 mt-1">Revizuiește cu un test de 5 min!</p>
                   </div>
                 </div>
               </div>
@@ -260,7 +260,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   }}
                   className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
                 >
-                  Start quiz
+                  Începe testul
                 </button>
               </div>
             </button>
@@ -274,8 +274,8 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   <Award className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-gray-900 font-medium">New achievement unlocked!</p>
-                  <p className="text-xs text-gray-600 mt-1">10/10 in Romanian literature</p>
+                  <p className="text-sm text-gray-900 font-medium">Realizare nouă deblocată!</p>
+                  <p className="text-xs text-gray-600 mt-1">10/10 la literatura română</p>
                 </div>
               </div>
             </button>
@@ -290,8 +290,8 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                     <TrendingUp className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-900 font-medium">Math grade improved!</p>
-                    <p className="text-xs text-gray-600 mt-1">+0.8 since last month</p>
+                    <p className="text-sm text-gray-900 font-medium">Nota la matematică s-a îmbunătățit!</p>
+                    <p className="text-xs text-gray-600 mt-1">+0.8 față de luna trecută</p>
                   </div>
                 </div>
               </div>
@@ -300,7 +300,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   onClick={(e) => e.stopPropagation()}
                   className="inline-flex items-center gap-1 text-gray-600 hover:text-gray-900 text-xs font-medium transition-colors"
                 >
-                  See how you improved
+                  Vezi cum te-ai îmbunătățit
                   <ChevronRight className="w-3 h-3" />
                 </button>
               </div>
@@ -309,7 +309,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
         </div>
 
         <div className="bg-white rounded-xl p-6 border border-gray-200">
-          <h3 className="font-semibold text-lg mb-4 text-gray-900">Upcoming Schedule</h3>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900">Orar următor</h3>
           <div className="space-y-3">
             {mockData.classesToday.slice(0, 3).map((cls, idx) => (
               <div
@@ -335,7 +335,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   {!cls.ended ? (
                     <button
                       onClick={() => onNavigate?.('schedule')}
-                      title="Open in Schedule"
+                      title="Deschide în Orar"
                       className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors"
                     >
                       <Calendar className="w-4 h-4" />
@@ -343,7 +343,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                   ) : (
                     <button
                       className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
-                      title="Mark as done"
+                      title="Marchează ca finalizat"
                     >
                       <CheckCircle2 className="w-4 h-4" />
                     </button>
