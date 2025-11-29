@@ -24,80 +24,80 @@ export default function Grades() {
   const subjects: Subject[] = [
     {
       id: 1,
-      name: 'Mathematics',
+      name: 'Matematică',
       grade: 9.5,
       average: 9.4,
       trend: 'up',
-      teacher: 'Ms. Johnson',
+      teacher: 'Dna. Johnson',
       color: 'blue',
-      profileType: 'Real Profile',
-      gradeType: 'Semester average',
-      averageType: 'Class average',
+      profileType: 'Profil Real',
+      gradeType: 'Medie semestru',
+      averageType: 'Medie clasă',
       trendData: { current: 9.5, previous: 8.7, assessments: 3 },
     },
     {
       id: 2,
-      name: 'Physics',
+      name: 'Fizică',
       grade: 9.2,
       average: 9.0,
       trend: 'up',
       teacher: 'Dr. Smith',
       color: 'green',
-      profileType: 'Science Track',
-      gradeType: 'Semester average',
-      averageType: 'Class average',
+      profileType: 'Filieră Științe',
+      gradeType: 'Medie semestru',
+      averageType: 'Medie clasă',
       trendData: { current: 9.2, previous: 8.8, assessments: 4 },
     },
     {
       id: 3,
-      name: 'Literature',
+      name: 'Literatură',
       grade: 8.8,
       average: 8.9,
       trend: 'down',
-      teacher: 'Mr. Anderson',
+      teacher: 'Dl. Anderson',
       color: 'purple',
-      profileType: 'Literature Track',
-      gradeType: 'Semester average',
-      averageType: 'Your last-year average',
+      profileType: 'Filieră Umană',
+      gradeType: 'Medie semestru',
+      averageType: 'Media ta de anul trecut',
       trendData: { current: 8.8, previous: 9.2, assessments: 3 },
     },
     {
       id: 4,
-      name: 'Chemistry',
+      name: 'Chimie',
       grade: 9.0,
       average: 9.0,
       trend: 'stable',
       teacher: 'Dr. Brown',
       color: 'orange',
-      profileType: 'Science Track',
-      gradeType: 'Semester average',
-      averageType: 'Class average',
+      profileType: 'Filieră Științe',
+      gradeType: 'Medie semestru',
+      averageType: 'Medie clasă',
       trendData: { current: 9.0, previous: 9.0, assessments: 2 },
     },
     {
       id: 5,
-      name: 'History',
+      name: 'Istorie',
       grade: 9.3,
       average: 9.1,
       trend: 'up',
-      teacher: 'Mrs. Davis',
+      teacher: 'Dna. Davis',
       color: 'red',
       profileType: 'Uman',
-      gradeType: 'Last grade',
-      averageType: 'Class average',
+      gradeType: 'Ultima notă',
+      averageType: 'Medie clasă',
       trendData: { current: 9.3, previous: 9.0, assessments: 2 },
     },
     {
       id: 6,
-      name: 'English',
+      name: 'Engleză',
       grade: 8.7,
       average: 8.8,
       trend: 'stable',
-      teacher: 'Ms. Wilson',
+      teacher: 'Dna. Wilson',
       color: 'teal',
-      profileType: 'Real Profile',
-      gradeType: 'Semester average',
-      averageType: 'Class average',
+      profileType: 'Profil Real',
+      gradeType: 'Medie semestru',
+      averageType: 'Medie clasă',
       trendData: { current: 8.7, previous: 8.7, assessments: 3 },
     },
   ];
@@ -114,25 +114,25 @@ export default function Grades() {
     if (trend === 'up') {
       const improvement = (trendData?.current ?? 0) - (trendData?.previous ?? 0);
       return {
-        label: 'Improving',
+        label: 'În creștere',
         bgColor: 'bg-green-50',
         textColor: 'text-green-700',
-        tooltip: `Improving: +${improvement.toFixed(1)} over the last ${trendData?.assessments ?? 3} assessments.`,
+        tooltip: `În creștere: +${improvement.toFixed(1)} în ultimele ${trendData?.assessments ?? 3} evaluări.`,
       };
     } else if (trend === 'down') {
       const decline = (trendData?.previous ?? 0) - (trendData?.current ?? 0);
       return {
-        label: 'Needs attention',
+        label: 'Necesită atenție',
         bgColor: 'bg-red-50',
         textColor: 'text-red-700',
-        tooltip: `Needs attention: -${decline.toFixed(1)} over the last ${trendData?.assessments ?? 3} assessments.`,
+        tooltip: `Necesită atenție: -${decline.toFixed(1)} în ultimele ${trendData?.assessments ?? 3} evaluări.`,
       };
     }
     return {
-      label: 'Stable performance',
+      label: 'Performanță stabilă',
       bgColor: 'bg-gray-50',
       textColor: 'text-gray-700',
-      tooltip: 'Your performance has been consistent over the last assessments.',
+      tooltip: 'Performanța ta a fost constantă în ultimele evaluări.',
     };
   };
 
@@ -164,12 +164,12 @@ export default function Grades() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Digital Catalog
+          Catalog Digital
         </h1>
         <div className="bg-white rounded-xl px-6 py-3 border border-gray-200">
-          <p className="text-sm text-gray-600">Semester Average</p>
+          <p className="text-sm text-gray-600">Medie semestru</p>
           <p className="text-3xl font-bold text-[#164B2E]">9.08</p>
-          <p className="text-xs text-gray-500 mt-1">Based on {subjects.length} subjects this semester</p>
+          <p className="text-xs text-gray-500 mt-1">Bazat pe {subjects.length} materii în acest semestru</p>
         </div>
       </div>
 
@@ -204,11 +204,11 @@ export default function Grades() {
 
               <div className="flex items-end justify-between mb-4">
                 <div>
-                  <p className="text-xs text-gray-500 mb-1">{subject.gradeType || 'Current Grade'}</p>
+                  <p className="text-xs text-gray-500 mb-1">{subject.gradeType || 'Nota curentă'}</p>
                   <p className={`text-4xl font-bold ${colorClasses.text}`}>{subject.grade}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-gray-500 mb-1">{subject.averageType || 'Average'}</p>
+                  <p className="text-xs text-gray-500 mb-1">{subject.averageType || 'Medie'}</p>
                   <p className="text-2xl font-semibold text-gray-600">{subject.average}</p>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function Grades() {
       </div>
 
       <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h3 className="font-semibold text-lg mb-4 text-gray-900">AI Performance Analysis</h3>
+        <h3 className="font-semibold text-lg mb-4 text-gray-900">Analiză Performanță AI</h3>
         <div className="space-y-4">
           <div className="bg-green-50 border border-green-200 rounded-xl p-4">
             <div className="flex items-start justify-between gap-3">
@@ -237,12 +237,12 @@ export default function Grades() {
                   <TrendingUp className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 mb-1">Strong Progress in Mathematics</p>
+                  <p className="font-semibold text-gray-900 mb-1">Progres excelent la Matematică</p>
                   <p className="text-sm text-gray-600">
-                    You're showing excellent understanding of complex problems. Your strength lies in algebraic reasoning and problem-solving techniques.
+                    Demonstrezi o înțelegere excelentă a problemelor complexe. Punctul tău forte este raționamentul algebric și tehnicile de rezolvare a problemelor.
                   </p>
                   <InsightActionButton
-                    label="Practice Math now"
+                    label="Exersează Matematică acum"
                     onClick={() => handlePracticeSubject('Mathematics')}
                   />
                 </div>
@@ -257,12 +257,12 @@ export default function Grades() {
                   <TrendingUp className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 mb-1">Physics Lab Skills Improving</p>
+                  <p className="font-semibold text-gray-900 mb-1">Îmbunătățiri la Laborator Fizică</p>
                   <p className="text-sm text-gray-600">
-                    Your experimental methodology and data analysis have shown significant improvement this semester.
+                    Metodologia ta experimentală și analiza datelor au arătat îmbunătățiri semnificative în acest semestru.
                   </p>
                   <InsightActionButton
-                    label="Plan a Physics revision session"
+                    label="Planifică o sesiune de recapitulare Fizică"
                     onClick={() => handlePlanSession('Physics')}
                   />
                 </div>
@@ -277,12 +277,12 @@ export default function Grades() {
                   <Minus className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 mb-1">Literature: Focus on Analysis</p>
+                  <p className="font-semibold text-gray-900 mb-1">Literatură: Concentrare pe Analiză</p>
                   <p className="text-sm text-gray-600">
-                    Consider deepening your literary analysis skills. The AI Tutor can help with essay structure and critical thinking.
+                    Consideră aprofundarea abilităților tale de analiză literară. Tutorele AI poate ajuta cu structura eseului și gândirea critică.
                   </p>
                   <InsightActionButton
-                    label="Ask AI Tutor about Literature"
+                    label="Întreabă Tutorele AI despre Literatură"
                     onClick={() => handleOpenTutor('Literature')}
                     variant="outline"
                   />
