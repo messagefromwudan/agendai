@@ -31,8 +31,8 @@ export default function Grades() {
       teacher: 'Dna. Johnson',
       color: 'blue',
       profileType: 'Profil Real',
-      gradeType: 'Medie semestru',
-      averageType: 'Medie clasă',
+      gradeType: 'Medie semestrială',
+      averageType: 'Medie pe clasă',
       trendData: { current: 9.5, previous: 8.7, assessments: 3 },
     },
     {
@@ -44,8 +44,8 @@ export default function Grades() {
       teacher: 'Dr. Smith',
       color: 'green',
       profileType: 'Filieră Științe',
-      gradeType: 'Medie semestru',
-      averageType: 'Medie clasă',
+      gradeType: 'Medie semestrială',
+      averageType: 'Medie pe clasă',
       trendData: { current: 9.2, previous: 8.8, assessments: 4 },
     },
     {
@@ -57,7 +57,7 @@ export default function Grades() {
       teacher: 'Dl. Anderson',
       color: 'purple',
       profileType: 'Filieră Umană',
-      gradeType: 'Medie semestru',
+      gradeType: 'Medie semestrială',
       averageType: 'Media ta de anul trecut',
       trendData: { current: 8.8, previous: 9.2, assessments: 3 },
     },
@@ -70,8 +70,8 @@ export default function Grades() {
       teacher: 'Dr. Brown',
       color: 'orange',
       profileType: 'Filieră Științe',
-      gradeType: 'Medie semestru',
-      averageType: 'Medie clasă',
+      gradeType: 'Medie semestrială',
+      averageType: 'Medie pe clasă',
       trendData: { current: 9.0, previous: 9.0, assessments: 2 },
     },
     {
@@ -84,7 +84,7 @@ export default function Grades() {
       color: 'red',
       profileType: 'Uman',
       gradeType: 'Ultima notă',
-      averageType: 'Medie clasă',
+      averageType: 'Medie pe clasă',
       trendData: { current: 9.3, previous: 9.0, assessments: 2 },
     },
     {
@@ -96,8 +96,8 @@ export default function Grades() {
       teacher: 'Dna. Wilson',
       color: 'teal',
       profileType: 'Profil Real',
-      gradeType: 'Medie semestru',
-      averageType: 'Medie clasă',
+      gradeType: 'Medie semestrială',
+      averageType: 'Medie pe clasă',
       trendData: { current: 8.7, previous: 8.7, assessments: 3 },
     },
   ];
@@ -129,7 +129,7 @@ export default function Grades() {
       };
     }
     return {
-      label: 'Performanță stabilă',
+      label: 'Performanță constantă',
       bgColor: 'bg-gray-50',
       textColor: 'text-gray-700',
       tooltip: 'Performanța ta a fost constantă în ultimele evaluări.',
@@ -167,7 +167,7 @@ export default function Grades() {
           Catalog Digital
         </h1>
         <div className="bg-white rounded-xl px-6 py-3 border border-gray-200">
-          <p className="text-sm text-gray-600">Medie semestru</p>
+          <p className="text-sm text-gray-600">Medie semestrială</p>
           <p className="text-3xl font-bold text-[#164B2E]">9.08</p>
           <p className="text-xs text-gray-500 mt-1">Bazat pe {subjects.length} materii în acest semestru</p>
         </div>
@@ -262,7 +262,7 @@ export default function Grades() {
                     Metodologia ta experimentală și analiza datelor au arătat îmbunătățiri semnificative în acest semestru.
                   </p>
                   <InsightActionButton
-                    label="Planifică o sesiune de recapitulare Fizică"
+                    label="Planifică o sesiune de recapitulare la fizică"
                     onClick={() => handlePlanSession('Physics')}
                   />
                 </div>
