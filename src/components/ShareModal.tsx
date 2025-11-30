@@ -33,7 +33,7 @@ export default function ShareModal({ isOpen, onClose, homework }: ShareModalProp
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Share Assignment
+              Distribuie Tema
             </h2>
             <button
               onClick={onClose}
@@ -54,8 +54,8 @@ export default function ShareModal({ isOpen, onClose, homework }: ShareModalProp
               <Copy className="w-5 h-5 text-blue-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-semibold text-gray-900">{copied ? 'Copied!' : 'Copy Link'}</p>
-              <p className="text-sm text-gray-600">Share via clipboard</p>
+              <p className="font-semibold text-gray-900">{copied ? 'Copiat!' : 'Copiază Link'}</p>
+              <p className="text-sm text-gray-600">Distribuie prin clipboard</p>
             </div>
           </button>
 
@@ -68,7 +68,7 @@ export default function ShareModal({ isOpen, onClose, homework }: ShareModalProp
             </div>
             <div className="flex-1 text-left">
               <p className="font-semibold text-gray-900">Email</p>
-              <p className="text-sm text-gray-600">Send to classmates</p>
+              <p className="text-sm text-gray-600">Trimite colegilor</p>
             </div>
           </button>
 
@@ -80,8 +80,8 @@ export default function ShareModal({ isOpen, onClose, homework }: ShareModalProp
               <MessageSquare className="w-5 h-5 text-purple-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-semibold text-gray-900">Message</p>
-              <p className="text-sm text-gray-600">Share in chat</p>
+              <p className="font-semibold text-gray-900">Mesaj</p>
+              <p className="text-sm text-gray-600">Distribuie în chat</p>
             </div>
           </button>
 
@@ -93,8 +93,8 @@ export default function ShareModal({ isOpen, onClose, homework }: ShareModalProp
               <Users className="w-5 h-5 text-orange-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-semibold text-gray-900">Study Group</p>
-              <p className="text-sm text-gray-600">Post to your group</p>
+              <p className="font-semibold text-gray-900">Grup de Studiu</p>
+              <p className="text-sm text-gray-600">Postează în grup</p>
             </div>
           </button>
         </div>
@@ -104,7 +104,7 @@ export default function ShareModal({ isOpen, onClose, homework }: ShareModalProp
             onClick={onClose}
             className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
           >
-            Cancel
+            Anulează
           </button>
         </div>
       </div>

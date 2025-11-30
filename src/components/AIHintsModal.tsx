@@ -13,9 +13,9 @@ export default function AIHintsModal({ isOpen, onClose, homework }: AIHintsModal
   if (!isOpen || !homework) return null;
 
   const hints = [
-    'Start by identifying what the problem is asking - write it down in your own words',
-    'Remember the quadratic formula: x = (-b ± √(b² - 4ac)) / 2a',
-    'Check your discriminant (b² - 4ac) first to know how many solutions to expect',
+    'Începe prin a identifica ce cere problema - scrie-o cu cuvintele tale',
+    'Amintește-ți formula de gradul doi: x = (-b ± √(b² - 4ac)) / 2a',
+    'Verifică mai întâi discriminantul (b² - 4ac) pentru a ști câte soluții să te aștepți',
   ];
 
   return (
@@ -35,7 +35,7 @@ export default function AIHintsModal({ isOpen, onClose, homework }: AIHintsModal
               </div>
               <div>
                 <h2 className="text-2xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Quick Hints
+                  Indicii Rapide
                 </h2>
                 <p className="text-white/80 text-sm">{homework.title}</p>
               </div>
@@ -51,7 +51,7 @@ export default function AIHintsModal({ isOpen, onClose, homework }: AIHintsModal
 
         <div className="p-6">
           <p className="text-sm text-gray-600 mb-4">
-            Here are some helpful pointers to get you started:
+            Iată câteva sfaturi utile pentru a începe:
           </p>
 
           <div className="space-y-3">
@@ -69,7 +69,7 @@ export default function AIHintsModal({ isOpen, onClose, homework }: AIHintsModal
 
           <div className="mt-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-purple-200 rounded-xl p-4">
             <p className="text-sm text-gray-700">
-              <strong>Need more help?</strong> Click on "Break into steps" for a detailed plan, or chat with the AI Tutor for interactive guidance.
+              <strong>Ai nevoie de mai mult ajutor?</strong> Apasă pe "Împarte în pași" pentru un plan detaliat sau discută cu Tutorele AI pentru îndrumări interactive.
             </p>
           </div>
 
@@ -77,7 +77,7 @@ export default function AIHintsModal({ isOpen, onClose, homework }: AIHintsModal
             onClick={onClose}
             className="w-full mt-6 px-6 py-3 bg-[#164B2E] text-white rounded-xl font-medium hover:bg-[#0d2819] transition-colors"
           >
-            Got it, thanks!
+            Am înțeles, mulțumesc!
           </button>
         </div>
       </div>

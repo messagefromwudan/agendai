@@ -18,12 +18,12 @@ type Step = {
 
 export default function AIBreakdownModal({ isOpen, onClose, homework }: AIBreakdownModalProps) {
   const [steps, setSteps] = useState<Step[]>([
-    { id: 1, text: 'Read through all the problems and identify key concepts', completed: false },
-    { id: 2, text: 'Review your notes on quadratic equations and formula', completed: false },
-    { id: 3, text: 'Start with the easier problems to build confidence', completed: false },
-    { id: 4, text: 'Work through medium difficulty problems', completed: false },
-    { id: 5, text: 'Tackle the challenging problems last', completed: false },
-    { id: 6, text: 'Double-check all solutions and verify answers', completed: false },
+    { id: 1, text: 'Citește toate problemele și identifică conceptele cheie', completed: false },
+    { id: 2, text: 'Revizuiește notițele despre ecuațiile de gradul doi și formula', completed: false },
+    { id: 3, text: 'Începe cu problemele mai ușoare pentru a-ți crește încrederea', completed: false },
+    { id: 4, text: 'Lucrează problemele de dificultate medie', completed: false },
+    { id: 5, text: 'Abordează problemele dificile la final', completed: false },
+    { id: 6, text: 'Verifică din nou toate soluțiile și confirmă răspunsurile', completed: false },
   ]);
 
   const toggleStep = (id: number) => {
@@ -45,7 +45,7 @@ export default function AIBreakdownModal({ isOpen, onClose, homework }: AIBreakd
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Step-by-Step Plan
+                Plan Pas cu Pas
               </h2>
               <p className="text-white/80 text-sm">{homework.title}</p>
             </div>
@@ -60,7 +60,7 @@ export default function AIBreakdownModal({ isOpen, onClose, homework }: AIBreakd
 
         <div className="p-6">
           <p className="text-sm text-gray-600 mb-4">
-            I've broken down this assignment into manageable steps. Check them off as you complete each one!
+            Am împărțit această temă în pași gestionabili. Bifează-i pe măsură ce îi finalizezi!
           </p>
 
           <div className="space-y-3">
@@ -80,7 +80,7 @@ export default function AIBreakdownModal({ isOpen, onClose, homework }: AIBreakd
                   <Circle className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                 )}
                 <div className="flex-1 text-left">
-                  <span className="font-semibold text-xs text-gray-500">Step {index + 1}</span>
+                  <span className="font-semibold text-xs text-gray-500">Pasul {index + 1}</span>
                   <p className={`text-sm ${step.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
                     {step.text}
                   </p>
@@ -91,7 +91,7 @@ export default function AIBreakdownModal({ isOpen, onClose, homework }: AIBreakd
 
           <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4">
             <p className="text-sm text-blue-900">
-              <strong>Progress:</strong> {steps.filter(s => s.completed).length} of {steps.length} steps completed
+              <strong>Progres:</strong> {steps.filter(s => s.completed).length} din {steps.length} pași finalizați
             </p>
           </div>
 
@@ -99,7 +99,7 @@ export default function AIBreakdownModal({ isOpen, onClose, homework }: AIBreakd
             onClick={onClose}
             className="w-full mt-6 px-6 py-3 bg-[#164B2E] text-white rounded-xl font-medium hover:bg-[#0d2819] transition-colors"
           >
-            Got it, thanks!
+            Am înțeles, mulțumesc!
           </button>
         </div>
       </div>

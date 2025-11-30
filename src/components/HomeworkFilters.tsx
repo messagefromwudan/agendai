@@ -21,7 +21,7 @@ export default function HomeworkFilters({
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <ArrowUpDown className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Sort by:</span>
+          <span className="text-sm font-medium text-gray-700">Sortează după:</span>
         </div>
         <div className="flex gap-2">
           <button
@@ -32,7 +32,7 @@ export default function HomeworkFilters({
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Due date
+            Termen limită
           </button>
           <button
             onClick={() => onSortChange('subject')}
@@ -42,7 +42,7 @@ export default function HomeworkFilters({
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Subject
+            Materie
           </button>
           <button
             onClick={() => onSortChange('difficulty')}
@@ -52,7 +52,7 @@ export default function HomeworkFilters({
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Difficulty
+            Dificultate
           </button>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function HomeworkFilters({
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Filter:</span>
+          <span className="text-sm font-medium text-gray-700">Filtrează:</span>
         </div>
         <div className="flex gap-2">
           <button
@@ -71,7 +71,7 @@ export default function HomeworkFilters({
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            All
+            Toate
           </button>
           <button
             onClick={() => onFilterChange('urgent')}
@@ -81,7 +81,7 @@ export default function HomeworkFilters({
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
-            Urgent only
+            Doar urgente
           </button>
           <button
             onClick={() => onFilterChange('flagged')}
@@ -92,7 +92,7 @@ export default function HomeworkFilters({
             }`}
           >
             <Star className="w-3 h-3" />
-            Flagged
+            Marcate
           </button>
         </div>
       </div>

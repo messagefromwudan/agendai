@@ -24,15 +24,15 @@ export default function HomeworkDetailModal({ isOpen, onClose, homework }: Homew
 
   const formatDueDate = (dueDate: string) => {
     const date = new Date(dueDate);
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const days = ['Duminică', 'Luni', 'Marți', 'Miercuri', 'Joi', 'Vineri', 'Sâmbătă'];
+    const months = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
     const dayName = days[date.getDay()];
     const monthName = months[date.getMonth()];
     const day = date.getDate();
     const year = date.getFullYear();
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${dayName}, ${monthName} ${day}, ${year} at ${hours}:${minutes}`;
+    return `${dayName}, ${day} ${monthName} ${year} la ${hours}:${minutes}`;
   };
 
   const getColorClasses = (color: string) => {
@@ -84,7 +84,7 @@ export default function HomeworkDetailModal({ isOpen, onClose, homework }: Homew
         <div className="p-6 space-y-6">
           <div className="flex items-center gap-6">
             <div>
-              <p className="text-xs text-gray-500 mb-1">Due Date</p>
+              <p className="text-xs text-gray-500 mb-1">Termen Limită</p>
               <div className="flex items-center gap-2 text-gray-900">
                 <Calendar className="w-4 h-4 text-gray-400" />
                 <span className="text-sm font-medium">{formatDueDate(homework.dueDate)}</span>
@@ -92,7 +92,7 @@ export default function HomeworkDetailModal({ isOpen, onClose, homework }: Homew
             </div>
 
             <div>
-              <p className="text-xs text-gray-500 mb-1">Difficulty</p>
+              <p className="text-xs text-gray-500 mb-1">Dificultate</p>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
@@ -108,38 +108,38 @@ export default function HomeworkDetailModal({ isOpen, onClose, homework }: Homew
 
           {homework.description && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Descriere</h3>
               <p className="text-sm text-gray-700 bg-gray-50 rounded-xl p-4">{homework.description}</p>
             </div>
           )}
 
           {homework.aiSuggestion && (
             <div className={`${colorClasses.light} border-l-4 ${colorClasses.bg} rounded-r-xl p-4`}>
-              <h3 className={`font-semibold ${colorClasses.text} mb-2 text-sm`}>AI Suggestion</h3>
+              <h3 className={`font-semibold ${colorClasses.text} mb-2 text-sm`}>Sugestie AI</h3>
               <p className="text-sm text-gray-700">{homework.aiSuggestion}</p>
             </div>
           )}
 
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">Attachments</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">Atașamente</h3>
             <button className="flex items-center gap-2 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-sm font-medium text-gray-700 w-full">
               <Paperclip className="w-4 h-4" />
-              No attachments yet - Click to add
+              Niciun atașament încă - Click pentru a adăuga
             </button>
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">Comments & Notes</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">Comentarii & Notițe</h3>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Add your notes or questions about this assignment..."
+              placeholder="Adaugă notițe sau întrebări despre această temă..."
               rows={4}
               className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm resize-none"
             />
             <button className="mt-2 flex items-center gap-2 px-4 py-2 bg-[#164B2E] hover:bg-[#0d2819] text-white rounded-lg text-sm font-medium transition-colors">
               <MessageSquare className="w-4 h-4" />
-              Add Comment
+              Adaugă Comentariu
             </button>
           </div>
 
@@ -148,10 +148,10 @@ export default function HomeworkDetailModal({ isOpen, onClose, homework }: Homew
               onClick={onClose}
               className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
             >
-              Close
+              Închide
             </button>
             <button className="flex-1 px-6 py-3 bg-[#164B2E] text-white rounded-xl font-medium hover:bg-[#0d2819] transition-colors shadow-lg hover:shadow-xl">
-              Save Changes
+              Salvează Modificările
             </button>
           </div>
         </div>

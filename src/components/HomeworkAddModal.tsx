@@ -42,10 +42,10 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.subject) newErrors.subject = 'Subject is required';
-    if (!formData.title.trim()) newErrors.title = 'Title is required';
-    if (!formData.type) newErrors.type = 'Type is required';
-    if (!formData.deadline) newErrors.deadline = 'Deadline is required';
+    if (!formData.subject) newErrors.subject = 'Materia este obligatorie';
+    if (!formData.title.trim()) newErrors.title = 'Titlul este obligatoriu';
+    if (!formData.type) newErrors.type = 'Tipul este obligatoriu';
+    if (!formData.deadline) newErrors.deadline = 'Termenul limită este obligatoriu';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -87,7 +87,7 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
       >
         <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            Add New Assignment
+            Adaugă Temă Nouă
           </h2>
           <button
             onClick={onClose}
@@ -100,7 +100,7 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Subject <span className="text-red-500">*</span>
+              Materie <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.subject}
@@ -109,7 +109,7 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
                 errors.subject ? 'border-red-500' : 'border-gray-200'
               } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm`}
             >
-              <option value="">Select a subject</option>
+              <option value="">Selectează o materie</option>
               {subjects.map((subject) => (
                 <option key={subject} value={subject}>
                   {subject}
@@ -121,13 +121,13 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Title <span className="text-red-500">*</span>
+              Titlu <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="e.g., Complete Chapter 5 exercises"
+              placeholder="ex. Completează exercițiile din Capitolul 5"
               className={`w-full px-4 py-3 bg-gray-50 border ${
                 errors.title ? 'border-red-500' : 'border-gray-200'
               } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm`}
@@ -137,7 +137,7 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Type <span className="text-red-500">*</span>
+              Tip <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.type}
@@ -146,17 +146,17 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
                 errors.type ? 'border-red-500' : 'border-gray-200'
               } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm`}
             >
-              <option value="Homework">Homework</option>
-              <option value="Project">Project</option>
-              <option value="Test Prep">Test Prep</option>
-              <option value="Lab Report">Lab Report</option>
+              <option value="Homework">Temă</option>
+              <option value="Project">Proiect</option>
+              <option value="Test Prep">Pregătire Test</option>
+              <option value="Lab Report">Raport Laborator</option>
             </select>
             {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Deadline <span className="text-red-500">*</span>
+              Termen Limită <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
@@ -173,7 +173,7 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Difficulty (Optional)</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Dificultate (Opțional)</label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((level) => (
                 <button
@@ -193,23 +193,23 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Attach Files (Optional)</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Atașează Fișiere (Opțional)</label>
             <button
               type="button"
               onClick={() => console.log('Mock file upload')}
               className="flex items-center gap-2 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors text-sm font-medium text-gray-700 w-full justify-center"
             >
               <Paperclip className="w-4 h-4" />
-              Choose files or take photo
+              Alege fișiere sau fă o poză
             </button>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Notes / Description</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Notițe / Descriere</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Add any additional details..."
+              placeholder="Adaugă detalii suplimentare..."
               rows={4}
               className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm resize-none"
             />
@@ -221,16 +221,16 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
               onClick={onClose}
               className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
             >
-              Cancel
+              Anulează
             </button>
             <button
               type="submit"
               className="flex-1 px-6 py-3 bg-[#164B2E] text-white rounded-xl font-medium hover:bg-[#0d2819] transition-colors shadow-lg hover:shadow-xl"
             >
-              Save Assignment
+              Salvează Tema
             </button>
           </div>
-          <p className="text-xs text-gray-500 text-center">Press Ctrl+Enter to save quickly</p>
+          <p className="text-xs text-gray-500 text-center">Apasă Ctrl+Enter pentru salvare rapidă</p>
         </form>
       </div>
     </div>

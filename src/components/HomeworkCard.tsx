@@ -64,8 +64,8 @@ export default function HomeworkCard({
 
   const formatDueDate = (dueDate: string) => {
     const date = new Date(dueDate);
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const days = ['Dum', 'Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sâm'];
+    const months = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'];
     const dayName = days[date.getDay()];
     const monthName = months[date.getMonth()];
     const day = date.getDate();
@@ -80,11 +80,11 @@ export default function HomeworkCard({
   const isWarning = daysUntil === 2 && !homework.completed;
 
   const getDueDateLabel = () => {
-    if (daysUntil < 0) return { text: 'Overdue', color: 'bg-red-100 border-red-300 text-red-700' };
-    if (daysUntil === 0) return { text: 'Due today', color: 'bg-red-100 border-red-300 text-red-700' };
-    if (daysUntil === 1) return { text: 'Due tomorrow', color: 'bg-red-100 border-red-300 text-red-700' };
-    if (daysUntil === 2) return { text: '2 days left', color: 'bg-orange-100 border-orange-300 text-orange-700' };
-    return { text: `${daysUntil} days left`, color: 'bg-gray-100 border-gray-300 text-gray-700' };
+    if (daysUntil < 0) return { text: 'Întârziată', color: 'bg-red-100 border-red-300 text-red-700' };
+    if (daysUntil === 0) return { text: 'Scadență azi', color: 'bg-red-100 border-red-300 text-red-700' };
+    if (daysUntil === 1) return { text: 'Scadență mâine', color: 'bg-red-100 border-red-300 text-red-700' };
+    if (daysUntil === 2) return { text: '2 zile rămase', color: 'bg-orange-100 border-orange-300 text-orange-700' };
+    return { text: `${daysUntil} zile rămase`, color: 'bg-gray-100 border-gray-300 text-gray-700' };
   };
 
   const dueDateLabel = getDueDateLabel();
@@ -138,18 +138,18 @@ export default function HomeworkCard({
             )}
             {homework.completed && homework.completedAt && (
               <div className="bg-green-100 border border-green-300 text-green-700 px-3 py-1 rounded-lg text-sm font-medium">
-                Completed
+                Finalizată
               </div>
             )}
           </div>
 
           <div className="flex items-center gap-2 mb-3 text-xs text-gray-500">
             <Calendar className="w-3 h-3" />
-            <span>Due • {formatDueDate(homework.dueDate)}</span>
+            <span>Termen • {formatDueDate(homework.dueDate)}</span>
           </div>
 
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs text-gray-500">Difficulty:</span>
+            <span className="text-xs text-gray-500">Dificultate:</span>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
@@ -162,7 +162,7 @@ export default function HomeworkCard({
 
           {homework.aiSuggestion && (
             <div className={`${colorClasses.light} border ${colorClasses.border} rounded-lg p-3`}>
-              <p className="text-xs font-medium text-gray-500 mb-1">AI Suggestion</p>
+              <p className="text-xs font-medium text-gray-500 mb-1">Sugestie AI</p>
               <p className="text-sm text-gray-700">{homework.aiSuggestion}</p>
             </div>
           )}
@@ -177,7 +177,7 @@ export default function HomeworkCard({
                 className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-medium transition-colors"
               >
                 <ListTree className="w-3 h-3" />
-                Break into steps
+                Împarte în pași
               </button>
               <button
                 onClick={(e) => {
@@ -187,7 +187,7 @@ export default function HomeworkCard({
                 className="flex items-center gap-1 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-xs font-medium transition-colors"
               >
                 <Lightbulb className="w-3 h-3" />
-                Get quick hints
+                Obține indicii rapide
               </button>
             </div>
           )}
@@ -200,7 +200,7 @@ export default function HomeworkCard({
               }}
               className="mt-3 flex items-center gap-1 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-xs font-medium transition-colors"
             >
-              View feedback from AI
+              Vezi feedback de la AI
             </button>
           )}
         </div>
@@ -222,7 +222,7 @@ export default function HomeworkCard({
                 className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg text-sm text-gray-700 transition-colors"
               >
                 <Calendar className="w-4 h-4" />
-                Reschedule
+                Reprogramează
               </button>
               {showReschedule && (
                 <div className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
@@ -244,7 +244,7 @@ export default function HomeworkCard({
                 className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg text-sm text-gray-700 transition-colors"
               >
                 <Pin className="w-4 h-4" />
-                {homework.important ? 'Unmark important' : 'Mark important'}
+                {homework.important ? 'Elimină important' : 'Marchează important'}
               </button>
               <button
                 onClick={(e) => {
@@ -254,7 +254,7 @@ export default function HomeworkCard({
                 className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg text-sm text-gray-700 transition-colors"
               >
                 <Share2 className="w-4 h-4" />
-                Share
+                Distribuie
               </button>
             </div>
           </div>

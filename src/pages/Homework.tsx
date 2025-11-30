@@ -19,7 +19,7 @@ export default function Homework() {
       difficulty: 3,
       dueDate: '2024-11-03T14:00',
       completed: false,
-      aiSuggestion: 'Review the quadratic formula notes from last week before starting.',
+      aiSuggestion: 'Revizuiește notițele despre formula de gradul doi din săptămâna trecută înainte de a începe.',
       color: 'blue',
       type: 'Homework',
       description: 'Complete exercises 15-30 from Chapter 5. Focus on applying the quadratic formula and factoring methods.',
@@ -31,7 +31,7 @@ export default function Homework() {
       difficulty: 4,
       dueDate: '2024-11-04T16:00',
       completed: false,
-      aiSuggestion: 'Structure your report with hypothesis, method, results, and conclusion.',
+      aiSuggestion: 'Structurează raportul cu ipoteză, metodă, rezultate și concluzie.',
       color: 'green',
       type: 'Lab Report',
       important: true,
@@ -43,7 +43,7 @@ export default function Homework() {
       difficulty: 2,
       dueDate: '2024-11-05T12:00',
       completed: true,
-      aiSuggestion: 'Great work! Your analysis was thorough and well-structured.',
+      aiSuggestion: 'Excelent! Analiza ta a fost completă și bine structurată.',
       color: 'purple',
       type: 'Project',
       completedAt: '2024-11-01T10:30',
@@ -55,7 +55,7 @@ export default function Homework() {
       difficulty: 1,
       dueDate: '2024-10-30T09:00',
       completed: false,
-      aiSuggestion: 'Start with identifying reactants and products in each equation.',
+      aiSuggestion: 'Începe prin a identifica reactanții și produșii în fiecare ecuație.',
       color: 'orange',
       type: 'Homework',
     },
@@ -66,7 +66,7 @@ export default function Homework() {
       difficulty: 2,
       dueDate: '2024-11-02T15:00',
       completed: true,
-      aiSuggestion: 'Excellent understanding of historical context!',
+      aiSuggestion: 'Înțelegere excelentă a contextului istoric!',
       color: 'red',
       type: 'Homework',
       completedAt: '2024-11-01T14:20',
@@ -93,13 +93,13 @@ export default function Homework() {
       difficulty: newHomework.difficulty,
       dueDate: newHomework.deadline,
       completed: false,
-      aiSuggestion: 'AI will analyze this assignment and provide personalized suggestions soon.',
+      aiSuggestion: 'AI va analiza această temă și va oferi sugestii personalizate în curând.',
       color: ['blue', 'green', 'purple', 'orange', 'red', 'teal'][Math.floor(Math.random() * 6)],
       type: newHomework.type,
       description: newHomework.description,
     };
     setHomework(prev => [...prev, homework]);
-    setToast({ message: 'Assignment added successfully!' });
+    setToast({ message: 'Temă adăugată cu succes!' });
     setTimeout(() => setToast(null), 5000);
   };
 
@@ -122,8 +122,8 @@ export default function Homework() {
 
     if (!wasCompleted) {
       setToast({
-        message: 'Moved to Completed',
-        action: { label: 'Undo', data: item },
+        message: 'Mutată la Finalizate',
+        action: { label: 'Anulează', data: item },
       });
       setTimeout(() => setToast(null), 5000);
     }
@@ -138,7 +138,7 @@ export default function Homework() {
 
   const handleReschedule = (id: number, newDate: string) => {
     setHomework(prev => prev.map(h => (h.id === id ? { ...h, dueDate: newDate } : h)));
-    setToast({ message: 'Assignment rescheduled successfully!' });
+    setToast({ message: 'Temă reprogramată cu succes!' });
     setTimeout(() => setToast(null), 3000);
   };
 
@@ -177,7 +177,7 @@ export default function Homework() {
   };
 
   const handleRequestExercise = () => {
-    setToast({ message: 'AI is generating follow-up exercises...' });
+    setToast({ message: 'AI generează exerciții de urmărire...' });
     setTimeout(() => setToast(null), 3000);
   };
 
@@ -231,14 +231,14 @@ export default function Homework() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Homework & Projects
+          Teme & Proiecte
         </h1>
         <button
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 bg-[#164B2E] hover:bg-[#0d2819] text-[#F1F5F9] px-6 py-3 rounded-xl transition-colors shadow-lg hover:shadow-xl"
         >
           <Plus className="w-5 h-5" />
-          <span className="font-medium">Add Homework</span>
+          <span className="font-medium">Adaugă Temă</span>
         </button>
       </div>
 
@@ -249,7 +249,7 @@ export default function Homework() {
             filterSection === 'all' ? 'ring-2 ring-blue-500' : ''
           }`}
         >
-          <p className="text-sm text-blue-700 mb-2">Total Assignments</p>
+          <p className="text-sm text-blue-700 mb-2">Total Teme</p>
           <p className="text-4xl font-bold text-blue-900">{homework.length}</p>
         </button>
         <button
@@ -258,7 +258,7 @@ export default function Homework() {
             filterSection === 'pending' ? 'ring-2 ring-orange-500' : ''
           }`}
         >
-          <p className="text-sm text-orange-700 mb-2">Pending</p>
+          <p className="text-sm text-orange-700 mb-2">În Așteptare</p>
           <p className="text-4xl font-bold text-orange-900">{pending.length}</p>
         </button>
         <button
@@ -267,7 +267,7 @@ export default function Homework() {
             filterSection === 'completed' ? 'ring-2 ring-green-500' : ''
           }`}
         >
-          <p className="text-sm text-green-700 mb-2">Completed This Week</p>
+          <p className="text-sm text-green-700 mb-2">Finalizate Săptămâna Aceasta</p>
           <p className="text-4xl font-bold text-green-900">{completed.length}</p>
         </button>
         <button
@@ -276,7 +276,7 @@ export default function Homework() {
             filterSection === 'overdue' ? 'ring-2 ring-red-500' : ''
           }`}
         >
-          <p className="text-sm text-red-700 mb-2">Overdue</p>
+          <p className="text-sm text-red-700 mb-2">Întârziate</p>
           <p className="text-4xl font-bold text-red-900">{overdue.length}</p>
         </button>
       </div>
@@ -295,9 +295,9 @@ export default function Homework() {
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-red-900">You have {overdue.length} overdue assignment{overdue.length > 1 ? 's' : ''}</p>
+              <p className="font-semibold text-red-900">Ai {overdue.length} tem{overdue.length > 1 ? 'e' : 'ă'} întârziat{overdue.length > 1 ? 'e' : 'ă'}</p>
               <p className="text-sm text-red-700 mt-1">
-                Review your overdue tasks and reschedule them to stay on track.
+                Revizuiește temele întârziate și reprogramează-le pentru a rămâne la zi.
               </p>
             </div>
           </div>
@@ -306,15 +306,15 @@ export default function Homework() {
 
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          {filterSection === 'all' && 'All Assignments'}
-          {filterSection === 'pending' && 'Pending Assignments'}
-          {filterSection === 'completed' && 'Completed Assignments'}
-          {filterSection === 'overdue' && 'Overdue Assignments'}
+          {filterSection === 'all' && 'Toate Temele'}
+          {filterSection === 'pending' && 'Teme În Așteptare'}
+          {filterSection === 'completed' && 'Teme Finalizate'}
+          {filterSection === 'overdue' && 'Teme Întârziate'}
         </h2>
         <div className="space-y-3">
           {filteredHomework.length === 0 ? (
             <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
-              <p className="text-gray-500">No assignments found.</p>
+              <p className="text-gray-500">Nu s-au găsit teme.</p>
             </div>
           ) : (
             filteredHomework.map(item => (

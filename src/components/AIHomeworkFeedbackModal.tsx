@@ -20,20 +20,20 @@ export default function AIHomeworkFeedbackModal({
 
   const mockFeedback = {
     score: 95,
-    qualityRating: 'Excellent',
+    qualityRating: 'Excelent',
     strengths: [
-      'Clear understanding of core concepts demonstrated',
-      'Well-structured solutions with logical flow',
-      'Good attention to detail in calculations',
+      'Înțelegere clară a conceptelor de bază demonstrată',
+      'Soluții bine structurate cu flux logic',
+      'Atenție bună la detalii în calcule',
     ],
     improvements: [
-      'Consider showing intermediate steps more explicitly',
-      'Practice explaining your reasoning in written form',
+      'Consideră să arăți pașii intermediari mai explicit',
+      'Exersează explicarea raționamentului tău în formă scrisă',
     ],
     nextSteps: [
-      'Try advanced problems on quadratic equations',
-      'Explore real-world applications of this concept',
-      'Review the connection to polynomial functions',
+      'Încearcă probleme avansate la ecuații de gradul doi',
+      'Explorează aplicații din viața reală ale acestui concept',
+      'Revizuiește conexiunea cu funcțiile polinomiale',
     ],
   };
 
@@ -54,7 +54,7 @@ export default function AIHomeworkFeedbackModal({
               </div>
               <div>
                 <h2 className="text-2xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  AI Feedback
+                  Feedback AI
                 </h2>
                 <p className="text-white/80 text-sm">{homework.title}</p>
               </div>
@@ -70,11 +70,11 @@ export default function AIHomeworkFeedbackModal({
           <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white/70 text-sm mb-1">Quality Score</p>
+                <p className="text-white/70 text-sm mb-1">Scor Calitate</p>
                 <p className="text-4xl font-bold">{mockFeedback.score}%</p>
               </div>
               <div className="text-right">
-                <p className="text-white/70 text-sm mb-1">Rating</p>
+                <p className="text-white/70 text-sm mb-1">Evaluare</p>
                 <p className="text-2xl font-semibold">{mockFeedback.qualityRating}</p>
               </div>
             </div>
@@ -87,7 +87,7 @@ export default function AIHomeworkFeedbackModal({
               <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                 <Award className="w-5 h-5 text-green-600" />
               </div>
-              <h3 className="font-semibold text-lg text-gray-900">Strengths</h3>
+              <h3 className="font-semibold text-lg text-gray-900">Puncte Forte</h3>
             </div>
             <ul className="space-y-2">
               {mockFeedback.strengths.map((strength, idx) => (
@@ -104,7 +104,7 @@ export default function AIHomeworkFeedbackModal({
               <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-orange-600" />
               </div>
-              <h3 className="font-semibold text-lg text-gray-900">Areas to Improve</h3>
+              <h3 className="font-semibold text-lg text-gray-900">Domenii de Îmbunătățit</h3>
             </div>
             <ul className="space-y-2">
               {mockFeedback.improvements.map((improvement, idx) => (
@@ -121,7 +121,7 @@ export default function AIHomeworkFeedbackModal({
               <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Target className="w-5 h-5 text-blue-600" />
               </div>
-              <h3 className="font-semibold text-lg text-gray-900">Suggested Next Steps</h3>
+              <h3 className="font-semibold text-lg text-gray-900">Pași Următori Sugerați</h3>
             </div>
             <ul className="space-y-2">
               {mockFeedback.nextSteps.map((step, idx) => (
@@ -135,7 +135,7 @@ export default function AIHomeworkFeedbackModal({
 
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4">
             <p className="text-sm text-gray-700 mb-3">
-              Ready to continue your learning journey? I can generate personalized practice exercises based on your performance.
+              Ești gata să continui parcursul de învățare? Pot genera exerciții de practică personalizate bazate pe performanța ta.
             </p>
             <button
               onClick={() => {
@@ -145,7 +145,7 @@ export default function AIHomeworkFeedbackModal({
               className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[#164B2E] hover:bg-[#0d2819] text-white rounded-lg font-medium transition-colors"
             >
               <Sparkles className="w-4 h-4" />
-              Ask AI for follow-up exercise
+              Cere AI un exercițiu de urmărire
             </button>
           </div>
 
@@ -153,7 +153,7 @@ export default function AIHomeworkFeedbackModal({
             onClick={onClose}
             className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
           >
-            Close
+            Închide
           </button>
         </div>
       </div>
