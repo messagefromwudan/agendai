@@ -34,9 +34,9 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Study Streak
+              Streak de studiu
             </h2>
-            <p className="text-sm text-gray-600">October 2024</p>
+            <p className="text-sm text-gray-600">Octombrie 2024</p>
           </div>
           <button
             onClick={onClose}
@@ -48,7 +48,7 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
 
         <div className="mb-6">
           <div className="grid grid-cols-7 gap-2 mb-2">
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+            {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((day) => (
               <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2">
                 {day}
               </div>
@@ -99,9 +99,9 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
             <div>
               <p className="font-bold text-orange-900 text-lg flex items-center gap-1">
                 <Flame className="w-5 h-5 inline" />
-                7-Day Streak Active
+                Streak de 7 zile activ
               </p>
-              <p className="text-sm text-orange-700">You've studied for 7 days in a row</p>
+              <p className="text-sm text-orange-700">Ai studiat 7 zile la rând</p>
             </div>
           </div>
         </div>
@@ -109,13 +109,13 @@ export default function StreakCalendar({ isOpen, onClose }: StreakCalendarProps)
         <div className="mt-4 flex items-center justify-center gap-6 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 bg-green-500 rounded-full shadow-sm"></div>
-            <span className="text-gray-600 font-medium">Study day</span>
+            <span className="text-gray-600 font-medium">Zi de studiu</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 bg-gradient-to-br from-yellow-400 via-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-sm">
               <Flame className="w-3 h-3 text-white" />
             </div>
-            <span className="text-gray-600 font-medium">Streak day</span>
+            <span className="text-gray-600 font-medium">Zi cu streak</span>
           </div>
         </div>
       </div>
