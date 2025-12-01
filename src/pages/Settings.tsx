@@ -51,24 +51,24 @@ export default function Settings() {
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
     setTheme(newTheme);
     updateTheme(newTheme);
-    showToast('Theme updated');
+    showToast('Temă actualizată');
   };
 
   const handleLanguageChange = (newLanguage: 'en' | 'ro') => {
     setLanguage(newLanguage);
     updateLanguage(newLanguage);
-    showToast('Language updated');
+    showToast('Limbă actualizată');
   };
 
   const handleNotificationChange = (type: NotificationType, enabled: boolean) => {
     setNotifications((prev) => ({ ...prev, [type]: enabled }));
     updateNotificationSetting(type, enabled);
-    showToast('Notifications updated');
+    showToast('Notificări actualizate');
   };
 
   const handleDeleteAccount = () => {
     console.log('Account deletion confirmed');
-    showToast('Account deletion initiated');
+    showToast('Ștergere cont inițiată');
   };
 
   const handleManageEmail = () => {
@@ -83,21 +83,21 @@ export default function Settings() {
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Settings
+          Setări
         </h1>
         {allChangesSaved && (
           <div className="flex items-center gap-2 text-sm text-green-600">
             <CheckCircle2 className="w-4 h-4" />
-            <span className="font-medium">All changes saved</span>
+            <span className="font-medium">Toate modificările au fost salvate</span>
           </div>
         )}
       </div>
 
       <SettingsSection
-        title="Appearance"
-        description="Customize how AgendAI looks on your device"
+        title="Aspect"
+        description="Personalizează cum arată AgendAI pe dispozitivul tău"
       >
-        <label className="block text-sm font-medium text-gray-700 mb-3">Theme</label>
+        <label className="block text-sm font-medium text-gray-700 mb-3">Temă</label>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {(['light', 'dark', 'system'] as const).map((themeOption) => {
             const icons = {
@@ -138,8 +138,8 @@ export default function Settings() {
       </SettingsSection>
 
       <SettingsSection
-        title="Notifications"
-        description="Manage your study reminders and alerts"
+        title="Notificări"
+        description="Gestionează mementourile și alertele de studiu"
       >
         <NotificationToggleList
           settings={notifications}
@@ -148,15 +148,15 @@ export default function Settings() {
       </SettingsSection>
 
       <SettingsSection
-        title="Language & Region"
-        description="Choose your preferred language"
+        title="Limbă și Regiune"
+        description="Alege limba preferată"
       >
         <LanguageSelector selected={language} onChange={handleLanguageChange} />
       </SettingsSection>
 
       <SettingsSection
-        title="Privacy & Account"
-        description="Manage your account settings and privacy"
+        title="Confidențialitate și Cont"
+        description="Gestionează setările contului și confidențialitatea"
       >
         <div className="space-y-4">
           <button
@@ -173,7 +173,7 @@ export default function Settings() {
               <User className="w-5 h-5 text-blue-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-medium text-gray-900">Manage Email</p>
+              <p className="font-medium text-gray-900">Gestionează Email</p>
               <p className="text-sm text-gray-600">bianca.popescu@student.ro</p>
             </div>
           </button>
@@ -192,8 +192,8 @@ export default function Settings() {
               <Shield className="w-5 h-5 text-purple-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-medium text-gray-900">Change Password</p>
-              <p className="text-sm text-gray-600">Update your account password</p>
+              <p className="font-medium text-gray-900">Schimbă Parola</p>
+              <p className="text-sm text-gray-600">Actualizează parola contului</p>
             </div>
           </button>
 
@@ -211,9 +211,9 @@ export default function Settings() {
               <Trash2 className="w-5 h-5 text-red-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-medium text-red-900">Delete Account</p>
+              <p className="font-medium text-red-900">Șterge Contul</p>
               <p className="text-sm text-red-700">
-                This action is permanent. Your data cannot be recovered.
+                Această acțiune este permanentă. Datele tale nu pot fi recuperate.
               </p>
             </div>
           </button>

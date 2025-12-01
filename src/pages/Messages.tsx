@@ -51,9 +51,9 @@ export default function Messages() {
     {
       id: 1,
       name: 'Ms. Johnson',
-      role: 'Mathematics Teacher',
-      subject: 'Mathematics',
-      lastMessage: 'Great progress on the last test!',
+      role: 'Profesor Matematică',
+      subject: 'Matematică',
+      lastMessage: 'Progres excelent la ultimul test!',
       lastMessageTime: new Date('2024-11-23T10:30:00'),
       time: '10:30 AM',
       unread: 2,
@@ -62,33 +62,33 @@ export default function Messages() {
     {
       id: 2,
       name: 'Dr. Smith',
-      role: 'Physics Teacher',
-      subject: 'Physics',
-      lastMessage: 'Lab report deadline extended',
+      role: 'Profesor Fizică',
+      subject: 'Fizică',
+      lastMessage: 'Termen raport laborator extins',
       lastMessageTime: new Date('2024-11-22T14:20:00'),
-      time: 'Yesterday',
+      time: 'Ieri',
       unread: 0,
       online: true,
     },
     {
       id: 3,
       name: 'Mr. Anderson',
-      role: 'Literature Teacher',
-      subject: 'Literature',
-      lastMessage: 'Your essay was excellent',
+      role: 'Profesor Literatură',
+      subject: 'Literatură',
+      lastMessage: 'Eseul tău a fost excelent',
       lastMessageTime: new Date('2024-11-21T09:15:00'),
-      time: '2 days ago',
+      time: 'Acum 2 zile',
       unread: 0,
       online: false,
     },
     {
       id: 4,
-      name: 'Class 11-A Group',
-      role: 'Study Group',
+      name: 'Grup Clasa 11-A',
+      role: 'Grup de Studiu',
       subject: 'General',
-      lastMessage: 'Alex: Who wants to study tomorrow?',
+      lastMessage: 'Alex: Cine vrea să studiem mâine?',
       lastMessageTime: new Date('2024-11-20T16:45:00'),
-      time: '3 days ago',
+      time: 'Acum 3 zile',
       unread: 5,
       online: true,
     },
@@ -98,15 +98,15 @@ export default function Messages() {
     {
       id: 1,
       sender: 'Ms. Johnson',
-      content: 'Hi Bianca! I wanted to congratulate you on your excellent performance in the last math test.',
+      content: 'Salut Bianca! Vreau să te felicit pentru performanța ta excelentă la ultimul test de matematică.',
       time: '10:15 AM',
       isOwn: false,
       reactions: [],
     },
     {
       id: 2,
-      sender: 'You',
-      content: 'Thank you so much, Ms. Johnson! I really enjoyed working on those quadratic problems.',
+      sender: 'Tu',
+      content: 'Mulțumesc mult, Dna. Johnson! Mi-a plăcut foarte mult să lucrez la acele probleme de gradul doi.',
       time: '10:20 AM',
       isOwn: true,
       reactions: [],
@@ -114,7 +114,7 @@ export default function Messages() {
     {
       id: 3,
       sender: 'Ms. Johnson',
-      content: 'Great progress on the last test! Keep up the excellent work. I\'ve noticed your problem-solving skills have really improved.',
+      content: 'Progres excelent la ultimul test! Continuă munca excelentă. Am observat că abilitățile tale de rezolvare a problemelor s-au îmbunătățit mult.',
       time: '10:30 AM',
       isOwn: false,
       reactions: [],
@@ -145,11 +145,11 @@ export default function Messages() {
 
   const getSubjectColor = (subject: string) => {
     const colors: Record<string, string> = {
-      'Mathematics': 'bg-blue-100 text-blue-700 border-blue-200',
-      'Physics': 'bg-green-100 text-green-700 border-green-200',
-      'Literature': 'bg-purple-100 text-purple-700 border-purple-200',
-      'Chemistry': 'bg-orange-100 text-orange-700 border-orange-200',
-      'History': 'bg-red-100 text-red-700 border-red-200',
+      'Matematică': 'bg-blue-100 text-blue-700 border-blue-200',
+      'Fizică': 'bg-green-100 text-green-700 border-green-200',
+      'Literatură': 'bg-purple-100 text-purple-700 border-purple-200',
+      'Chimie': 'bg-orange-100 text-orange-700 border-orange-200',
+      'Istorie': 'bg-red-100 text-red-700 border-red-200',
       'General': 'bg-gray-100 text-gray-700 border-gray-200',
     };
     return colors[subject] || 'bg-gray-100 text-gray-700 border-gray-200';
@@ -181,7 +181,7 @@ export default function Messages() {
         .find(msg => !msg.isOwn);
 
       if (lastTeacherMessage) {
-        const aiSuggestion = `Thank you for your feedback, ${lastTeacherMessage.sender}. I appreciate your support and will continue working hard to improve my skills.`;
+        const aiSuggestion = `Mulțumesc pentru feedback, ${lastTeacherMessage.sender}. Apreciez sprijinul dumneavoastră și voi continua să muncesc din greu pentru a-mi îmbunătăți abilitățile.`;
         setMessage(aiSuggestion);
       }
       setIsGeneratingAI(false);
@@ -202,13 +202,13 @@ export default function Messages() {
             <div className="flex items-center justify-between mb-4">
               {isSidebarOpen && (
                 <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Messages
+                  Mesaje
                 </h1>
               )}
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 className={`p-2 hover:bg-gray-100 rounded-lg transition-colors ${!isSidebarOpen ? 'mx-auto' : ''}`}
-                title={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                title={isSidebarOpen ? 'Ascunde bara laterală' : 'Extinde bara laterală'}
               >
                 {isSidebarOpen ? (
                   <X className="w-5 h-5 text-gray-600" />
@@ -225,7 +225,7 @@ export default function Messages() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search messages..."
+                    placeholder="Caută mesaje..."
                     className="w-full pl-10 pr-10 py-2 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm"
                   />
                   <button
@@ -233,7 +233,7 @@ export default function Messages() {
                     className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded transition-colors ${
                       showAdvancedSearch ? 'text-[#164B2E]' : 'text-gray-400'
                     }`}
-                    title="Advanced search"
+                    title="Căutare avansată"
                   >
                     <Filter className="w-4 h-4" />
                   </button>
@@ -245,21 +245,21 @@ export default function Messages() {
                       type="text"
                       value={searchSubject}
                       onChange={(e) => setSearchSubject(e.target.value)}
-                      placeholder="Filter by subject..."
+                      placeholder="Filtrează după materie..."
                       className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-xs"
                     />
                     <input
                       type="text"
                       value={searchTeacher}
                       onChange={(e) => setSearchTeacher(e.target.value)}
-                      placeholder="Filter by teacher..."
+                      placeholder="Filtrează după profesor..."
                       className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-xs"
                     />
                     <input
                       type="text"
                       value={searchKeywords}
                       onChange={(e) => setSearchKeywords(e.target.value)}
-                      placeholder="Filter by keywords..."
+                      placeholder="Filtrează după cuvinte cheie..."
                       className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-xs"
                     />
                     <button
@@ -270,7 +270,7 @@ export default function Messages() {
                       }}
                       className="w-full text-xs text-gray-600 hover:text-[#164B2E] font-medium transition-colors"
                     >
-                      Clear filters
+                      Șterge filtrele
                     </button>
                   </div>
                 )}
@@ -351,7 +351,7 @@ export default function Messages() {
                 </h2>
                 <div className="flex items-center gap-2">
                   <Circle className="w-2 h-2 fill-green-500 text-green-500" />
-                  <span className="text-sm text-gray-500">Active now</span>
+                  <span className="text-sm text-gray-500">Activ acum</span>
                 </div>
               </div>
             </div>
@@ -394,7 +394,7 @@ export default function Messages() {
                             className={`p-1.5 hover:bg-gray-100 rounded transition-colors ${
                               msg.reactions?.includes('like') ? 'bg-blue-50' : ''
                             }`}
-                            title="Like"
+                            title="Apreciază"
                           >
                             <ThumbsUp className={`w-4 h-4 ${msg.reactions?.includes('like') ? 'text-blue-600 fill-blue-600' : 'text-gray-600'}`} />
                           </button>
@@ -403,7 +403,7 @@ export default function Messages() {
                             className={`p-1.5 hover:bg-gray-100 rounded transition-colors ${
                               msg.reactions?.includes('confirm') ? 'bg-green-50' : ''
                             }`}
-                            title="Acknowledge"
+                            title="Confirmă"
                           >
                             <CheckCheck className={`w-4 h-4 ${msg.reactions?.includes('confirm') ? 'text-green-600' : 'text-gray-600'}`} />
                           </button>
@@ -443,30 +443,30 @@ export default function Messages() {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Type your message..."
+                placeholder="Scrie mesajul tău..."
                 className="flex-1 px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm"
               />
               <button
                 onClick={handleAIDraftReply}
                 disabled={isGeneratingAI}
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-4 py-3 rounded-xl transition-all flex items-center gap-2 shadow-md hover:shadow-lg disabled:cursor-not-allowed"
-                title="AI Draft Reply"
+                title="Generează Răspuns cu AI"
               >
                 {isGeneratingAI ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span className="font-medium text-sm">Drafting...</span>
+                    <span className="font-medium text-sm">Generez...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    <span className="font-medium text-sm">AI Draft</span>
+                    <span className="font-medium text-sm">Generează AI</span>
                   </>
                 )}
               </button>
               <button className="bg-[#164B2E] hover:bg-[#0d2819] text-[#F1F5F9] px-6 py-3 rounded-xl transition-colors flex items-center gap-2 shadow-md hover:shadow-lg">
                 <Send className="w-5 h-5" />
-                <span className="font-medium">Send</span>
+                <span className="font-medium">Trimite</span>
               </button>
             </div>
           </div>
