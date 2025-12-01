@@ -43,7 +43,7 @@ export default function Schedule() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [currentTip, setCurrentTip] = useState(0);
 
-  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  const weekDays = ['Lun', 'Mar', 'Mie', 'Joi', 'Vin'];
   const dates = ['28', '29', '30', '31', '1'];
 
   const weekSchedule: DaySchedule = {
@@ -76,33 +76,33 @@ export default function Schedule() {
       type: 'focus',
       icon: Brain,
       color: 'blue',
-      title: 'Focus Session Recommendation',
-      content: 'You have a 30-minute gap before your study session. Would you like to schedule a quick focus session for Physics test preparation?',
-      action: 'Schedule now',
+      title: 'Recomandare Sesiune de Concentrare',
+      content: 'Ai o pauză de 30 de minute înainte de sesiunea ta de studiu. Vrei să programezi o sesiune scurtă de concentrare pentru pregătirea testului la Fizică?',
+      action: 'Programează acum',
     },
     {
       type: 'break',
       icon: Coffee,
       color: 'orange',
-      title: 'Break Reminder',
-      content: 'You\'ve been studying for 2 hours straight. Take a 15-minute break to recharge and improve retention.',
-      action: 'Set break timer',
+      title: 'Memento Pauză',
+      content: 'Ai studiat 2 ore continuu. Ia o pauză de 15 minute pentru a te reîncărca și pentru a îmbunătăți retenția.',
+      action: 'Setează cronometru pauză',
     },
     {
       type: 'recap',
       icon: BookOpen,
       color: 'purple',
-      title: 'Recap Session',
-      content: 'Your Mathematics class ended 1 hour ago. A quick 10-minute recap now will boost long-term retention by 40%.',
-      action: 'Start recap',
+      title: 'Sesiune de Recapitulare',
+      content: 'Ora ta de Matematică s-a încheiat acum o oră. O recapitulare rapidă de 10 minute acum va îmbunătăți retenția pe termen lung cu 40%.',
+      action: 'Începe recapitularea',
     },
     {
       type: 'test_prep',
       icon: Target,
       color: 'green',
-      title: 'Test Preparation Tip',
-      content: 'Your Physics test is in 2 days. Based on your schedule, the best time to review is tomorrow at 3 PM. Want me to block that time?',
-      action: 'Block time',
+      title: 'Sfat Pregătire Test',
+      content: 'Testul tău la Fizică este în 2 zile. Pe baza programului tău, cel mai bun moment pentru revizuire este mâine la ora 15:00. Vrei să blochez acel timp?',
+      action: 'Blochează timpul',
     },
   ];
 
@@ -135,11 +135,11 @@ export default function Schedule() {
     friday.setDate(monday.getDate() + 4);
 
     const formatDate = (date: Date) => {
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const months = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Noi', 'Dec'];
       return `${months[date.getMonth()]} ${date.getDate()}`;
     };
 
-    return `Week of ${formatDate(monday)} - ${formatDate(friday)}`;
+    return `Săptămâna ${formatDate(monday)} - ${formatDate(friday)}`;
   };
 
   const getNextClass = () => {
@@ -196,9 +196,9 @@ export default function Schedule() {
 
   const getStatusChip = (status: ClassStatus) => {
     const configs = {
-      upcoming: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Upcoming' },
-      'in-progress': { bg: 'bg-green-100', text: 'text-green-700', label: 'In Progress' },
-      finished: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Finished' },
+      upcoming: { bg: 'bg-blue-100', text: 'text-blue-700', label: 'Urmează' },
+      'in-progress': { bg: 'bg-green-100', text: 'text-green-700', label: 'În Desfășurare' },
+      finished: { bg: 'bg-gray-100', text: 'text-gray-700', label: 'Finalizat' },
     };
     const config = configs[status];
     return (
@@ -252,7 +252,7 @@ export default function Schedule() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Smart Schedule
+          Orar Inteligent
         </h1>
         <div className="flex items-center gap-4">
           <div className="bg-white border border-gray-200 rounded-xl p-1 flex gap-1">
@@ -264,7 +264,7 @@ export default function Schedule() {
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
-              Week View
+              Vedere Săptămână
             </button>
             <button
               onClick={() => setViewMode('day')}
@@ -274,7 +274,7 @@ export default function Schedule() {
                   : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
-              Day View
+              Vedere Zi
             </button>
           </div>
           <div className="flex items-center gap-2">
@@ -305,7 +305,7 @@ export default function Schedule() {
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <p className="text-[#F1F5F9]/70 text-sm">Next Class</p>
+                <p className="text-[#F1F5F9]/70 text-sm">Următoarea Oră</p>
                 {getStatusChip(nextClassStatus)}
               </div>
               <h2 className="text-2xl font-bold mb-1">{nextClass.title}</h2>
@@ -318,19 +318,19 @@ export default function Schedule() {
               {nextClassStatus === 'upcoming' && (
                 <>
                   <p className="text-2xl font-bold">{minutesUntil}m</p>
-                  <p className="text-sm text-[#F1F5F9]/70">until start</p>
+                  <p className="text-sm text-[#F1F5F9]/70">până la început</p>
                 </>
               )}
               {nextClassStatus === 'in-progress' && (
                 <>
-                  <p className="text-lg font-bold">Now</p>
-                  <p className="text-sm text-[#F1F5F9]/70">in progress</p>
+                  <p className="text-lg font-bold">Acum</p>
+                  <p className="text-sm text-[#F1F5F9]/70">în desfășurare</p>
                 </>
               )}
               {nextClassStatus === 'finished' && (
                 <>
-                  <p className="text-lg font-bold">Done</p>
-                  <p className="text-sm text-[#F1F5F9]/70">finished</p>
+                  <p className="text-lg font-bold">Gata</p>
+                  <p className="text-sm text-[#F1F5F9]/70">finalizat</p>
                 </>
               )}
             </div>
@@ -395,14 +395,14 @@ export default function Schedule() {
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">
-              {weekDays[selectedDay]}, {dates[selectedDay]} - Detailed Schedule
+              {weekDays[selectedDay]}, {dates[selectedDay]} - Orar Detaliat
             </h2>
             <button
               onClick={() => setViewMode('week')}
               className="flex items-center gap-2 text-[#164B2E] hover:bg-green-50 px-4 py-2 rounded-lg transition-colors"
             >
               <CalendarIcon className="w-4 h-4" />
-              <span className="text-sm font-medium">Back to Week</span>
+              <span className="text-sm font-medium">Înapoi la Săptămână</span>
             </button>
           </div>
           <div className="space-y-4">
@@ -416,7 +416,7 @@ export default function Schedule() {
                 >
                   <div className="flex items-start gap-4">
                     <div className="text-center min-w-[80px]">
-                      <p className="text-xs text-gray-500 mb-1">Time</p>
+                      <p className="text-xs text-gray-500 mb-1">Oră</p>
                       <p className="font-semibold text-gray-900 text-sm">{event.time}</p>
                     </div>
                     <div className={`w-1 ${colorClasses.bg} rounded-full self-stretch`}></div>
@@ -443,12 +443,12 @@ export default function Schedule() {
                         {event.homeworkCompleted ? (
                           <>
                             <CheckCircle2 className="w-3 h-3 text-green-600" />
-                            <span className="text-xs font-medium text-green-700">Homework Done</span>
+                            <span className="text-xs font-medium text-green-700">Temă Făcută</span>
                           </>
                         ) : (
                           <>
                             <Circle className="w-3 h-3 text-red-600" />
-                            <span className="text-xs font-medium text-red-700">Homework Pending</span>
+                            <span className="text-xs font-medium text-red-700">Temă În Așteptare</span>
                           </>
                         )}
                       </div>
