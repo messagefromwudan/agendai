@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Moon, Sun, Monitor, User, Shield, Trash2, CheckCircle2 } from 'lucide-react';
+import { Moon, Sun, Monitor, User, Shield, Trash2, CheckCircle2, LogOut } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
 import SettingsSection from '../components/SettingsSection';
 import ThemeOptionPreview from '../components/ThemeOptionPreview';
 import NotificationToggleList from '../components/NotificationToggleList';
@@ -21,6 +23,7 @@ type ToastType = {
 type NotificationType = 'homework' | 'tests' | 'streak' | 'messages' | 'aiTutor';
 
 export default function Settings() {
+  const { user } = useAuth();
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('light');
   const [language, setLanguage] = useState<'en' | 'ro'>('en');
   const [notifications, setNotifications] = useState<NotificationSettings>({
@@ -33,6 +36,7 @@ export default function Settings() {
   const [toast, setToast] = useState<ToastType>({ message: '', show: false });
   const [showDeleteFlow, setShowDeleteFlow] = useState(false);
   const [allChangesSaved, setAllChangesSaved] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     const prefs = loadPreferences();
@@ -77,6 +81,11 @@ export default function Settings() {
 
   const handleChangePassword = () => {
     console.log('Change password clicked');
+  };
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    await supabase.auth.signOut();
   };
 
   return (
@@ -194,6 +203,26 @@ export default function Settings() {
             <div className="flex-1 text-left">
               <p className="font-medium text-gray-900">Schimbă Parola</p>
               <p className="text-sm text-gray-600">Actualizează parola contului</p>
+            </div>
+          </button>
+
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleLogout();
+              }
+            }}
+            className="w-full flex items-center gap-3 p-4 rounded-xl border border-orange-200 bg-orange-50 hover:bg-orange-100 transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-50"
+          >
+            <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+              <LogOut className="w-5 h-5 text-orange-600" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="font-medium text-orange-900">Deconectare</p>
+              <p className="text-sm text-orange-700">Ieși din contul tău</p>
             </div>
           </button>
 
