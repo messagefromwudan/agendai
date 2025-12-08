@@ -1,26 +1,10 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, Brain, Calendar, Backpack, TrendingUp, Award, Flame, Info, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import StreakCalendar from '../components/StreakCalendar';
+import { fetchDashboardData, type DashboardData } from '../utils/dashboardHelpers';
 
 type DashboardProps = {
   onNavigate?: (page: string) => void;
-};
-
-const mockData = {
-  user: { name: 'Bianca' },
-  upcomingEvents: [
-    { type: 'test', subject: 'Physics', daysUntil: 1 },
-  ],
-  gpa: 9.37,
-  gpaStatus: 'Top 10%',
-  activeSubjects: { total: 8, needingAttention: 0 },
-  aiSessions: { thisWeek: 23, avgPerDay: 3.29 },
-  homework: { completed: 5, total: 8, dueTomorrow: 2, overdue: 0 },
-  classesToday: [
-    { time: '09:00', duration: '45m', subject: 'Mathematics', room: 'Room 204', teacher: 'Ms. Johnson', color: '#164B2E', ended: false },
-    { time: '11:00', duration: '2h', subject: 'Physics Lab', room: 'Lab 3', teacher: 'Dr. Smith', color: '#2563eb', ended: false },
-    { time: '14:00', duration: '1h', subject: 'Literature', room: 'Room 101', teacher: 'Mr. Anderson', color: '#9333ea', ended: false },
-  ],
 };
 
 type TooltipState = {
@@ -34,13 +18,28 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
   const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, x: 0, y: 0 });
   const [countdown, setCountdown] = useState<Record<number, string>>({});
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    const dashboardData = await fetchDashboardData();
+    setData(dashboardData);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (!data) return;
+
     const interval = setInterval(() => {
       const now = new Date();
       const updated: Record<number, string> = {};
 
-      mockData.classesToday.forEach((cls, idx) => {
+      data.classesToday.forEach((cls, idx) => {
         const [hours, mins] = cls.time.split(':').map(Number);
         const classTime = new Date();
         classTime.setHours(hours, mins, 0);
@@ -70,23 +69,27 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
       clearInterval(interval);
       clearTimeout(timer);
     };
-  }, []);
+  }, [data]);
 
   const getSubheadline = () => {
-    if (mockData.upcomingEvents.length > 0) {
-      const event = mockData.upcomingEvents[0];
+    if (!data) return "Hai să facem ziua de azi una productivă!";
+
+    if (data.upcomingEvents.length > 0) {
+      const event = data.upcomingEvents[0];
       if (event.daysUntil === 1) {
-        return `Mâine ai un test important – hai să ne concentrăm azi pe fizică.`;
+        return `Mâine ai un test important – hai să ne concentrăm azi pe ${event.subject.toLowerCase()}.`;
       }
     }
     return "Hai să facem ziua de azi una productivă!";
   };
 
   const getSubjectStatus = () => {
-    if (mockData.activeSubjects.needingAttention === 0) {
+    if (!data) return 'Toate la zi';
+
+    if (data.activeSubjects.needingAttention === 0) {
       return 'Toate la zi';
-    } else if (mockData.activeSubjects.needingAttention <= 2) {
-      return `${mockData.activeSubjects.needingAttention} Necesită atenție`;
+    } else if (data.activeSubjects.needingAttention <= 2) {
+      return `${data.activeSubjects.needingAttention} Necesită atenție`;
     }
     return 'Necesită focalizare';
   };
@@ -109,12 +112,33 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#164B2E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Se încarcă...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Nu s-au putut încărca datele.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            Bine ai revenit, {mockData.user.name}
+            Bine ai revenit, {data.user.name}
           </h1>
           <p className="text-gray-600 mt-1">{getSubheadline()}</p>
         </div>
@@ -157,10 +181,10 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                 </button>
               </div>
               <p className="text-xs text-[#F1F5F9]/50 mb-4">Media generală este disponibilă în Profil.</p>
-              <h2 className="text-5xl font-bold mb-4">{mockData.gpa}</h2>
+              <h2 className="text-5xl font-bold mb-4">{data.gpa.toFixed(2)}</h2>
               <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-lg backdrop-blur-sm">
                 <TrendingUp className="w-4 h-4 text-green-300" />
-                <span className="text-sm">{mockData.gpaStatus}</span>
+                <span className="text-sm">{data.gpaStatus}</span>
               </div>
             </div>
             <div className="w-32 h-32 bg-white/10 rounded-full backdrop-blur-sm flex items-center justify-center flex-shrink-0">
@@ -179,7 +203,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <BookOpen className="w-6 h-6 text-blue-600" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{mockData.activeSubjects.total}</span>
+            <span className="text-2xl font-bold text-gray-900">{data.activeSubjects.total}</span>
           </div>
           <h3 className="font-semibold text-gray-900 mb-1">Materii active</h3>
           <p className="text-sm text-gray-500">{getSubjectStatus()}</p>
@@ -193,10 +217,10 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Brain className="w-6 h-6 text-purple-600" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{mockData.aiSessions.thisWeek}</span>
+            <span className="text-2xl font-bold text-gray-900">{data.aiSessions.thisWeek}</span>
           </div>
           <h3 className="font-semibold text-gray-900 mb-1">Sesiuni AI</h3>
-          <p className="text-sm text-gray-500">Medie {mockData.aiSessions.avgPerDay.toFixed(1)}/zi</p>
+          <p className="text-sm text-gray-500">Medie {data.aiSessions.avgPerDay.toFixed(1)}/zi</p>
         </div>
 
         <div
@@ -207,13 +231,13 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Backpack className="w-6 h-6 text-green-600" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{mockData.homework.completed}/{mockData.homework.total}</span>
+            <span className="text-2xl font-bold text-gray-900">{data.homework.completed}/{data.homework.total}</span>
           </div>
           <h3 className="font-semibold text-gray-900 mb-1">Teme</h3>
           <div className="space-y-1">
             <p className="text-sm text-gray-500">Termen în această săptămână</p>
-            {mockData.homework.dueTomorrow > 0 && (
-              <p className="text-xs text-orange-600 font-medium">{mockData.homework.dueTomorrow} termen mâine</p>
+            {data.homework.dueTomorrow > 0 && (
+              <p className="text-xs text-orange-600 font-medium">{data.homework.dueTomorrow} termen mâine</p>
             )}
           </div>
         </div>
@@ -226,7 +250,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
               <Calendar className="w-6 h-6 text-orange-600" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">{mockData.classesToday.length}</span>
+            <span className="text-2xl font-bold text-gray-900">{data.classesToday.length}</span>
           </div>
           <h3 className="font-semibold text-gray-900 mb-1">Orele de azi</h3>
           <p className="text-sm text-gray-500">{countdown[0] || 'Următoarea în 45 min'}</p>
@@ -311,7 +335,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
         <div className="bg-white rounded-xl p-6 border border-gray-200">
           <h3 className="font-semibold text-lg mb-4 text-gray-900">Orarul următor</h3>
           <div className="space-y-3">
-            {mockData.classesToday.slice(0, 3).map((cls, idx) => (
+            {data.classesToday.slice(0, 3).map((cls, idx) => (
               <div
                 key={idx}
                 className="flex items-center justify-between gap-4 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
