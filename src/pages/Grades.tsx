@@ -1,106 +1,40 @@
 import { TrendingUp, TrendingDown, Minus, ChevronRight } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SubjectInsights from '../components/SubjectInsights';
 import SimpleTooltip from '../components/SimpleTooltip';
 import InsightActionButton from '../components/InsightActionButton';
-
-type Subject = {
-  id: number;
-  name: string;
-  grade: number;
-  average: number;
-  trend: 'up' | 'down' | 'stable';
-  teacher: string;
-  color: string;
-  profileType?: string;
-  gradeType?: string;
-  averageType?: string;
-  trendData?: { current: number; previous: number; assessments: number };
-};
+import {
+  fetchSubjects,
+  fetchAIInsights,
+  calculateSemesterAverage,
+  type Subject,
+  type AIInsight,
+} from '../utils/gradesHelpers';
 
 export default function Grades() {
-  const [selectedSubjectId, setSelectedSubjectId] = useState<number | null>(null);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [insights, setInsights] = useState<AIInsight[]>([]);
+  const [semesterAverage, setSemesterAverage] = useState<number>(0);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const subjects: Subject[] = [
-    {
-      id: 1,
-      name: 'Matematică',
-      grade: 9.5,
-      average: 9.4,
-      trend: 'up',
-      teacher: 'Dna. Johnson',
-      color: 'blue',
-      profileType: 'Profil Real',
-      gradeType: 'Medie semestrială',
-      averageType: 'Medie pe clasă',
-      trendData: { current: 9.5, previous: 8.7, assessments: 3 },
-    },
-    {
-      id: 2,
-      name: 'Fizică',
-      grade: 9.2,
-      average: 9.0,
-      trend: 'up',
-      teacher: 'Dr. Smith',
-      color: 'green',
-      profileType: 'Filieră Științe',
-      gradeType: 'Medie semestrială',
-      averageType: 'Medie pe clasă',
-      trendData: { current: 9.2, previous: 8.8, assessments: 4 },
-    },
-    {
-      id: 3,
-      name: 'Literatură',
-      grade: 8.8,
-      average: 8.9,
-      trend: 'down',
-      teacher: 'Dl. Anderson',
-      color: 'purple',
-      profileType: 'Filieră Umană',
-      gradeType: 'Medie semestrială',
-      averageType: 'Media ta de anul trecut',
-      trendData: { current: 8.8, previous: 9.2, assessments: 3 },
-    },
-    {
-      id: 4,
-      name: 'Chimie',
-      grade: 9.0,
-      average: 9.0,
-      trend: 'stable',
-      teacher: 'Dr. Brown',
-      color: 'orange',
-      profileType: 'Filieră Științe',
-      gradeType: 'Medie semestrială',
-      averageType: 'Medie pe clasă',
-      trendData: { current: 9.0, previous: 9.0, assessments: 2 },
-    },
-    {
-      id: 5,
-      name: 'Istorie',
-      grade: 9.3,
-      average: 9.1,
-      trend: 'up',
-      teacher: 'Dna. Davis',
-      color: 'red',
-      profileType: 'Uman',
-      gradeType: 'Ultima notă',
-      averageType: 'Medie pe clasă',
-      trendData: { current: 9.3, previous: 9.0, assessments: 2 },
-    },
-    {
-      id: 6,
-      name: 'Engleză',
-      grade: 8.7,
-      average: 8.8,
-      trend: 'stable',
-      teacher: 'Dna. Wilson',
-      color: 'teal',
-      profileType: 'Profil Real',
-      gradeType: 'Medie semestrială',
-      averageType: 'Medie pe clasă',
-      trendData: { current: 8.7, previous: 8.7, assessments: 3 },
-    },
-  ];
+  useEffect(() => {
+    loadGradesData();
+  }, []);
+
+  const loadGradesData = async () => {
+    setLoading(true);
+    const [subjectsList, insightsList, average] = await Promise.all([
+      fetchSubjects(),
+      fetchAIInsights(),
+      calculateSemesterAverage(),
+    ]);
+
+    setSubjects(subjectsList);
+    setInsights(insightsList);
+    setSemesterAverage(average);
+    setLoading(false);
+  };
 
   const selectedSubject = subjects.find((s) => s.id === selectedSubjectId) || null;
 
@@ -148,6 +82,20 @@ export default function Grades() {
     return colors[color] || colors.blue;
   };
 
+  const getInsightIcon = (type: 'positive' | 'improvement' | 'attention') => {
+    if (type === 'positive' || type === 'improvement') {
+      return <TrendingUp className="w-4 h-4 text-white" />;
+    }
+    return <Minus className="w-4 h-4 text-white" />;
+  };
+
+  const getInsightBgColor = (type: 'positive' | 'improvement' | 'attention') => {
+    if (type === 'positive' || type === 'improvement') {
+      return { bg: 'bg-green-50', border: 'border-green-200', icon: 'bg-green-500' };
+    }
+    return { bg: 'bg-orange-50', border: 'border-orange-200', icon: 'bg-orange-500' };
+  };
+
   const handlePracticeSubject = (subject: string) => {
     console.log(`Practice ${subject}`);
   };
@@ -160,6 +108,17 @@ export default function Grades() {
     console.log(`Plan session for ${subject}`);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#164B2E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Se încarcă...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -168,7 +127,7 @@ export default function Grades() {
         </h1>
         <div className="bg-white rounded-xl px-6 py-3 border border-gray-200">
           <p className="text-sm text-gray-600">Medie semestrială</p>
-          <p className="text-3xl font-bold text-[#164B2E]">9.08</p>
+          <p className="text-3xl font-bold text-[#164B2E]">{semesterAverage.toFixed(2)}</p>
           <p className="text-xs text-gray-500 mt-1">Bazat pe {subjects.length} materii în acest semestru</p>
         </div>
       </div>
@@ -179,119 +138,98 @@ export default function Grades() {
         subject={selectedSubject}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {subjects.map((subject) => {
-          const colorClasses = getColorClasses(subject.color);
-          const trendStatus = getTrendStatus(subject.trend, subject.trendData);
-          return (
-            <div
-              key={subject.id}
-              onClick={() => setSelectedSubjectId(subject.id)}
-              className={`bg-white border ${colorClasses.border} rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer group`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg text-gray-900">{subject.name}</h3>
-                  <div className="flex items-center gap-1">
-                    <p className="text-sm text-gray-500">{subject.teacher}</p>
-                    {subject.profileType && (
-                      <span className="text-xs text-gray-400">· {subject.profileType}</span>
-                    )}
+      {subjects.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {subjects.map((subject) => {
+            const colorClasses = getColorClasses(subject.color);
+            const trendStatus = getTrendStatus(subject.trend, subject.trendData);
+            return (
+              <div
+                key={subject.id}
+                onClick={() => setSelectedSubjectId(subject.id)}
+                className={`bg-white border ${colorClasses.border} rounded-xl p-6 hover:shadow-lg transition-all cursor-pointer group`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg text-gray-900">{subject.name}</h3>
+                    <div className="flex items-center gap-1">
+                      <p className="text-sm text-gray-500">{subject.teacher}</p>
+                      {subject.profileType && (
+                        <span className="text-xs text-gray-400">· {subject.profileType}</span>
+                      )}
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                </div>
+
+                <div className="flex items-end justify-between mb-4">
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">{subject.gradeType || 'Nota curentă'}</p>
+                    <p className={`text-4xl font-bold ${colorClasses.text}`}>{subject.grade}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500 mb-1">{subject.averageType || 'Medie'}</p>
+                    <p className="text-2xl font-semibold text-gray-600">{subject.average}</p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform flex-shrink-0" />
-              </div>
 
-              <div className="flex items-end justify-between mb-4">
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">{subject.gradeType || 'Nota curentă'}</p>
-                  <p className={`text-4xl font-bold ${colorClasses.text}`}>{subject.grade}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-gray-500 mb-1">{subject.averageType || 'Medie'}</p>
-                  <p className="text-2xl font-semibold text-gray-600">{subject.average}</p>
+                <div className="relative group/tooltip">
+                  <div className={`flex items-center gap-2 ${trendStatus.bgColor} px-3 py-2 rounded-lg cursor-help`}>
+                    {getTrendIcon(subject.trend)}
+                    <span className={`text-sm font-medium ${trendStatus.textColor}`}>
+                      {trendStatus.label}
+                    </span>
+                  </div>
+                  <SimpleTooltip text={trendStatus.tooltip} />
                 </div>
               </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl p-12 border border-gray-200 text-center">
+          <p className="text-gray-500">Nu sunt materii înregistrate încă. Adaugă-ți materiile pentru a vedea notele.</p>
+        </div>
+      )}
 
-              <div className="relative group/tooltip">
-                <div className={`flex items-center gap-2 ${trendStatus.bgColor} px-3 py-2 rounded-lg cursor-help`}>
-                  {getTrendIcon(subject.trend)}
-                  <span className={`text-sm font-medium ${trendStatus.textColor}`}>
-                    {trendStatus.label}
-                  </span>
+      {insights.length > 0 && (
+        <div className="bg-white rounded-xl p-6 border border-gray-200">
+          <h3 className="font-semibold text-lg mb-4 text-gray-900">Analiză Performanță AI</h3>
+          <div className="space-y-4">
+            {insights.map((insight) => {
+              const colors = getInsightBgColor(insight.type);
+              return (
+                <div key={insight.id} className={`${colors.bg} border ${colors.border} rounded-xl p-4`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className={`w-8 h-8 ${colors.icon} rounded-full flex items-center justify-center flex-shrink-0`}>
+                        {getInsightIcon(insight.type)}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-900 mb-1">{insight.title}</p>
+                        <p className="text-sm text-gray-600">{insight.description}</p>
+                        <InsightActionButton
+                          label={insight.actionLabel}
+                          onClick={() => {
+                            if (insight.actionType === 'practice') {
+                              handlePracticeSubject(insight.subject);
+                            } else if (insight.actionType === 'plan') {
+                              handlePlanSession(insight.subject);
+                            } else {
+                              handleOpenTutor(insight.subject);
+                            }
+                          }}
+                          variant={insight.type === 'attention' ? 'outline' : undefined}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <SimpleTooltip text={trendStatus.tooltip} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
-        <h3 className="font-semibold text-lg mb-4 text-gray-900">Analiză Performanță AI</h3>
-        <div className="space-y-4">
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900 mb-1">Progres excelent la Matematică</p>
-                  <p className="text-sm text-gray-600">
-                    Demonstrezi o înțelegere excelentă a problemelor complexe. Punctul tău forte este raționamentul algebric și tehnicile de rezolvare a problemelor.
-                  </p>
-                  <InsightActionButton
-                    label="Exersează Matematică acum"
-                    onClick={() => handlePracticeSubject('Mathematics')}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900 mb-1">Îmbunătățiri la Laborator Fizică</p>
-                  <p className="text-sm text-gray-600">
-                    Metodologia ta experimentală și analiza datelor au arătat îmbunătățiri semnificative în acest semestru.
-                  </p>
-                  <InsightActionButton
-                    label="Planifică o sesiune de recapitulare la fizică"
-                    onClick={() => handlePlanSession('Physics')}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Minus className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-gray-900 mb-1">Literatură: Concentrare pe Analiză</p>
-                  <p className="text-sm text-gray-600">
-                    Consideră aprofundarea abilităților tale de analiză literară. Tutorele AI poate ajuta cu structura eseului și gândirea critică.
-                  </p>
-                  <InsightActionButton
-                    label="Întreabă Tutorele AI despre Literatură"
-                    onClick={() => handleOpenTutor('Literature')}
-                    variant="outline"
-                  />
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
