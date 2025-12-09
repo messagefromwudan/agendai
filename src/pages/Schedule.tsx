@@ -2,9 +2,16 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Clock, Calendar as CalendarIcon, CheckCircle2, Circle, Coffee, Brain, BookOpen, Target } from 'lucide-react';
 import ClassDetailModal from '../components/ClassDetailModal';
 import WeekPickerCalendar from '../components/WeekPickerCalendar';
+import {
+  fetchWeekSchedule,
+  fetchAITips,
+  updateEventNotes,
+  type ScheduleEvent as ScheduleEventType,
+  type AITip as AITipType,
+} from '../utils/scheduleHelpers';
 
 type ClassEvent = {
-  id: number;
+  id: string;
   title: string;
   time: string;
   location: string;
@@ -31,6 +38,13 @@ type AITip = {
   action: string;
 };
 
+const iconMap: Record<string, any> = {
+  Brain,
+  Coffee,
+  BookOpen,
+  Target,
+};
+
 export default function Schedule() {
   const [viewMode, setViewMode] = useState<'week' | 'day'>(() => {
     return (localStorage.getItem('scheduleViewMode') as 'week' | 'day') || 'week';
@@ -42,69 +56,55 @@ export default function Schedule() {
   const [showClassModal, setShowClassModal] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [currentTip, setCurrentTip] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [weekSchedule, setWeekSchedule] = useState<DaySchedule>({});
+  const [aiTips, setAiTips] = useState<AITip[]>([]);
 
   const weekDays = ['Lun', 'Mar', 'Mie', 'Joi', 'Vin'];
   const dates = ['28', '29', '30', '31', '1'];
 
-  const weekSchedule: DaySchedule = {
-    0: [
-      { id: 1, title: 'Mathematics', time: '08:00 - 09:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true, description: 'Advanced Calculus - Derivatives and integrals', notes: 'Remember to review the homework from last week' },
-      { id: 2, title: 'Physics', time: '10:00 - 11:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false, description: 'Newton\'s Laws - Practical applications' },
-      { id: 3, title: 'Literature', time: '13:00 - 14:00', location: 'Room 101', teacher: 'Mr. Anderson', type: 'class', color: 'purple', homeworkCompleted: true, description: 'Romantic Poetry Analysis' },
-    ],
-    1: [
-      { id: 4, title: 'Chemistry', time: '09:00 - 10:30', location: 'Lab 2', teacher: 'Dr. Brown', type: 'class', color: 'orange', homeworkCompleted: true, description: 'Chemical reactions and balancing equations' },
-      { id: 5, title: 'History', time: '11:00 - 12:00', location: 'Room 305', teacher: 'Mrs. Davis', type: 'class', color: 'red', homeworkCompleted: false, description: 'World War II - Key events and outcomes' },
-    ],
-    2: [
-      { id: 6, title: 'English', time: '08:00 - 09:00', location: 'Room 210', teacher: 'Ms. Wilson', type: 'class', color: 'teal', homeworkCompleted: true, description: 'Grammar and composition' },
-      { id: 7, title: 'Mathematics', time: '10:00 - 11:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true, description: 'Problem-solving session' },
-    ],
-    3: [
-      { id: 8, title: 'Physics Lab', time: '09:00 - 11:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false, description: 'Hands-on experiments with motion and force' },
-      { id: 9, title: 'Chemistry', time: '13:00 - 14:00', location: 'Lab 2', teacher: 'Dr. Brown', type: 'class', color: 'orange', homeworkCompleted: true, description: 'Lab report review session' },
-    ],
-    4: [
-      { id: 10, title: 'Mathematics', time: '08:00 - 09:30', location: 'Room 204', teacher: 'Ms. Johnson', type: 'class', color: 'blue', homeworkCompleted: true, description: 'Quiz on derivatives' },
-      { id: 11, title: 'Physics Lab', time: '10:00 - 12:00', location: 'Lab 3', teacher: 'Dr. Smith', type: 'class', color: 'green', homeworkCompleted: false, description: 'Final lab project presentation' },
-      { id: 12, title: 'Literature', time: '13:00 - 14:00', location: 'Room 101', teacher: 'Mr. Anderson', type: 'class', color: 'purple', homeworkCompleted: true, description: 'Group discussion on assigned reading' },
-    ],
-  };
+  useEffect(() => {
+    loadScheduleData();
+  }, []);
 
-  const aiTips: AITip[] = [
-    {
-      type: 'focus',
-      icon: Brain,
-      color: 'blue',
-      title: 'Recomandare Sesiune de Concentrare',
-      content: 'Ai o pauză de 30 de minute înainte de sesiunea ta de studiu. Vrei să programezi o sesiune scurtă de concentrare pentru pregătirea testului la Fizică?',
-      action: 'Programează acum',
-    },
-    {
-      type: 'break',
-      icon: Coffee,
-      color: 'orange',
-      title: 'Memento Pauză',
-      content: 'Ai studiat 2 ore continuu. Ia o pauză de 15 minute pentru a te reîncărca și pentru a îmbunătăți retenția.',
-      action: 'Setează cronometru pauză',
-    },
-    {
-      type: 'recap',
-      icon: BookOpen,
-      color: 'purple',
-      title: 'Sesiune de Recapitulare',
-      content: 'Ora ta de Matematică s-a încheiat acum o oră. O recapitulare rapidă de 10 minute acum va îmbunătăți retenția pe termen lung cu 40%.',
-      action: 'Începe recapitularea',
-    },
-    {
-      type: 'test_prep',
-      icon: Target,
-      color: 'green',
-      title: 'Sfat Pregătire Test',
-      content: 'Testul tău la Fizică este în 2 zile. Pe baza programului tău, cel mai bun moment pentru revizuire este mâine la ora 15:00. Vrei să blochez acel timp?',
-      action: 'Blochează timpul',
-    },
-  ];
+  const loadScheduleData = async () => {
+    setLoading(true);
+    const [schedule, tips] = await Promise.all([
+      fetchWeekSchedule(),
+      fetchAITips(),
+    ]);
+
+    const mappedSchedule: DaySchedule = {};
+    Object.keys(schedule).forEach((key) => {
+      const dayIndex = parseInt(key);
+      mappedSchedule[dayIndex] = schedule[dayIndex].map((event) => ({
+        id: event.id,
+        title: event.title,
+        time: event.time,
+        location: event.location,
+        teacher: event.teacher,
+        type: event.type,
+        color: event.color,
+        homeworkCompleted: event.homeworkCompleted,
+        description: event.description,
+        notes: event.notes,
+      }));
+    });
+
+    setWeekSchedule(mappedSchedule);
+
+    const mappedTips: AITip[] = tips.map((tip) => ({
+      type: tip.type,
+      icon: iconMap[tip.icon] || Brain,
+      color: tip.color,
+      title: tip.title,
+      content: tip.content,
+      action: tip.action,
+    }));
+
+    setAiTips(mappedTips);
+    setLoading(false);
+  };
 
   useEffect(() => {
     localStorage.setItem('scheduleViewMode', viewMode);
@@ -118,11 +118,12 @@ export default function Schedule() {
   }, []);
 
   useEffect(() => {
+    if (aiTips.length === 0) return;
     const tipTimer = setInterval(() => {
       setCurrentTip((prev) => (prev + 1) % aiTips.length);
     }, 86400000);
     return () => clearInterval(tipTimer);
-  }, []);
+  }, [aiTips.length]);
 
   const getWeekRange = (offset: number) => {
     const today = new Date();
@@ -232,13 +233,29 @@ export default function Schedule() {
     setShowClassModal(true);
   };
 
-  const handleSaveNotes = (notes: string) => {
-    console.log('Saving notes:', notes);
+  const handleSaveNotes = async (notes: string) => {
+    if (!selectedClass) return;
+
+    const success = await updateEventNotes(selectedClass.id, notes);
+    if (success) {
+      setWeekSchedule((prev) => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach((key) => {
+          const dayIndex = parseInt(key);
+          updated[dayIndex] = updated[dayIndex].map((event) =>
+            event.id === selectedClass.id ? { ...event, notes } : event
+          );
+        });
+        return updated;
+      });
+
+      setSelectedClass((prev) => (prev ? { ...prev, notes } : null));
+    }
   };
 
   const currentDayIndex = getCurrentDayIndex();
   const activeTip = aiTips[currentTip];
-  const TipIcon = activeTip.icon;
+  const TipIcon = activeTip?.icon;
 
   const tipColorMap: Record<string, { bg: string; border: string; icon: string }> = {
     blue: { bg: 'bg-blue-50', border: 'border-blue-200', icon: 'bg-blue-500' },
@@ -246,7 +263,18 @@ export default function Schedule() {
     purple: { bg: 'bg-purple-50', border: 'border-purple-200', icon: 'bg-purple-500' },
     green: { bg: 'bg-green-50', border: 'border-green-200', icon: 'bg-green-500' },
   };
-  const tipColors = tipColorMap[activeTip.color];
+  const tipColors = activeTip ? tipColorMap[activeTip.color] : tipColorMap.blue;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#164B2E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Se încarcă orarul...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -461,22 +489,24 @@ export default function Schedule() {
         </div>
       )}
 
-      <div className={`${tipColors.bg} border ${tipColors.border} rounded-xl p-4`}>
-        <div className="flex items-start gap-3">
-          <div className={`w-8 h-8 ${tipColors.icon} rounded-full flex items-center justify-center flex-shrink-0`}>
-            <TipIcon className="w-4 h-4 text-white" />
-          </div>
-          <div className="flex-1">
-            <p className="font-semibold text-gray-900 mb-1">{activeTip.title}</p>
-            <p className="text-sm text-gray-700">
-              {activeTip.content}
-            </p>
-            <button className="mt-2 text-sm font-semibold text-[#164B2E] hover:underline">
-              {activeTip.action} →
-            </button>
+      {activeTip && TipIcon && (
+        <div className={`${tipColors.bg} border ${tipColors.border} rounded-xl p-4`}>
+          <div className="flex items-start gap-3">
+            <div className={`w-8 h-8 ${tipColors.icon} rounded-full flex items-center justify-center flex-shrink-0`}>
+              <TipIcon className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 mb-1">{activeTip.title}</p>
+              <p className="text-sm text-gray-700">
+                {activeTip.content}
+              </p>
+              <button className="mt-2 text-sm font-semibold text-[#164B2E] hover:underline">
+                {activeTip.action} →
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <WeekPickerCalendar
         isOpen={showCalendar}

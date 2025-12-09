@@ -5,7 +5,7 @@ type ClassDetailModalProps = {
   isOpen: boolean;
   onClose: () => void;
   classEvent: {
-    id: number;
+    id: string;
     title: string;
     time: string;
     location: string;
