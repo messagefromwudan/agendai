@@ -1,13 +1,14 @@
 import { X, Calendar, Star, Paperclip } from 'lucide-react';
 import { useState } from 'react';
+import { fetchSubjectsForHomework } from '../utils/homeworkHelpers';
 
 type HomeworkAddModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (homework: NewHomework) => void;
+  onSave: (homework: NewHomeworkItem) => void;
 };
 
-export type NewHomework = {
+export type NewHomeworkItem = {
   subject: string;
   title: string;
   type: 'Homework' | 'Project' | 'Test Prep' | 'Lab Report';
@@ -17,19 +18,8 @@ export type NewHomework = {
   attachments?: string[];
 };
 
-const subjects = [
-  'Mathematics',
-  'Physics',
-  'Literature',
-  'Chemistry',
-  'History',
-  'English',
-  'Biology',
-  'Computer Science',
-];
-
 export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAddModalProps) {
-  const [formData, setFormData] = useState<NewHomework>({
+  const [formData, setFormData] = useState<NewHomeworkItem>({
     subject: '',
     title: '',
     type: 'Homework',
@@ -39,6 +29,21 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [subjects, setSubjects] = useState<string[]>([]);
+  const [loadingSubjects, setLoadingSubjects] = useState(false);
+
+  useState(() => {
+    if (isOpen) {
+      loadSubjects();
+    }
+  });
+
+  const loadSubjects = async () => {
+    setLoadingSubjects(true);
+    const subjectsList = await fetchSubjectsForHomework();
+    setSubjects(subjectsList);
+    setLoadingSubjects(false);
+  };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -105,11 +110,12 @@ export default function HomeworkAddModal({ isOpen, onClose, onSave }: HomeworkAd
             <select
               value={formData.subject}
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+              disabled={loadingSubjects}
               className={`w-full px-4 py-3 bg-gray-50 border ${
                 errors.subject ? 'border-red-500' : 'border-gray-200'
               } rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm`}
             >
-              <option value="">Selectează o materie</option>
+              <option value="">{loadingSubjects ? 'Se încarcă...' : 'Selectează o materie'}</option>
               {subjects.map((subject) => (
                 <option key={subject} value={subject}>
                   {subject}

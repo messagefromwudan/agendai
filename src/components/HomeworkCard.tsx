@@ -1,19 +1,10 @@
 import { Star, Clock, Circle, CheckCircle2, MoreVertical, Pin, Share2, Calendar, Lightbulb, ListTree } from 'lucide-react';
 import { useState } from 'react';
+import { HomeworkItem } from '../utils/homeworkHelpers';
 
-export type HomeworkCardData = {
+export type HomeworkCardData = HomeworkItem & {
   id: number;
-  title: string;
   subject: string;
-  difficulty: number;
-  dueDate: string;
-  completed: boolean;
-  aiSuggestion: string;
-  color: string;
-  important?: boolean;
-  description?: string;
-  type?: string;
-  completedAt?: string;
 };
 
 type HomeworkCardProps = {

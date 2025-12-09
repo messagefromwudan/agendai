@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, AlertCircle } from 'lucide-react';
-import HomeworkAddModal, { NewHomework } from '../components/HomeworkAddModal';
-import HomeworkCard, { HomeworkCardData } from '../components/HomeworkCard';
+import HomeworkAddModal from '../components/HomeworkAddModal';
+import HomeworkCard from '../components/HomeworkCard';
 import HomeworkFilters, { SortOption, FilterOption } from '../components/HomeworkFilters';
 import AIHomeworkFeedbackModal from '../components/AIHomeworkFeedbackModal';
 import HomeworkDetailModal from '../components/HomeworkDetailModal';
@@ -9,69 +9,23 @@ import AIBreakdownModal from '../components/AIBreakdownModal';
 import AIHintsModal from '../components/AIHintsModal';
 import ShareModal from '../components/ShareModal';
 import Toast from '../components/Toast';
+import {
+  fetchHomework,
+  createHomework,
+  updateHomeworkCompletion,
+  updateHomeworkDueDate,
+  updateHomeworkImportance,
+  type HomeworkItem,
+  type NewHomeworkItem,
+} from '../utils/homeworkHelpers';
+
+export type HomeworkCardData = HomeworkItem & {
+  id: number;
+};
 
 export default function Homework() {
-  const [homework, setHomework] = useState<HomeworkCardData[]>([
-    {
-      id: 1,
-      title: 'Quadratic Equations Problem Set',
-      subject: 'Mathematics',
-      difficulty: 3,
-      dueDate: '2024-11-03T14:00',
-      completed: false,
-      aiSuggestion: 'Revizuiește notițele despre formula de gradul doi din săptămâna trecută înainte de a începe.',
-      color: 'blue',
-      type: 'Homework',
-      description: 'Complete exercises 15-30 from Chapter 5. Focus on applying the quadratic formula and factoring methods.',
-    },
-    {
-      id: 2,
-      title: 'Lab Report: Newton\'s Laws',
-      subject: 'Physics',
-      difficulty: 4,
-      dueDate: '2024-11-04T16:00',
-      completed: false,
-      aiSuggestion: 'Structurează raportul cu ipoteză, metodă, rezultate și concluzie.',
-      color: 'green',
-      type: 'Lab Report',
-      important: true,
-    },
-    {
-      id: 3,
-      title: 'Essay: Romantic Poetry Analysis',
-      subject: 'Literature',
-      difficulty: 2,
-      dueDate: '2024-11-05T12:00',
-      completed: true,
-      aiSuggestion: 'Excelent! Analiza ta a fost completă și bine structurată.',
-      color: 'purple',
-      type: 'Project',
-      completedAt: '2024-11-01T10:30',
-    },
-    {
-      id: 4,
-      title: 'Chemical Reactions Worksheet',
-      subject: 'Chemistry',
-      difficulty: 1,
-      dueDate: '2024-10-30T09:00',
-      completed: false,
-      aiSuggestion: 'Începe prin a identifica reactanții și produșii în fiecare ecuație.',
-      color: 'orange',
-      type: 'Homework',
-    },
-    {
-      id: 5,
-      title: 'History Chapter Summary',
-      subject: 'History',
-      difficulty: 2,
-      dueDate: '2024-11-02T15:00',
-      completed: true,
-      aiSuggestion: 'Înțelegere excelentă a contextului istoric!',
-      color: 'red',
-      type: 'Homework',
-      completedAt: '2024-11-01T14:20',
-    },
-  ]);
+  const [homework, setHomework] = useState<HomeworkCardData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -85,40 +39,41 @@ export default function Homework() {
   const [toast, setToast] = useState<{ message: string; action?: { label: string; data: HomeworkCardData } } | null>(null);
   const [filterSection, setFilterSection] = useState<'all' | 'pending' | 'completed' | 'overdue'>('all');
 
-  const handleAddHomework = (newHomework: NewHomework) => {
-    const homework: HomeworkCardData = {
-      id: Math.max(...homework.map(h => h.id), 0) + 1,
-      title: newHomework.title,
-      subject: newHomework.subject,
-      difficulty: newHomework.difficulty,
-      dueDate: newHomework.deadline,
-      completed: false,
-      aiSuggestion: 'AI va analiza această temă și va oferi sugestii personalizate în curând.',
-      color: ['blue', 'green', 'purple', 'orange', 'red', 'teal'][Math.floor(Math.random() * 6)],
-      type: newHomework.type,
-      description: newHomework.description,
-    };
-    setHomework(prev => [...prev, homework]);
+  useEffect(() => {
+    loadHomework();
+  }, []);
+
+  const loadHomework = async () => {
+    setLoading(true);
+    const homeworkData = await fetchHomework();
+    const mappedHomework = homeworkData.map((h, index) => ({
+      ...h,
+      id: index + 1, // Convert string ID to number for compatibility
+      subject: h.subjectName,
+    }));
+    setHomework(mappedHomework);
+    setLoading(false);
+  };
+
+  const handleAddHomework = async (newHomework: NewHomeworkItem) => {
+    const createdHomework = await createHomework(newHomework);
+    if (createdHomework) {
+      await loadHomework(); // Reload to get fresh data
+    }
     setToast({ message: 'Temă adăugată cu succes!' });
     setTimeout(() => setToast(null), 5000);
   };
 
-  const handleToggleComplete = (id: number) => {
+  const handleToggleComplete = async (id: number) => {
     const item = homework.find(h => h.id === id);
     if (!item) return;
 
     const wasCompleted = item.completed;
-    setHomework(prev =>
-      prev.map(h =>
-        h.id === id
-          ? {
-              ...h,
-              completed: !h.completed,
-              completedAt: !h.completed ? new Date().toISOString() : undefined,
-            }
-          : h
-      )
-    );
+    
+    const success = await updateHomeworkCompletion(item.userId, !item.completed);
+    if (success) {
+      await loadHomework(); // Reload to get fresh data
+    }
 
     if (!wasCompleted) {
       setToast({
@@ -130,20 +85,32 @@ export default function Homework() {
   };
 
   const handleUndoComplete = (item: HomeworkCardData) => {
-    setHomework(prev =>
-      prev.map(h => (h.id === item.id ? { ...h, completed: false, completedAt: undefined } : h))
-    );
+    updateHomeworkCompletion(item.userId, false).then(() => {
+      loadHomework();
+    });
     setToast(null);
   };
 
-  const handleReschedule = (id: number, newDate: string) => {
-    setHomework(prev => prev.map(h => (h.id === id ? { ...h, dueDate: newDate } : h)));
+  const handleReschedule = async (id: number, newDate: string) => {
+    const item = homework.find(h => h.id === id);
+    if (!item) return;
+
+    const success = await updateHomeworkDueDate(item.userId, newDate);
+    if (success) {
+      await loadHomework();
+    }
     setToast({ message: 'Temă reprogramată cu succes!' });
     setTimeout(() => setToast(null), 3000);
   };
 
-  const handleToggleImportant = (id: number) => {
-    setHomework(prev => prev.map(h => (h.id === id ? { ...h, important: !h.important } : h)));
+  const handleToggleImportant = async (id: number) => {
+    const item = homework.find(h => h.id === id);
+    if (!item) return;
+
+    const success = await updateHomeworkImportance(item.userId, !item.important);
+    if (success) {
+      await loadHomework();
+    }
   };
 
   const handleShare = (id: number) => {
@@ -226,6 +193,17 @@ export default function Homework() {
 
   const filteredHomework = getFilteredAndSorted();
   const showFilters = filterSection === 'all' || filterSection === 'pending';
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#164B2E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Se încarcă...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
