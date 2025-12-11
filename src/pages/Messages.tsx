@@ -1,31 +1,21 @@
 import { Search, Send, Circle, Menu, X, Sparkles, ThumbsUp, CheckCheck, Filter } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import {
+  fetchConversations,
+  fetchMessages,
+  createMessage,
+  updateMessageReactions,
+  markConversationAsRead,
+  type Conversation as ConversationType,
+  type Message as MessageType,
+} from '../utils/messagesHelpers';
 
 type Reaction = 'like' | 'confirm';
 
-type Message = {
-  id: number;
-  sender: string;
-  content: string;
-  time: string;
-  isOwn: boolean;
-  reactions?: Reaction[];
-};
-
-type Conversation = {
-  id: number;
-  name: string;
-  role: string;
-  subject: string;
-  lastMessage: string;
-  lastMessageTime: Date;
-  time: string;
-  unread: number;
-  online: boolean;
-};
-
 export default function Messages() {
-  const [selectedChat, setSelectedChat] = useState(1);
+  const [conversations, setConversations] = useState<ConversationType[]>([]);
+  const [currentMessages, setCurrentMessages] = useState<MessageType[]>([]);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,99 +23,46 @@ export default function Messages() {
   const [searchSubject, setSearchSubject] = useState('');
   const [searchTeacher, setSearchTeacher] = useState('');
   const [searchKeywords, setSearchKeywords] = useState('');
-  const [hoveredMessage, setHoveredMessage] = useState<number | null>(null);
+  const [hoveredMessage, setHoveredMessage] = useState<string | null>(null);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const savedState = localStorage.getItem('messagesSidebarOpen');
     if (savedState !== null) {
       setIsSidebarOpen(savedState === 'true');
     }
+    loadConversations();
   }, []);
 
   useEffect(() => {
     localStorage.setItem('messagesSidebarOpen', String(isSidebarOpen));
   }, [isSidebarOpen]);
 
-  const conversations: Conversation[] = [
-    {
-      id: 1,
-      name: 'Ms. Johnson',
-      role: 'Profesor Matematică',
-      subject: 'Matematică',
-      lastMessage: 'Progres excelent la ultimul test!',
-      lastMessageTime: new Date('2024-11-23T10:30:00'),
-      time: '10:30 AM',
-      unread: 2,
-      online: true,
-    },
-    {
-      id: 2,
-      name: 'Dr. Smith',
-      role: 'Profesor Fizică',
-      subject: 'Fizică',
-      lastMessage: 'Termen raport laborator extins',
-      lastMessageTime: new Date('2024-11-22T14:20:00'),
-      time: 'Ieri',
-      unread: 0,
-      online: true,
-    },
-    {
-      id: 3,
-      name: 'Mr. Anderson',
-      role: 'Profesor Literatură',
-      subject: 'Literatură',
-      lastMessage: 'Eseul tău a fost excelent',
-      lastMessageTime: new Date('2024-11-21T09:15:00'),
-      time: 'Acum 2 zile',
-      unread: 0,
-      online: false,
-    },
-    {
-      id: 4,
-      name: 'Grup Clasa 11-A',
-      role: 'Grup de Studiu',
-      subject: 'General',
-      lastMessage: 'Alex: Cine vrea să studiem mâine?',
-      lastMessageTime: new Date('2024-11-20T16:45:00'),
-      time: 'Acum 3 zile',
-      unread: 5,
-      online: true,
-    },
-  ];
+  useEffect(() => {
+    if (selectedChat) {
+      loadMessages(selectedChat);
+      markConversationAsRead(selectedChat);
+    }
+  }, [selectedChat]);
 
-  const [currentMessages, setCurrentMessages] = useState<Message[]>([
-    {
-      id: 1,
-      sender: 'Ms. Johnson',
-      content: 'Salut Bianca! Vreau să te felicit pentru performanța ta excelentă la ultimul test de matematică.',
-      time: '10:15 AM',
-      isOwn: false,
-      reactions: [],
-    },
-    {
-      id: 2,
-      sender: 'Tu',
-      content: 'Mulțumesc mult, Dna. Johnson! Mi-a plăcut foarte mult să lucrez la acele probleme de gradul doi.',
-      time: '10:20 AM',
-      isOwn: true,
-      reactions: [],
-    },
-    {
-      id: 3,
-      sender: 'Ms. Johnson',
-      content: 'Progres excelent la ultimul test! Continuă munca excelentă. Am observat că abilitățile tale de rezolvare a problemelor s-au îmbunătățit mult.',
-      time: '10:30 AM',
-      isOwn: false,
-      reactions: [],
-    },
-  ]);
+  const loadConversations = async () => {
+    setLoading(true);
+    const convos = await fetchConversations();
+    setConversations(convos);
+    if (convos.length > 0 && !selectedChat) {
+      setSelectedChat(convos[0].id);
+    }
+    setLoading(false);
+  };
 
-  const sortedConversations = [...conversations].sort(
-    (a, b) => b.lastMessageTime.getTime() - a.lastMessageTime.getTime()
-  );
+  const loadMessages = async (conversationId: string) => {
+    const msgs = await fetchMessages(conversationId);
+    setCurrentMessages(msgs);
+  };
 
-  const filteredConversations = sortedConversations.filter((conv) => {
+  const filteredConversations = conversations.filter((conv) => {
     const matchesSearch = searchQuery === '' ||
       conv.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conv.lastMessage.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -155,22 +92,29 @@ export default function Messages() {
     return colors[subject] || 'bg-gray-100 text-gray-700 border-gray-200';
   };
 
-  const handleReaction = (messageId: number, reaction: Reaction) => {
+  const handleReaction = async (messageId: string, reaction: Reaction) => {
+    const targetMessage = currentMessages.find(m => m.id === messageId);
+    if (!targetMessage) return;
+
+    const reactions = targetMessage.reactions || [];
+    const hasReaction = reactions.includes(reaction);
+    const newReactions = hasReaction
+      ? reactions.filter(r => r !== reaction)
+      : [...reactions, reaction];
+
     setCurrentMessages(messages =>
       messages.map(msg => {
         if (msg.id === messageId) {
-          const reactions = msg.reactions || [];
-          const hasReaction = reactions.includes(reaction);
           return {
             ...msg,
-            reactions: hasReaction
-              ? reactions.filter(r => r !== reaction)
-              : [...reactions, reaction],
+            reactions: newReactions,
           };
         }
         return msg;
       })
     );
+
+    await updateMessageReactions(messageId, newReactions);
   };
 
   const handleAIDraftReply = () => {
@@ -188,7 +132,50 @@ export default function Messages() {
     }, 1500);
   };
 
+  const handleSendMessage = async () => {
+    if (!message.trim() || !selectedChat || sending) return;
+
+    setSending(true);
+    const messageContent = message;
+    setMessage('');
+
+    const newMessage = await createMessage(selectedChat, 'Tu', messageContent, true);
+    if (newMessage) {
+      setCurrentMessages(prev => [...prev, newMessage]);
+      await loadConversations();
+    }
+
+    setSending(false);
+  };
+
   const selectedConversation = conversations.find(c => c.id === selectedChat);
+
+  const formatRelativeTime = (date: Date): string => {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    } else if (diffDays === 1) {
+      return 'Ieri';
+    } else if (diffDays <= 7) {
+      return `Acum ${diffDays} zile`;
+    } else {
+      return date.toLocaleDateString('ro-RO', { month: 'short', day: 'numeric' });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="h-[calc(100vh-8rem)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#164B2E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Se încarcă...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-8rem)]">
@@ -309,7 +296,7 @@ export default function Messages() {
                             {conv.subject}
                           </span>
                         </div>
-                        <span className="text-xs text-gray-500 ml-2 flex-shrink-0">{conv.time}</span>
+                        <span className="text-xs text-gray-500 ml-2 flex-shrink-0">{formatRelativeTime(conv.lastMessageTime)}</span>
                       </div>
                       <p className="text-xs text-gray-500 mb-1">{conv.role}</p>
                       <p className="text-sm text-gray-600 truncate">{conv.lastMessage}</p>
@@ -443,8 +430,15 @@ export default function Messages() {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
                 placeholder="Scrie mesajul tău..."
                 className="flex-1 px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm"
+                disabled={sending}
               />
               <button
                 onClick={handleAIDraftReply}
@@ -464,9 +458,13 @@ export default function Messages() {
                   </>
                 )}
               </button>
-              <button className="bg-[#164B2E] hover:bg-[#0d2819] text-[#F1F5F9] px-6 py-3 rounded-xl transition-colors flex items-center gap-2 shadow-md hover:shadow-lg">
+              <button
+                onClick={handleSendMessage}
+                disabled={sending || !message.trim()}
+                className="bg-[#164B2E] hover:bg-[#0d2819] disabled:bg-gray-400 disabled:cursor-not-allowed text-[#F1F5F9] px-6 py-3 rounded-xl transition-colors flex items-center gap-2 shadow-md hover:shadow-lg"
+              >
                 <Send className="w-5 h-5" />
-                <span className="font-medium">Trimite</span>
+                <span className="font-medium">{sending ? 'Se trimite...' : 'Trimite'}</span>
               </button>
             </div>
           </div>
