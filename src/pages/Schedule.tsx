@@ -389,14 +389,14 @@ export default function Schedule() {
                   <p className="text-2xl font-bold">{dates[index]}</p>
                 </div>
 
-                <div className="space-y-2 flex-1 overflow-y-auto max-h-96">
+                <div className="space-y-2 flex-1 overflow-y-auto max-h-96 relative">
                   {dayClasses.map((classEvent) => {
                     const colorClasses = getColorClasses(classEvent.color);
                     return (
                       <div
                         key={classEvent.id}
                         onClick={(e) => handleClassClick(classEvent, e)}
-                        className={`${isToday ? 'bg-white/10 border-white/20' : `${colorClasses.light} border ${colorClasses.border}`} border rounded-lg p-2 transition-all hover:scale-105 cursor-pointer`}
+                        className={`${isToday ? 'bg-white/10 border-white/20' : `${colorClasses.light} border ${colorClasses.border}`} border rounded-lg p-2 transition-all hover:scale-105 hover:z-10 relative cursor-pointer hover:shadow-lg`}
                       >
                         <div className="flex items-start justify-between gap-2 mb-1">
                           <p className={`text-xs font-semibold truncate ${isToday ? 'text-[#F1F5F9]' : colorClasses.text}`}>
