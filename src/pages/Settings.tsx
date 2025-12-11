@@ -37,13 +37,20 @@ export default function Settings() {
   const [showDeleteFlow, setShowDeleteFlow] = useState(false);
   const [allChangesSaved, setAllChangesSaved] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const prefs = loadPreferences();
+    loadUserPreferences();
+  }, []);
+
+  const loadUserPreferences = async () => {
+    setLoading(true);
+    const prefs = await loadPreferences();
     setTheme(prefs.theme);
     setLanguage(prefs.language);
     setNotifications(prefs.notifications);
-  }, []);
+    setLoading(false);
+  };
 
   const showToast = (message: string) => {
     setToast({ message, show: true });
@@ -52,22 +59,28 @@ export default function Settings() {
     }, 3000);
   };
 
-  const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
+  const handleThemeChange = async (newTheme: 'light' | 'dark' | 'system') => {
     setTheme(newTheme);
-    updateTheme(newTheme);
-    showToast('Temă actualizată');
+    const success = await updateTheme(newTheme);
+    if (success) {
+      showToast('Temă actualizată');
+    }
   };
 
-  const handleLanguageChange = (newLanguage: 'en' | 'ro') => {
+  const handleLanguageChange = async (newLanguage: 'en' | 'ro') => {
     setLanguage(newLanguage);
-    updateLanguage(newLanguage);
-    showToast('Limbă actualizată');
+    const success = await updateLanguage(newLanguage);
+    if (success) {
+      showToast('Limbă actualizată');
+    }
   };
 
-  const handleNotificationChange = (type: NotificationType, enabled: boolean) => {
+  const handleNotificationChange = async (type: NotificationType, enabled: boolean) => {
     setNotifications((prev) => ({ ...prev, [type]: enabled }));
-    updateNotificationSetting(type, enabled);
-    showToast('Notificări actualizate');
+    const success = await updateNotificationSetting(type, enabled);
+    if (success) {
+      showToast('Notificări actualizate');
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -87,6 +100,17 @@ export default function Settings() {
     setLoggingOut(true);
     await supabase.auth.signOut();
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#164B2E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Se încarcă setările...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -183,7 +207,7 @@ export default function Settings() {
             </div>
             <div className="flex-1 text-left">
               <p className="font-medium text-gray-900">Gestionează Email</p>
-              <p className="text-sm text-gray-600">bianca.popescu@student.ro</p>
+              <p className="text-sm text-gray-600">{user?.email || 'No email'}</p>
             </div>
           </button>
 
