@@ -20,7 +20,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
 
   const handlePasswordSubmit = () => {
     if (!password) {
-      setPasswordError('Password is required');
+      setPasswordError('Parola este obligatorie');
       return;
     }
     setPasswordError('');
@@ -29,7 +29,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
 
   const handleConfirmationSubmit = () => {
     if (confirmText !== 'DELETE') {
-      setConfirmError('Please type DELETE exactly');
+      setConfirmError('Te rugăm să tastezi DELETE exact așa cum apare');
       return;
     }
     setConfirmError('');
@@ -66,7 +66,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
                 <AlertTriangle className="w-6 h-6" />
               </div>
               <h2 className="text-2xl font-bold" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Delete Account
+                Ștergere cont
               </h2>
             </div>
             <button
@@ -77,7 +77,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
             </button>
           </div>
           <p className="text-white/90 text-sm">
-            This action is permanent. Your data cannot be recovered.
+            Această acțiune este permanentă. Datele tale nu pot fi recuperate.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
             <>
               <div>
                 <p className="text-sm text-gray-700 mb-4">
-                  To continue, please enter your password to verify your identity.
+                  Pentru a continua, introdu parola pentru a-ți verifica identitatea.
                 </p>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -102,7 +102,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
                         handlePasswordSubmit();
                       }
                     }}
-                    placeholder="Enter your password"
+                    placeholder="Introdu parola ta"
                     className={`w-full pl-10 pr-4 py-3 bg-gray-50 border ${
                       passwordError ? 'border-red-500' : 'border-gray-200'
                     } rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm`}
@@ -118,13 +118,13 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
                   onClick={handleClose}
                   className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
                 >
-                  Cancel
+                  Anulează
                 </button>
                 <button
                   onClick={handlePasswordSubmit}
                   className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors"
                 >
-                  Continue
+                  Continuă
                 </button>
               </div>
             </>
@@ -134,7 +134,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
             <>
               <div>
                 <p className="text-sm text-gray-700 mb-4">
-                  Type <strong className="font-mono text-red-600">DELETE</strong> to confirm you want to permanently delete your account.
+                  Tastează <strong className="font-mono text-red-600">DELETE</strong> pentru a confirma că vrei să ștergi definitiv contul.
                 </p>
                 <input
                   type="text"
@@ -148,7 +148,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
                       handleConfirmationSubmit();
                     }
                   }}
-                  placeholder="Type DELETE"
+                  placeholder="Tastează DELETE"
                   className={`w-full px-4 py-3 bg-gray-50 border ${
                     confirmError ? 'border-red-500' : 'border-gray-200'
                   } rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-mono`}
@@ -160,7 +160,7 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
               </div>
               <div className="bg-red-50 border border-red-200 rounded-xl p-4">
                 <p className="text-sm text-red-800">
-                  <strong>Warning:</strong> All your data including grades, homework, messages, and AI progress will be permanently deleted.
+                  <strong>Atenție:</strong> Toate datele tale, inclusiv note, teme, mesaje și progresul cu AI, vor fi șterse definitiv.
                 </p>
               </div>
               <div className="flex gap-3">
@@ -168,13 +168,13 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
                   onClick={handleClose}
                   className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
                 >
-                  Cancel
+                  Anulează
                 </button>
                 <button
                   onClick={handleConfirmationSubmit}
                   className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors"
                 >
-                  Continue
+                  Continuă
                 </button>
               </div>
             </>
@@ -186,17 +186,17 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertTriangle className="w-8 h-8 text-red-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Final Confirmation</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Confirmare finală</h3>
                 <p className="text-sm text-gray-600">
-                  Are you absolutely sure you want to delete your account? This cannot be undone.
+                  Ești absolut sigur(ă) că vrei să îți ștergi contul? Acest lucru nu poate fi anulat.
                 </p>
               </div>
               <div className="bg-red-50 border border-red-200 rounded-xl p-4">
                 <ul className="text-sm text-red-800 space-y-1">
-                  <li>• All your academic data will be deleted</li>
-                  <li>• Your study progress will be lost</li>
-                  <li>• Messages and notifications will be removed</li>
-                  <li>• This action is irreversible</li>
+                  <li>• Toate datele tale academice vor fi șterse</li>
+                  <li>• Progresul tău la învățare va fi pierdut</li>
+                  <li>• Mesajele și notificările vor fi eliminate</li>
+                  <li>• Această acțiune este ireversibilă</li>
                 </ul>
               </div>
               <div className="flex gap-3">
@@ -204,13 +204,13 @@ export default function DeleteAccountFlow({ isOpen, onClose, onConfirm }: Delete
                   onClick={handleClose}
                   className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
                 >
-                  Cancel
+                  Anulează
                 </button>
                 <button
                   onClick={handleFinalConfirm}
                   className="flex-1 px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors shadow-lg hover:shadow-xl"
                 >
-                  Delete My Account
+                  Șterge contul meu
                 </button>
               </div>
             </>

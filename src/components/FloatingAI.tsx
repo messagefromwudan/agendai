@@ -27,8 +27,8 @@ export default function FloatingAI() {
                 <Bot className="w-6 h-6 text-[#F1F5F9]" />
               </div>
               <div>
-                <h3 className="text-[#F1F5F9] font-semibold">AI Assistant</h3>
-                <p className="text-[#F1F5F9]/70 text-xs">Always here to help</p>
+                <h3 className="text-[#F1F5F9] font-semibold">Asistent AI</h3>
+                <p className="text-[#F1F5F9]/70 text-xs">Întotdeauna aici să te ajut</p>
               </div>
             </div>
             <button
@@ -47,7 +47,7 @@ export default function FloatingAI() {
                 </div>
                 <div className="bg-white rounded-2xl rounded-tl-none p-4 shadow-sm max-w-[75%]">
                   <p className="text-sm text-gray-800">
-                    Hi! I'm your AI learning companion. I can help you with homework, explain concepts, or create study plans. What would you like to work on?
+                    Hei! Sunt asistentul tău AI pentru învățare. Te pot ajuta la teme, să îți explic concepte sau să creez planuri de studiu. Cu ce vrei să începem?
                   </p>
                 </div>
               </div>
@@ -60,7 +60,7 @@ export default function FloatingAI() {
                 type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Ask me anything..."
+                placeholder="Întreabă-mă orice..."
                 className="flex-1 px-4 py-3 bg-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm"
               />
               <button className="bg-[#164B2E] text-[#F1F5F9] p-3 rounded-xl hover:bg-[#0d2819] transition-colors">

@@ -7,14 +7,14 @@ type SidebarProps = {
 
 export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
   const menuItems = [
-    { id: 'dashboard', icon: Home, label: 'Dashboard' },
-    { id: 'profile', icon: User, label: 'Profile' },
-    { id: 'grades', icon: BookOpen, label: 'Grades' },
-    { id: 'ai-tutor', icon: Brain, label: 'AI Tutor' },
-    { id: 'homework', icon: Backpack, label: 'Homework' },
-    { id: 'schedule', icon: Calendar, label: 'Schedule' },
-    { id: 'progress', icon: TrendingUp, label: 'Progress' },
-    { id: 'messages', icon: MessageSquare, label: 'Messages' },
+    { id: 'dashboard', icon: Home, label: 'Tablou de bord' },
+    { id: 'profile', icon: User, label: 'Profil' },
+    { id: 'grades', icon: BookOpen, label: 'Note' },
+    { id: 'ai-tutor', icon: Brain, label: 'Tutore AI' },
+    { id: 'homework', icon: Backpack, label: 'Teme' },
+    { id: 'schedule', icon: Calendar, label: 'Orar' },
+    { id: 'progress', icon: TrendingUp, label: 'Progres' },
+    { id: 'messages', icon: MessageSquare, label: 'Mesaje' },
   ];
 
   return (
@@ -28,7 +28,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
             <h1 className="text-xl font-bold text-[#164B2E]" style={{ fontFamily: 'Poppins, sans-serif' }}>
               AgendAI
             </h1>
-            <p className="text-xs text-gray-500">Smart Learning Hub</p>
+            <p className="text-xs text-gray-500">Centru inteligent de învățare</p>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@ export default function Sidebar({ currentPage, onNavigate }: SidebarProps) {
           }`}
         >
           <Settings className="w-5 h-5" />
-          <span className="font-medium text-sm">Settings</span>
+          <span className="font-medium text-sm">Setări</span>
         </button>
       </div>
     </div>

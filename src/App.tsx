@@ -14,17 +14,25 @@ import Schedule from './pages/Schedule';
 import Progress from './pages/Progress';
 import Messages from './pages/Messages';
 import Settings from './pages/Settings';
+import PublicStudentProfile from './pages/PublicStudentProfile';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('welcome');
   const { user, loading } = useAuth();
+
+  const params = new URLSearchParams(window.location.search);
+  const publicStudentId = params.get('publicStudentId');
+
+  if (publicStudentId) {
+    return <PublicStudentProfile studentId={publicStudentId} />;
+  }
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#164B2E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">Se încarcă...</p>
         </div>
       </div>
     );
@@ -50,7 +58,7 @@ function App() {
       case 'dashboard':
         return <Dashboard onNavigate={setCurrentPage} />;
       case 'profile':
-        return <Profile />;
+        return <Profile onNavigate={setCurrentPage} />;
       case 'grades':
         return <Grades />;
       case 'ai-tutor':

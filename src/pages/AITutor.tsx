@@ -34,20 +34,40 @@ export default function AITutor() {
   const loadSessionData = async () => {
     setLoading(true);
     try {
+      let focusPayload: {
+        badgeId: string;
+        badgeName: string;
+        focusInstructions: string;
+      } | null = null;
+
+      try {
+        const stored = window.localStorage.getItem('aiTutorFocus');
+        if (stored) {
+          focusPayload = JSON.parse(stored);
+          window.localStorage.removeItem('aiTutorFocus');
+        }
+      } catch (error) {
+        console.error('Failed to read AI Tutor focus from storage:', error);
+      }
+
       const [activeSession, actions] = await Promise.all([
         fetchActiveSession(),
         fetchQuickActions(),
       ]);
+
+      let effectiveSession: AITutorSession | null = null;
 
       if (activeSession) {
         setSession(activeSession);
         setMode(activeSession.mode);
         const sessionMessages = await fetchSessionMessages(activeSession.id);
         setMessages(sessionMessages);
+        effectiveSession = activeSession;
       } else {
         const newSession = await createSession('explain');
         if (newSession) {
           setSession(newSession);
+          effectiveSession = newSession;
           const initialMessage = await addMessage(
             newSession.id,
             'ai',
@@ -61,6 +81,18 @@ export default function AITutor() {
           if (initialMessage) {
             setMessages([initialMessage]);
           }
+        }
+      }
+
+      if (effectiveSession && focusPayload) {
+        try {
+          const focusPrompt = `Vreau să lucrez la abilitățile necesare pentru a debloca realizarea „${focusPayload.badgeName}”. Instrucțiunile pentru deblocare sunt: ${focusPayload.focusInstructions}. Te rog să mă ghidezi pas cu pas, cu explicații scurte, exerciții practice și mici teste, astfel încât să pot obține această realizare.`;
+          const userMessage = await addMessage(effectiveSession.id, 'user', focusPrompt);
+          if (userMessage) {
+            setMessages((prev) => [...prev, userMessage]);
+          }
+        } catch (error) {
+          console.error('Failed to send focus message to AI Tutor:', error);
         }
       }
 

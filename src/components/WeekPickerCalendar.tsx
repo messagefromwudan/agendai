@@ -69,8 +69,8 @@ export default function WeekPickerCalendar({
   };
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
+    'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'
   ];
 
   return (
@@ -84,7 +84,7 @@ export default function WeekPickerCalendar({
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            Select Week
+            Alege săptămâna
           </h2>
           <button
             onClick={onClose}
@@ -113,7 +113,7 @@ export default function WeekPickerCalendar({
         </div>
 
         <div className="grid grid-cols-7 gap-1 mb-2">
-          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+          {['Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ', 'Du'].map((day) => (
             <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2">
               {day}
             </div>
@@ -146,7 +146,7 @@ export default function WeekPickerCalendar({
 
         <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
           <p className="text-xs text-blue-800">
-            Click any date to jump to that week. The highlighted week is your currently selected week.
+            Dă click pe orice dată pentru a sări la săptămâna respectivă. Săptămâna evidențiată este cea selectată acum.
           </p>
         </div>
       </div>

@@ -16,7 +16,7 @@ export default function Welcome({ onNavigate }: WelcomeProps) {
 
         <h1 className="text-4xl font-bold text-gray-900 mb-3">AgendAI</h1>
         <p className="text-lg text-gray-600 mb-12">
-          Your intelligent learning companion for success
+          Asistentul tău inteligent pentru învățare și succes
         </p>
 
         <div className="space-y-3">
@@ -36,7 +36,7 @@ export default function Welcome({ onNavigate }: WelcomeProps) {
         </div>
 
         <p className="text-sm text-gray-500 mt-8">
-          © 2024 AgendAI. All rights reserved.
+          © 2024 AgendAI. Toate drepturile rezervate.
         </p>
       </div>
     </div>

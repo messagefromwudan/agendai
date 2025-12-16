@@ -82,7 +82,7 @@ export default function ClassDetailModal({
             <div className={`${colorClasses.light} border border-gray-200 rounded-xl p-4`}>
               <div className="flex items-center gap-2 mb-2">
                 <MapPin className={`w-4 h-4 ${colorClasses.text}`} />
-                <p className="text-xs font-semibold text-gray-600">Location</p>
+                <p className="text-xs font-semibold text-gray-600">Locație</p>
               </div>
               <p className="text-sm font-medium text-gray-900">{classEvent.location}</p>
             </div>
@@ -90,7 +90,7 @@ export default function ClassDetailModal({
             <div className={`${colorClasses.light} border border-gray-200 rounded-xl p-4`}>
               <div className="flex items-center gap-2 mb-2">
                 <User className={`w-4 h-4 ${colorClasses.text}`} />
-                <p className="text-xs font-semibold text-gray-600">Teacher</p>
+                <p className="text-xs font-semibold text-gray-600">Profesor</p>
               </div>
               <p className="text-sm font-medium text-gray-900">{classEvent.teacher}</p>
             </div>
@@ -100,7 +100,7 @@ export default function ClassDetailModal({
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <BookOpen className="w-4 h-4 text-gray-600" />
-                <h3 className="font-semibold text-gray-900">Class Description</h3>
+                <h3 className="font-semibold text-gray-900">Descrierea orei</h3>
               </div>
               <p className="text-sm text-gray-700 bg-gray-50 rounded-xl p-4">
                 {classEvent.description}
@@ -111,12 +111,12 @@ export default function ClassDetailModal({
           <div>
             <div className="flex items-center gap-2 mb-3">
               <FileText className="w-4 h-4 text-gray-600" />
-              <h3 className="font-semibold text-gray-900">Personal Notes</h3>
+              <h3 className="font-semibold text-gray-900">Notițe personale</h3>
             </div>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add your notes about this class..."
+              placeholder="Adaugă notițele tale despre această oră..."
               rows={4}
               className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#164B2E] text-sm resize-none"
             />
@@ -127,13 +127,13 @@ export default function ClassDetailModal({
               onClick={onClose}
               className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
             >
-              Close
+              Închide
             </button>
             <button
               onClick={handleSave}
               className="flex-1 px-6 py-3 bg-[#164B2E] text-white rounded-xl font-medium hover:bg-[#0d2819] transition-colors shadow-lg hover:shadow-xl"
             >
-              Save Notes
+              Salvează notițele
             </button>
           </div>
         </div>

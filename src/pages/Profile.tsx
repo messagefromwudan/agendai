@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Award, Clock, BookOpen, Trophy, Zap, Target, Camera } from 'lucide-react';
+import { Award, Clock, BookOpen, Trophy, Zap, Target, Camera, QrCode } from 'lucide-react';
 import SimpleTooltip from '../components/SimpleTooltip';
 import ProfileBadge from '../components/ProfileBadge';
 import BadgeDetailsModal from '../components/BadgeDetailsModal';
@@ -25,6 +25,10 @@ type AchievementBadge = {
   howToGet: string;
 };
 
+type ProfileProps = {
+  onNavigate?: (page: string) => void;
+};
+
 const iconMap: Record<string, any> = {
   Target,
   Trophy,
@@ -34,7 +38,7 @@ const iconMap: Record<string, any> = {
   BookOpen,
 };
 
-export default function Profile() {
+export default function Profile({ onNavigate }: ProfileProps) {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [profileStats, setProfileStats] = useState<ProfileStats | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
@@ -43,11 +47,32 @@ export default function Profile() {
   const [selectedBadge, setSelectedBadge] = useState<AchievementBadge | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAdditionalBadges, setShowAdditionalBadges] = useState(false);
+  const [showQrCode, setShowQrCode] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const additionalBadgesRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     loadProfileData();
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        additionalBadgesRef.current &&
+        !additionalBadgesRef.current.contains(event.target as Node)
+      ) {
+        setShowAdditionalBadges(false);
+      }
+    };
+
+    if (showAdditionalBadges) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAdditionalBadges]);
 
   const loadProfileData = async () => {
     setLoading(true);
@@ -95,6 +120,23 @@ export default function Profile() {
     }
   };
 
+  const handlePracticeForBadge = (badge: AchievementBadge) => {
+    try {
+      const focusPayload = {
+        badgeId: badge.id,
+        badgeName: badge.name,
+        focusInstructions: badge.howToGet,
+      };
+      window.localStorage.setItem('aiTutorFocus', JSON.stringify(focusPayload));
+    } catch (error) {
+      console.error('Failed to set AI Tutor focus from profile badge:', error);
+    }
+
+    if (onNavigate) {
+      onNavigate('ai-tutor');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -127,6 +169,10 @@ export default function Profile() {
         badgeName={selectedBadge?.name || ''}
         description={selectedBadge?.description || ''}
         howToGet={selectedBadge?.howToGet || ''}
+        earned={!!selectedBadge?.earned}
+        onPractice={
+          selectedBadge ? () => handlePracticeForBadge(selectedBadge) : undefined
+        }
         onClose={() => setSelectedBadge(null)}
       />
 
@@ -159,14 +205,14 @@ export default function Profile() {
                 onChange={handlePhotoChange}
                 className="hidden"
               />
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#164B2E] text-[#F1F5F9] px-4 py-1 rounded-full text-xs font-semibold shadow-lg">
-                <ProfileBadge type={profileData.mainBadgeType} size="small" />
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full shadow-lg border-2 border-[#164B2E] bg-white">
+                <ProfileBadge type={profileData.mainBadgeType} size="large" />
               </div>
             </div>
 
             {profileData.additionalBadges.length > 0 && (
               <div className="mb-6 flex justify-center">
-                <div className="relative">
+                <div className="relative" ref={additionalBadgesRef}>
                   <button
                     onClick={() => setShowAdditionalBadges(!showAdditionalBadges)}
                     className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 hover:text-gray-900 transition-colors bg-gray-50 px-2 py-1 rounded-full"
@@ -186,16 +232,21 @@ export default function Profile() {
               </div>
             )}
 
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">{profileData.fullName}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-1 -mt-4">{profileData.fullName}</h2>
             <p className="text-gray-500 mb-4">{profileData.className}</p>
 
             <div className="bg-gray-50 rounded-xl p-4 mb-4">
               <p className="text-xs text-gray-500 mb-1">ID Student</p>
               <div className="flex items-center justify-center gap-2">
                 <span className="font-mono font-bold text-gray-900">{profileData.studentId}</span>
-                <div className="w-8 h-8 bg-[#164B2E] rounded flex items-center justify-center">
-                  <div className="w-6 h-6 bg-white/20 rounded"></div>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowQrCode(true)}
+                  className="w-8 h-8 bg-[#164B2E] rounded flex items-center justify-center text-white hover:bg-[#0d2819] transition-colors"
+                  title="Vezi codul QR al studentului"
+                >
+                  <QrCode className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
@@ -264,11 +315,10 @@ export default function Profile() {
                   return (
                     <button
                       key={badge.id}
-                      onClick={() => badge.earned && setSelectedBadge(badge)}
-                      disabled={!badge.earned}
+                      onClick={() => setSelectedBadge(badge)}
                       className={`border ${color.border} ${color.bg} rounded-xl p-4 text-center ${
-                        badge.earned ? 'opacity-100 cursor-pointer hover:shadow-lg' : 'opacity-40 cursor-default'
-                      } transition-all hover:scale-105 disabled:hover:scale-100`}
+                        badge.earned ? 'opacity-100 hover:shadow-lg' : 'opacity-40'
+                      } cursor-pointer transition-all hover:scale-105`}
                     >
                       <div className={`w-16 h-16 ${color.bg} rounded-full flex items-center justify-center mx-auto mb-3 ${
                         badge.earned ? 'ring-4 ring-white shadow-lg' : ''
@@ -325,6 +375,42 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {showQrCode && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowQrCode(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Cod QR Student</h2>
+              <button
+                type="button"
+                onClick={() => setShowQrCode(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">
+              Scanează acest cod pentru a identifica rapid studentul cu ID-ul{' '}
+              <span className="font-mono font-semibold text-gray-900">{profileData.studentId}</span>.
+            </p>
+            <div className="flex justify-center">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(
+                  `${window.location.origin}?publicStudentId=${profileData.studentId}`
+                )}`}
+                alt="Cod QR Student"
+                className="rounded-lg border border-gray-200"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

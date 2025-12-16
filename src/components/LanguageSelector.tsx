@@ -8,7 +8,7 @@ type LanguageSelectorProps = {
 };
 
 const languages = {
-  en: { label: 'English', flag: '🇬🇧' },
+  en: { label: 'Engleză', flag: '🇬🇧' },
   ro: { label: 'Română', flag: '🇷🇴' },
 };
 
@@ -16,8 +16,8 @@ export default function LanguageSelector({ selected, onChange }: LanguageSelecto
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-medium text-gray-700">Language</label>
-        <p className="text-xs text-gray-500 italic">Changes apply instantly.</p>
+        <label className="block text-sm font-medium text-gray-700">Limbă</label>
+        <p className="text-xs text-gray-500 italic">Schimbările se aplică instant.</p>
       </div>
       <div className="grid grid-cols-2 gap-3">
         {(Object.keys(languages) as Language[]).map((lang) => {

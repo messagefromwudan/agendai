@@ -13,21 +13,21 @@ export default function Progress({ onNavigate }: ProgressProps = {}) {
 
   const gpaDataByInterval = {
     month: [
-      { label: 'Săpt 1', value: 8.9, date: 'Sep 1' },
-      { label: 'Săpt 2', value: 9.0, date: 'Sep 8' },
-      { label: 'Săpt 3', value: 9.1, date: 'Sep 15' },
-      { label: 'Săpt 4', value: 9.15, date: 'Sep 22' },
+      { label: 'Săpt 1', value: 8.9, date: '1 septembrie' },
+      { label: 'Săpt 2', value: 9.0, date: '8 septembrie' },
+      { label: 'Săpt 3', value: 9.1, date: '15 septembrie' },
+      { label: 'Săpt 4', value: 9.15, date: '22 septembrie' },
     ],
     semester: [
-      { label: 'Sep', value: 8.9, date: 'Septembrie' },
+      { label: 'Sept', value: 8.9, date: 'Septembrie' },
       { label: 'Oct', value: 9.15, date: 'Octombrie' },
       { label: 'Nov', value: 9.37, date: 'Noiembrie' },
     ],
     year: [
-      { label: 'T1', value: 8.7, date: 'Ian-Mar' },
-      { label: 'T2', value: 8.9, date: 'Apr-Iun' },
-      { label: 'T3', value: 9.15, date: 'Iul-Sep' },
-      { label: 'T4', value: 9.37, date: 'Oct-Dec' },
+      { label: 'T1', value: 8.7, date: 'Ian–Mar' },
+      { label: 'T2', value: 8.9, date: 'Apr–Iun' },
+      { label: 'T3', value: 9.15, date: 'Iul–Sept' },
+      { label: 'T4', value: 9.37, date: 'Oct–Dec' },
     ],
   };
 

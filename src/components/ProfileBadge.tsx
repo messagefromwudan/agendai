@@ -46,11 +46,8 @@ export default function ProfileBadge({ type, size = 'small' }: ProfileBadgeProps
 
   if (size === 'large') {
     return (
-      <div
-        className="flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold"
-        style={{ backgroundColor: config.bgColor, color: config.color }}
-      >
-        <Icon className="w-3 h-3" />
+      <div className="flex items-center justify-center gap-1 text-xs font-semibold" style={{ color: config.color }}>
+        <Icon className="w-7 h-7" />
         {config.label}
       </div>
     );

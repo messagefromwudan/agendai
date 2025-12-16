@@ -156,7 +156,7 @@ export default function Messages() {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
-      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      return date.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit', hour12: false });
     } else if (diffDays === 1) {
       return 'Ieri';
     } else if (diffDays <= 7) {
@@ -334,7 +334,7 @@ export default function Messages() {
               </div>
               <div>
                 <h2 className="font-semibold text-gray-900">
-                  {selectedConversation?.name || 'Ms. Johnson'}
+                  {selectedConversation?.name || 'Profesor'}
                 </h2>
                 <div className="flex items-center gap-2">
                   <Circle className="w-2 h-2 fill-green-500 text-green-500" />

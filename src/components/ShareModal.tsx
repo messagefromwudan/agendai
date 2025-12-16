@@ -16,7 +16,7 @@ export default function ShareModal({ isOpen, onClose, homework }: ShareModalProp
   if (!isOpen || !homework) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`Check out this assignment: ${homework.title} (${homework.subject})`);
+    navigator.clipboard.writeText(`Vezi această temă: ${homework.title} (${homework.subject})`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

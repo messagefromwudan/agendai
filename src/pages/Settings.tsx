@@ -206,8 +206,8 @@ export default function Settings() {
               <User className="w-5 h-5 text-blue-600" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-medium text-gray-900">Gestionează Email</p>
-              <p className="text-sm text-gray-600">{user?.email || 'No email'}</p>
+              <p className="font-medium text-gray-900">Gestionează emailul</p>
+              <p className="text-sm text-gray-600">{user?.email || 'Fără email'}</p>
             </div>
           </button>
 
