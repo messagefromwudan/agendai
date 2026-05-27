@@ -18,6 +18,7 @@ import {
   Zap,
   ChevronDown,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { supabaseClient } from "@/lib/supabaseClient";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -73,27 +74,37 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-// Minimal markdown renderer: bold, code blocks, line breaks
-function renderMarkdown(text: string) {
-  const lines = text.split("\n");
-  return lines.map((line, i) => {
-    // Bold: **text**
-    const parts = line.split(/\*\*(.*?)\*\*/g);
-    const rendered = parts.map((part, j) =>
-      j % 2 === 1 ? (
-        <strong key={j}>{part}</strong>
-      ) : (
-        <span key={j}>{part}</span>
-      )
-    );
-    return (
-      <span key={i}>
-        {rendered}
-        {i < lines.length - 1 && <br />}
-      </span>
-    );
-  });
-}
+const MarkdownComponents = {
+  p: ({ children }: any) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+  h1: ({ children }: any) => <p className="font-bold text-base mb-2 mt-1">{children}</p>,
+  h2: ({ children }: any) => <p className="font-semibold mb-1.5 mt-1">{children}</p>,
+  h3: ({ children }: any) => <p className="font-semibold mb-1 mt-0.5">{children}</p>,
+  ul: ({ children }: any) => <ul className="list-disc ml-5 mb-2 space-y-0.5">{children}</ul>,
+  ol: ({ children }: any) => <ol className="list-decimal ml-5 mb-2 space-y-0.5">{children}</ol>,
+  li: ({ children }: any) => <li className="leading-relaxed">{children}</li>,
+  pre: ({ children }: any) => (
+    <pre className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-3 text-xs font-mono overflow-x-auto mb-2">
+      {children}
+    </pre>
+  ),
+  code: ({ className, children }: any) => (
+    <code
+      className={
+        className
+          ? className
+          : "bg-black/8 dark:bg-white/8 px-1 py-0.5 rounded text-[0.8em] font-mono"
+      }
+    >
+      {children}
+    </code>
+  ),
+  strong: ({ children }: any) => <strong className="font-semibold">{children}</strong>,
+  blockquote: ({ children }: any) => (
+    <blockquote className="border-l-2 border-gray-300 dark:border-gray-600 pl-3 my-2 italic text-gray-500 dark:text-gray-400">
+      {children}
+    </blockquote>
+  ),
+};
 
 export default function TutorePage() {
   const router = useRouter();
@@ -107,6 +118,7 @@ export default function TutorePage() {
   const [inputText, setInputText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [subjectOpen, setSubjectOpen] = useState(false);
+  const [sendError, setSendError] = useState("");
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -217,6 +229,8 @@ export default function TutorePage() {
     const messageText = (text ?? inputText).trim();
     if (!messageText || isStreaming || credits <= 0) return;
 
+    setSendError("");
+
     const {
       data: { session },
     } = await supabaseClient.auth.getSession();
@@ -251,9 +265,6 @@ export default function TutorePage() {
       content: m.content,
     }));
 
-    let streamingContent = "";
-    let activeSessionId = currentSessionId;
-
     try {
       const response = await fetch("/api/tutor", {
         method: "POST",
@@ -268,92 +279,37 @@ export default function TutorePage() {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        let errorMsg = "A apărut o eroare. Încearcă din nou.";
-        try {
-          const err = await response.json();
-          if (err.error) errorMsg = err.error;
-        } catch {}
         setMessages((prev) =>
           prev.map((m) =>
             m.id === "streaming"
-              ? { ...m, id: crypto.randomUUID(), content: errorMsg, streaming: false, error: true }
+              ? { ...m, id: crypto.randomUUID(), content: data.error ?? "A apărut o eroare.", streaming: false, error: true }
               : m
           )
         );
-        setIsStreaming(false);
         return;
       }
 
-      const reader = response.body!.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const data = line.slice(6).trim();
-          if (data === "[DONE]") continue;
-
-          try {
-            const parsed = JSON.parse(data);
-
-            if (parsed.sessionId && !activeSessionId) {
-              activeSessionId = parsed.sessionId;
-              setCurrentSessionId(parsed.sessionId);
-            }
-
-            if (parsed.text) {
-              streamingContent += parsed.text;
-              const snap = streamingContent;
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === "streaming" ? { ...m, content: snap } : m
-                )
-              );
-            }
-
-            if (parsed.error) {
-              const errText = parsed.error;
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === "streaming"
-                    ? { ...m, content: errText, streaming: false, error: true }
-                    : m
-                )
-              );
-            }
-          } catch {}
-        }
+      if (data.sessionId && !currentSessionId) {
+        setCurrentSessionId(data.sessionId);
       }
 
-      // Finalize
       setMessages((prev) =>
         prev.map((m) =>
           m.id === "streaming"
-            ? { ...m, id: crypto.randomUUID(), streaming: false }
+            ? { ...m, id: crypto.randomUUID(), content: data.response ?? "", streaming: false }
             : m
         )
       );
       setCredits((prev) => Math.max(0, prev - 1));
-    } catch {
+    } catch (err) {
+      console.error("handleSend error:", err);
       setMessages((prev) =>
         prev.map((m) =>
           m.id === "streaming"
-            ? {
-                ...m,
-                id: crypto.randomUUID(),
-                content: "Conexiune întreruptă. Încearcă din nou.",
-                streaming: false,
-                error: true,
-              }
+            ? { ...m, id: crypto.randomUUID(), content: "Conexiune întreruptă. Încearcă din nou.", streaming: false, error: true }
             : m
         )
       );
@@ -587,7 +543,11 @@ export default function TutorePage() {
                       {msg.role === "user" ? (
                         <p>{msg.content}</p>
                       ) : (
-                        <p>{renderMarkdown(msg.content)}</p>
+                        <div className="text-sm">
+                          <ReactMarkdown components={MarkdownComponents}>
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
                       )}
                       {msg.streaming && !msg.content && (
                         <span className="inline-flex gap-1 mt-1">
@@ -603,6 +563,25 @@ export default function TutorePage() {
               </div>
             )}
           </div>
+
+          {/* Error banner */}
+          {sendError && (
+            <div className="shrink-0 px-6 py-2 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
+              <div className="max-w-3xl mx-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                <Zap size={14} className="text-red-500 shrink-0" />
+                <p className="text-sm text-red-600 dark:text-red-400 font-medium flex-1">
+                  {sendError}
+                </p>
+                <button
+                  onClick={() => setSendError("")}
+                  className="text-red-400 hover:text-red-600 dark:hover:text-red-300 text-lg leading-none shrink-0"
+                  aria-label="Închide"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Input area */}
           <div
