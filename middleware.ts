@@ -2,8 +2,32 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const ADMIN_ROLES = ["admin", "director", "director_adjunct", "secretary"];
+const PROFESSOR_ROLES = ["professor", "teacher"];
+
+const STUDENT_ROUTES = [
+  "/dashboard", "/catalog", "/teme", "/orar", "/progres",
+  "/mesaje", "/profil", "/setari", "/tutore",
+];
+
+function homeForRole(role: string): string {
+  if (ADMIN_ROLES.includes(role)) return "/admin";
+  if (PROFESSOR_ROLES.includes(role)) return "/profesor";
+  return "/dashboard";
+}
+
 export async function middleware(req: NextRequest) {
   let res = NextResponse.next({ request: { headers: req.headers } });
+  const { pathname } = req.nextUrl;
+
+  // Skip API routes and auth pages — they handle their own auth
+  if (
+    pathname.startsWith("/api/") ||
+    pathname === "/login" ||
+    pathname === "/signup"
+  ) {
+    return res;
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,9 +48,45 @@ export async function middleware(req: NextRequest) {
     }
   );
 
-  // Refreshes the session token and writes updated auth cookies to the response.
-  // Without this, tokens can expire between requests and API routes return 401.
-  await supabase.auth.getUser();
+  // Refresh session token so auth cookies stay fresh
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const isAdminRoute = pathname.startsWith("/admin");
+  const isProfessorRoute = pathname.startsWith("/profesor");
+  const isStudentRoute = STUDENT_ROUTES.some(
+    (r) => pathname === r || pathname.startsWith(r + "/")
+  );
+
+  // Not a protected route — let it through
+  if (!isAdminRoute && !isProfessorRoute && !isStudentRoute) {
+    return res;
+  }
+
+  // Unauthenticated — send to login
+  if (!user) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  // Fetch role to enforce per-route access
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  const role = profile?.role ?? "student";
+  const home = homeForRole(role);
+
+  if (isAdminRoute && !ADMIN_ROLES.includes(role)) {
+    return NextResponse.redirect(new URL(home, req.url));
+  }
+  if (isProfessorRoute && !PROFESSOR_ROLES.includes(role)) {
+    return NextResponse.redirect(new URL(home, req.url));
+  }
+  if (isStudentRoute && (ADMIN_ROLES.includes(role) || PROFESSOR_ROLES.includes(role))) {
+    return NextResponse.redirect(new URL(home, req.url));
+  }
+
   return res;
 }
 

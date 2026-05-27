@@ -13,6 +13,15 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
+const ADMIN_ROLES = ["admin", "director", "director_adjunct", "secretary"];
+const PROFESSOR_ROLES = ["professor", "teacher"];
+
+function homeForRole(role: string): string {
+  if (ADMIN_ROLES.includes(role)) return "/admin";
+  if (PROFESSOR_ROLES.includes(role)) return "/profesor";
+  return "/dashboard";
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -23,9 +32,14 @@ export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    supabaseClient.auth.getSession().then(({ data }) => {
+    supabaseClient.auth.getSession().then(async ({ data }) => {
       if (data.session) {
-        router.replace("/dashboard");
+        const { data: prof } = await supabaseClient
+          .from("profiles")
+          .select("role")
+          .eq("id", data.session.user.id)
+          .single();
+        router.replace(homeForRole(prof?.role ?? "student"));
       } else {
         setMounted(true);
       }
@@ -37,16 +51,21 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const { error: authError } = await supabaseClient.auth.signInWithPassword({
+    const { data: signInData, error: authError } = await supabaseClient.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (authError) {
+    if (authError || !signInData.user) {
       setError("Email sau parolă incorectă. Încearcă din nou.");
       setLoading(false);
     } else {
-      router.push("/dashboard");
+      const { data: prof } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", signInData.user.id)
+        .single();
+      router.push(homeForRole(prof?.role ?? "student"));
     }
   }
 

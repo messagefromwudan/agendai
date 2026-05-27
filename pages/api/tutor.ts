@@ -28,9 +28,6 @@ const supabaseAdmin = createClient(
 );
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log("[tutor API] called", req.method, JSON.stringify(req.body ?? {}).slice(0, 200));
-  console.log("[tutor API] has OPENAI_API_KEY:", !!process.env.OPENAI_API_KEY);
-
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -46,6 +43,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (authError || !user) {
     console.error("[tutor API] auth error:", authError?.message);
     return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  // Server-side credit check
+  const { data: profileData } = await supabaseAdmin
+    .from("profiles")
+    .select("thinking_credits")
+    .eq("id", user.id)
+    .single();
+  if (!profileData || profileData.thinking_credits <= 0) {
+    return res.status(402).json({ error: "Nu mai ai credite Tuto. Contactează administratorul pentru reîncărcare." });
   }
 
   const { messages, subject, sessionId } = req.body as {
@@ -99,7 +106,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     const responseText = completion.choices[0]?.message?.content ?? "";
-    console.log("[tutor API] success, response length:", responseText.length);
 
     // Save AI response
     if (activeSessionId && responseText) {

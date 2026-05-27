@@ -304,6 +304,10 @@ export default function TutorePage() {
         )
       );
       setCredits((prev) => Math.max(0, prev - 1));
+      await supabaseClient
+        .from("profiles")
+        .update({ thinking_credits: Math.max(0, credits - 1) })
+        .eq("id", session.user.id);
     } catch (err) {
       console.error("handleSend error:", err);
       setMessages((prev) =>
