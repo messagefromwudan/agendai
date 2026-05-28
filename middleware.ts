@@ -5,9 +5,12 @@ import type { NextRequest } from "next/server";
 const ADMIN_ROLES = ["admin", "director", "director_adjunct", "secretary"];
 const PROFESSOR_ROLES = ["professor", "teacher"];
 
-const STUDENT_ROUTES = [
-  "/dashboard", "/catalog", "/teme", "/orar", "/progres",
-  "/mesaje", "/profil", "/setari", "/tutore",
+// Accessible by any authenticated user regardless of role
+const SHARED_ROUTES = ["/setari", "/profil", "/mesaje"];
+
+// Only students may access these
+const STUDENT_ONLY_ROUTES = [
+  "/dashboard", "/catalog", "/teme", "/orar", "/progres", "/tutore",
 ];
 
 function homeForRole(role: string): string {
@@ -53,18 +56,26 @@ export async function middleware(req: NextRequest) {
 
   const isAdminRoute = pathname.startsWith("/admin");
   const isProfessorRoute = pathname.startsWith("/profesor");
-  const isStudentRoute = STUDENT_ROUTES.some(
+  const isSharedRoute = SHARED_ROUTES.some(
+    (r) => pathname === r || pathname.startsWith(r + "/")
+  );
+  const isStudentOnlyRoute = STUDENT_ONLY_ROUTES.some(
     (r) => pathname === r || pathname.startsWith(r + "/")
   );
 
   // Not a protected route — let it through
-  if (!isAdminRoute && !isProfessorRoute && !isStudentRoute) {
+  if (!isAdminRoute && !isProfessorRoute && !isSharedRoute && !isStudentOnlyRoute) {
     return res;
   }
 
   // Unauthenticated — send to login
   if (!user) {
     return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  // Shared routes are accessible by any authenticated user — no role check needed
+  if (isSharedRoute) {
+    return res;
   }
 
   // Fetch role to enforce per-route access
@@ -83,7 +94,7 @@ export async function middleware(req: NextRequest) {
   if (isProfessorRoute && !PROFESSOR_ROLES.includes(role)) {
     return NextResponse.redirect(new URL(home, req.url));
   }
-  if (isStudentRoute && (ADMIN_ROLES.includes(role) || PROFESSOR_ROLES.includes(role))) {
+  if (isStudentOnlyRoute && (ADMIN_ROLES.includes(role) || PROFESSOR_ROLES.includes(role))) {
     return NextResponse.redirect(new URL(home, req.url));
   }
 

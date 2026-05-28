@@ -269,7 +269,7 @@ export default function DashboardPage() {
           {/* Main nav */}
           <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             {MAIN_NAV.map(({ label, icon: Icon, href }) => {
-              const active = href === "/dashboard";
+              const active = router.pathname === href;
               return (
                 <Link
                   key={href}
@@ -289,16 +289,23 @@ export default function DashboardPage() {
 
           {/* Bottom nav */}
           <div className="px-3 py-3 border-t border-gray-100 dark:border-gray-700 space-y-0.5 shrink-0">
-            {BOTTOM_NAV.map(({ label, icon: Icon, href }) => (
-              <Link
-                key={href}
-                href={href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-150"
-              >
-                <Icon size={17} />
-                {label}
-              </Link>
-            ))}
+            {BOTTOM_NAV.map(({ label, icon: Icon, href }) => {
+              const active = router.pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 ${
+                    active
+                      ? "bg-[#164B2E] text-white"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <Icon size={17} />
+                  {label}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Profile footer */}

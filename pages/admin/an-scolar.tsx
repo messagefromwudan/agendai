@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Inter, Poppins } from "next/font/google";
-import { Plus, CheckCircle, Circle, Loader2, X } from "lucide-react";
+import { Plus, CheckCircle, Circle, Loader2, X, AlertTriangle } from "lucide-react";
 import { supabaseClient } from "@/lib/supabaseClient";
 import AdminSidebar from "@/components/AdminSidebar";
 
@@ -28,6 +28,7 @@ function formatDate(iso: string) {
 export default function AnScolarPage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
+  const [noSchool, setNoSchool] = useState(false);
   const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [years, setYears] = useState<SchoolYear[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -49,6 +50,13 @@ export default function AnScolarPage() {
 
       if (!prof || !ADMIN_ROLES.includes(prof.role)) { router.replace("/dashboard"); return; }
       setProfile(prof);
+
+      if (!prof.school_id) {
+        setNoSchool(true);
+        setReady(true);
+        return;
+      }
+
       await fetchYears(prof.school_id);
       setReady(true);
     }
@@ -128,6 +136,14 @@ export default function AnScolarPage() {
         <AdminSidebar fullName={profile?.full_name ?? ""} role={profile?.role ?? ""} />
 
         <main className="ml-64 flex-1 p-8">
+          {noSchool ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-4">
+              <AlertTriangle size={36} className="text-orange-400" />
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center max-w-md">
+                Contul tău nu este asociat cu o școală. Contactează administratorul platformei.
+              </p>
+            </div>
+          ) : (<>
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="font-heading text-2xl font-bold text-gray-900 dark:text-white">An Școlar</h1>
@@ -269,6 +285,7 @@ export default function AnScolarPage() {
               </div>
             ))}
           </div>
+          </>)}
         </main>
       </div>
     </>

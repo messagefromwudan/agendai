@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Inter, Poppins } from "next/font/google";
-import { Search, Plus, X, Loader2 } from "lucide-react";
+import { Search, Plus, X, Loader2, AlertTriangle } from "lucide-react";
 import { supabaseClient } from "@/lib/supabaseClient";
 import AdminSidebar from "@/components/AdminSidebar";
 
@@ -22,7 +22,7 @@ interface UserRow {
   full_name: string;
   email: string | null;
   created_at: string;
-  grade_level: number | null;
+  grade: number | null;
 }
 
 interface NewUserForm {
@@ -40,6 +40,7 @@ function formatDate(iso: string) {
 export default function UtilizatoriPage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
+  const [noSchool, setNoSchool] = useState(false);
   const [profile, setProfile] = useState<AdminProfile | null>(null);
   const [activeTab, setActiveTab] = useState<"elevi" | "profesori">("elevi");
   const [students, setStudents] = useState<UserRow[]>([]);
@@ -64,6 +65,13 @@ export default function UtilizatoriPage() {
       if (!prof || !ADMIN_ROLES.includes(prof.role)) { router.replace("/dashboard"); return; }
 
       setProfile(prof);
+
+      if (!prof.school_id) {
+        setNoSchool(true);
+        setReady(true);
+        return;
+      }
+
       await fetchUsers(prof.school_id);
       setReady(true);
     }
@@ -71,20 +79,23 @@ export default function UtilizatoriPage() {
   }, [router]);
 
   async function fetchUsers(schoolId: string) {
+    console.log("[utilizatori] fetchUsers school_id:", schoolId);
     const [studentsRes, teachersRes] = await Promise.all([
       supabaseClient
         .from("profiles")
-        .select("id, full_name, email, created_at, grade_level")
+        .select("id, full_name, email, created_at, grade")
         .eq("school_id", schoolId)
         .eq("role", "student")
         .order("full_name"),
       supabaseClient
         .from("profiles")
-        .select("id, full_name, email, created_at, grade_level")
+        .select("id, full_name, email, created_at, grade")
         .eq("school_id", schoolId)
-        .eq("role", "teacher")
+        .eq("role", "professor")
         .order("full_name"),
     ]);
+    console.log("[utilizatori] studentsRes:", { data: studentsRes.data, error: studentsRes.error });
+    console.log("[utilizatori] teachersRes:", { data: teachersRes.data, error: teachersRes.error });
     if (studentsRes.data) setStudents(studentsRes.data as UserRow[]);
     if (teachersRes.data) setTeachers(teachersRes.data as UserRow[]);
   }
@@ -138,6 +149,14 @@ export default function UtilizatoriPage() {
         <AdminSidebar fullName={profile?.full_name ?? ""} role={profile?.role ?? ""} />
 
         <main className="ml-64 flex-1 p-8">
+          {noSchool ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-4">
+              <AlertTriangle size={36} className="text-orange-400" />
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center max-w-md">
+                Contul tău nu este asociat cu o școală. Contactează administratorul platformei.
+              </p>
+            </div>
+          ) : (<>
           <div className="mb-6">
             <h1 className="font-heading text-2xl font-bold text-gray-900 dark:text-white">Utilizatori</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestionează elevii și profesorii din școală</p>
@@ -275,7 +294,7 @@ export default function UtilizatoriPage() {
                       <td className="px-5 py-3.5 text-gray-500 dark:text-gray-400">{u.email ?? "—"}</td>
                       {activeTab === "elevi" && (
                         <td className="px-5 py-3.5 text-gray-500 dark:text-gray-400">
-                          {u.grade_level ? `Clasa ${u.grade_level}` : "—"}
+                          {u.grade ? `Clasa ${u.grade}` : "—"}
                         </td>
                       )}
                       <td className="px-5 py-3.5 text-gray-500 dark:text-gray-400">{formatDate(u.created_at)}</td>
@@ -285,6 +304,7 @@ export default function UtilizatoriPage() {
               </tbody>
             </table>
           </div>
+          </>)}
         </main>
       </div>
     </>

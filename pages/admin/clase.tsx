@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Inter, Poppins } from "next/font/google";
-import { Plus, ChevronDown, ChevronUp, X, Loader2, Users } from "lucide-react";
+import { Plus, ChevronDown, ChevronUp, X, Loader2, Users, AlertTriangle } from "lucide-react";
 import { supabaseClient } from "@/lib/supabaseClient";
 import AdminSidebar from "@/components/AdminSidebar";
 
@@ -29,7 +29,7 @@ interface Subject { id: string; name: string; }
 interface ClassSubjectRow {
   subject_id: string;
   subject_name: string;
-  teacher_id: string | null;
+  professor_id: string | null;
   teacher_name: string | null;
 }
 
@@ -38,10 +38,14 @@ interface ClassDetail {
   subjects: ClassSubjectRow[];
 }
 
+interface SchoolYear { id: string; name: string; }
+
 export default function ClasePage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
+  const [noSchool, setNoSchool] = useState(false);
   const [profile, setProfile] = useState<AdminProfile | null>(null);
+  const [activeSchoolYear, setActiveSchoolYear] = useState<SchoolYear | null>(null);
   const [classes, setClasses] = useState<ClassRow[]>([]);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [allStudents, setAllStudents] = useState<Student[]>([]);
@@ -80,6 +84,12 @@ export default function ClasePage() {
       if (!prof || !ADMIN_ROLES.includes(prof.role)) { router.replace("/dashboard"); return; }
       setProfile(prof);
 
+      if (!prof.school_id) {
+        setNoSchool(true);
+        setReady(true);
+        return;
+      }
+
       await loadAll(prof.school_id);
       setReady(true);
     }
@@ -87,12 +97,14 @@ export default function ClasePage() {
   }, [router]);
 
   async function loadAll(schoolId: string) {
-    const [classesRes, teachersRes, studentsRes, subjectsRes] = await Promise.all([
+    const [classesRes, teachersRes, studentsRes, subjectsRes, yearRes] = await Promise.all([
       supabaseClient.from("classes").select("id, name, grade_level, class_teacher_id").eq("school_id", schoolId).order("grade_level").order("name"),
-      supabaseClient.from("profiles").select("id, full_name").eq("school_id", schoolId).eq("role", "teacher").order("full_name"),
+      supabaseClient.from("profiles").select("id, full_name").eq("school_id", schoolId).eq("role", "professor").order("full_name"),
       supabaseClient.from("profiles").select("id, full_name").eq("school_id", schoolId).eq("role", "student").order("full_name"),
       supabaseClient.from("subjects").select("id, name").order("name"),
+      supabaseClient.from("school_years").select("id, name").eq("school_id", schoolId).eq("is_active", true).single(),
     ]);
+    setActiveSchoolYear(yearRes.data ?? null);
 
     const rawClasses = (classesRes.data ?? []) as { id: string; name: string; grade_level: number; class_teacher_id: string | null }[];
     const teacherMap: Record<string, string> = {};
@@ -123,7 +135,7 @@ export default function ClasePage() {
     setLoadingDetail(classId);
     const [enrollRes, subjectsRes] = await Promise.all([
       supabaseClient.from("class_enrollments").select("student_id, profiles(full_name)").eq("class_id", classId),
-      supabaseClient.from("class_subjects").select("subject_id, teacher_id, subjects(name), profiles(full_name)").eq("class_id", classId),
+      supabaseClient.from("class_subjects").select("subject_id, professor_id, subjects(name), profiles(full_name)").eq("class_id", classId),
     ]);
 
     const students: Student[] = ((enrollRes.data ?? []) as any[]).map((e) => ({
@@ -134,7 +146,7 @@ export default function ClasePage() {
     const subjects: ClassSubjectRow[] = ((subjectsRes.data ?? []) as any[]).map((s) => ({
       subject_id: s.subject_id,
       subject_name: s.subjects?.name ?? "—",
-      teacher_id: s.teacher_id,
+      professor_id: s.professor_id,
       teacher_name: s.profiles?.full_name ?? null,
     }));
 
@@ -155,11 +167,13 @@ export default function ClasePage() {
     if (!newClassName) { setClassError("Introduceți numele clasei."); return; }
     setSavingClass(true);
     setClassError(null);
+    console.log("[clase] handleAddClass school_year_id:", activeSchoolYear?.id ?? null);
     const { error } = await supabaseClient.from("classes").insert({
       name: newClassName,
       grade_level: parseInt(newGradeLevel),
       class_teacher_id: newTeacherId || null,
       school_id: profile!.school_id,
+      school_year_id: activeSchoolYear?.id ?? null,
     });
     if (error) { setClassError(error.message); } else {
       setShowNewClass(false);
@@ -189,7 +203,7 @@ export default function ClasePage() {
     await supabaseClient.from("class_subjects").insert({
       class_id: classId,
       subject_id: selectedSubjectId,
-      teacher_id: selectedSubjectTeacherId || null,
+      professor_id: selectedSubjectTeacherId || null,
     });
     setAddSubjectClassId(null);
     setSelectedSubjectId(""); setSelectedSubjectTeacherId("");
@@ -216,6 +230,14 @@ export default function ClasePage() {
         <AdminSidebar fullName={profile?.full_name ?? ""} role={profile?.role ?? ""} />
 
         <main className="ml-64 flex-1 p-8">
+          {noSchool ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-4">
+              <AlertTriangle size={36} className="text-orange-400" />
+              <p className="text-sm text-gray-600 dark:text-gray-400 text-center max-w-md">
+                Contul tău nu este asociat cu o școală. Contactează administratorul platformei.
+              </p>
+            </div>
+          ) : (<>
           <div className="flex items-start justify-between mb-6">
             <div>
               <h1 className="font-heading text-2xl font-bold text-gray-900 dark:text-white">Clase</h1>
@@ -228,6 +250,18 @@ export default function ClasePage() {
               <Plus size={15} /> Adaugă clasă
             </button>
           </div>
+
+          {/* No active school year warning */}
+          {!activeSchoolYear && (
+            <div className="flex items-center gap-3 bg-orange-50 dark:bg-orange-900/15 border border-orange-200 dark:border-orange-800/30 rounded-2xl px-5 py-4 mb-5">
+              <AlertTriangle size={18} className="text-orange-500 shrink-0" />
+              <p className="text-sm text-orange-700 dark:text-orange-400">
+                Nu există un an școlar activ.{" "}
+                <a href="/admin/an-scolar" className="underline font-medium">Mergi la An Școlar</a>{" "}
+                pentru a activa unul.
+              </p>
+            </div>
+          )}
 
           {/* New class form */}
           {showNewClass && (
@@ -442,6 +476,7 @@ export default function ClasePage() {
               );
             })}
           </div>
+          </>)}
         </main>
       </div>
     </>
