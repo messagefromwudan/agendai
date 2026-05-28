@@ -74,20 +74,23 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
+type ChildrenProp = { children?: React.ReactNode };
+type CodeProp = { children?: React.ReactNode; className?: string };
+
 const MarkdownComponents = {
-  p: ({ children }: any) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
-  h1: ({ children }: any) => <p className="font-bold text-base mb-2 mt-1">{children}</p>,
-  h2: ({ children }: any) => <p className="font-semibold mb-1.5 mt-1">{children}</p>,
-  h3: ({ children }: any) => <p className="font-semibold mb-1 mt-0.5">{children}</p>,
-  ul: ({ children }: any) => <ul className="list-disc ml-5 mb-2 space-y-0.5">{children}</ul>,
-  ol: ({ children }: any) => <ol className="list-decimal ml-5 mb-2 space-y-0.5">{children}</ol>,
-  li: ({ children }: any) => <li className="leading-relaxed">{children}</li>,
-  pre: ({ children }: any) => (
+  p: ({ children }: ChildrenProp) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+  h1: ({ children }: ChildrenProp) => <p className="font-bold text-base mb-2 mt-1">{children}</p>,
+  h2: ({ children }: ChildrenProp) => <p className="font-semibold mb-1.5 mt-1">{children}</p>,
+  h3: ({ children }: ChildrenProp) => <p className="font-semibold mb-1 mt-0.5">{children}</p>,
+  ul: ({ children }: ChildrenProp) => <ul className="list-disc ml-5 mb-2 space-y-0.5">{children}</ul>,
+  ol: ({ children }: ChildrenProp) => <ol className="list-decimal ml-5 mb-2 space-y-0.5">{children}</ol>,
+  li: ({ children }: ChildrenProp) => <li className="leading-relaxed">{children}</li>,
+  pre: ({ children }: ChildrenProp) => (
     <pre className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg p-3 text-xs font-mono overflow-x-auto mb-2">
       {children}
     </pre>
   ),
-  code: ({ className, children }: any) => (
+  code: ({ className, children }: CodeProp) => (
     <code
       className={
         className
@@ -98,8 +101,8 @@ const MarkdownComponents = {
       {children}
     </code>
   ),
-  strong: ({ children }: any) => <strong className="font-semibold">{children}</strong>,
-  blockquote: ({ children }: any) => (
+  strong: ({ children }: ChildrenProp) => <strong className="font-semibold">{children}</strong>,
+  blockquote: ({ children }: ChildrenProp) => (
     <blockquote className="border-l-2 border-gray-300 dark:border-gray-600 pl-3 my-2 italic text-gray-500 dark:text-gray-400">
       {children}
     </blockquote>
@@ -162,7 +165,7 @@ export default function TutorePage() {
               .from("class_subjects")
               .select("subject_id, subjects(id, name)")
               .eq("class_id", classId)
-          : Promise.resolve({ data: [] as any[], error: null }),
+          : Promise.resolve({ data: [] as unknown as { subject_id: string; subjects?: { id: string; name: string } | null }[], error: null }),
         supabaseClient
           .from("chat_sessions")
           .select("id")
@@ -172,10 +175,10 @@ export default function TutorePage() {
       ]);
 
       if (subjectsRes.data) {
-        const subjectList: Subject[] = (subjectsRes.data as any[])
-          .map((row: any) => row.subjects)
-          .filter(Boolean)
-          .map((s: any) => ({ id: s.id, name: s.name }));
+        const subjectList: Subject[] = (subjectsRes.data as unknown as { subject_id: string; subjects?: { id: string; name: string } | null }[])
+          .map((row) => row.subjects)
+          .filter((s): s is { id: string; name: string } => s != null)
+          .map((s) => ({ id: s.id, name: s.name }));
         setSubjects(subjectList);
       }
 
@@ -190,7 +193,7 @@ export default function TutorePage() {
 
         if (msgs && msgs.length > 0) {
           setMessages(
-            (msgs as any[]).map((m) => ({
+            (msgs as { id: string; role: string; content: string }[]).map((m) => ({
               id: m.id,
               role: m.role as "user" | "assistant",
               content: m.content,

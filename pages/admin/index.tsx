@@ -76,9 +76,9 @@ export default function AdminDashboard() {
           .single(),
       ]);
 
-      setTotalStudents((studentsRes as any).count ?? 0);
-      setTotalProfessors((professorsRes as any).count ?? 0);
-      setTotalClasses((classesRes as any).count ?? 0);
+      setTotalStudents(studentsRes.count ?? 0);
+      setTotalProfessors(professorsRes.count ?? 0);
+      setTotalClasses(classesRes.count ?? 0);
       setActiveYear(yearRes.data?.name ?? null);
       setReady(true);
     }

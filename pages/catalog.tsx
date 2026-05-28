@@ -139,7 +139,7 @@ export default function CatalogPage() {
               .from("class_subjects")
               .select("subject_id, subjects(id, name)")
               .eq("class_id", classId)
-          : Promise.resolve({ data: [] as any[], error: null }),
+          : Promise.resolve({ data: [] as unknown as { subject_id: string; subjects?: { id: string; name: string } | null }[], error: null }),
         supabaseClient
           .from("grades")
           .select("id, subject_id, grade, grade_type, created_at")
@@ -150,7 +150,7 @@ export default function CatalogPage() {
       // Group grades by subject_id
       const gradesBySubject: Record<string, GradeEntry[]> = {};
       if (gradesRes.data) {
-        for (const g of gradesRes.data as any[]) {
+        for (const g of gradesRes.data as { id: string; subject_id: string; grade: number; grade_type: string | null; created_at: string }[]) {
           const sid = g.subject_id;
           if (!gradesBySubject[sid]) gradesBySubject[sid] = [];
           gradesBySubject[sid].push({
@@ -165,7 +165,7 @@ export default function CatalogPage() {
       // Build subject cards
       const cards: SubjectCard[] = [];
       if (subjectsRes.data) {
-        for (const row of subjectsRes.data as any[]) {
+        for (const row of subjectsRes.data as unknown as { subject_id: string; subjects?: { id: string; name: string } | null }[]) {
           const subjectId = row.subject_id ?? row.subjects?.id;
           const subjectName = row.subjects?.name ?? "—";
           const gradeList = gradesBySubject[subjectId] ?? [];

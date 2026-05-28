@@ -188,7 +188,7 @@ export default function TemePage() {
               .eq("class_id", classId)
               .eq("is_published", true)
               .order("due_date", { ascending: true })
-          : Promise.resolve({ data: [] as any[], error: null }),
+          : Promise.resolve({ data: [] as unknown as { id: string; title: string; description: string | null; due_date: string; subject_id: string; subjects?: { name: string } | null }[], error: null }),
         supabaseClient
           .from("assignment_submissions")
           .select("id, assignment_id, content, submitted_at, grade")
@@ -198,7 +198,7 @@ export default function TemePage() {
       // Index submissions by assignment_id
       const subMap: Record<string, Submission> = {};
       if (submissionsRes.data) {
-        for (const s of submissionsRes.data as any[]) {
+        for (const s of submissionsRes.data as { id: string; assignment_id: string; content: string | null; submitted_at: string; grade: number | null }[]) {
           subMap[s.assignment_id] = {
             id: s.id,
             content: s.content,
@@ -214,7 +214,7 @@ export default function TemePage() {
       let colorIdx = 0;
 
       if (assignmentsRes.data) {
-        for (const a of assignmentsRes.data as any[]) {
+        for (const a of assignmentsRes.data as unknown as { id: string; title: string; description: string | null; due_date: string; subject_id: string; subjects?: { name: string } | null }[]) {
           const sid = a.subject_id;
           if (!(sid in colorMap)) {
             colorMap[sid] = colorIdx % SUBJECT_COLORS.length;
@@ -255,11 +255,12 @@ export default function TemePage() {
     if (error || !data) {
       setSubmitError("A apărut o eroare. Încearcă din nou.");
     } else {
+      const subData = data as { id: string; content: string | null; submitted_at: string; grade: number | null };
       const newSub: Submission = {
-        id: (data as any).id,
-        content: (data as any).content,
-        submitted_at: (data as any).submitted_at,
-        grade: (data as any).grade ?? null,
+        id: subData.id,
+        content: subData.content,
+        submitted_at: subData.submitted_at,
+        grade: subData.grade ?? null,
       };
       setAssignments((prev) =>
         prev.map((a) =>

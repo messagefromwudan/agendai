@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Link from "next/link";
 import { Inter, Poppins } from "next/font/google";
 import { Plus, ChevronDown, ChevronUp, X, Loader2, Users, AlertTriangle } from "lucide-react";
 import { supabaseClient } from "@/lib/supabaseClient";
@@ -138,12 +139,12 @@ export default function ClasePage() {
       supabaseClient.from("class_subjects").select("subject_id, professor_id, subjects(name), profiles(full_name)").eq("class_id", classId),
     ]);
 
-    const students: Student[] = ((enrollRes.data ?? []) as any[]).map((e) => ({
+    const students: Student[] = ((enrollRes.data ?? []) as unknown as { student_id: string; profiles?: { full_name: string } | null }[]).map((e) => ({
       id: e.student_id,
       full_name: e.profiles?.full_name ?? "—",
     }));
 
-    const subjects: ClassSubjectRow[] = ((subjectsRes.data ?? []) as any[]).map((s) => ({
+    const subjects: ClassSubjectRow[] = ((subjectsRes.data ?? []) as unknown as { subject_id: string; professor_id: string | null; subjects?: { name: string } | null; profiles?: { full_name: string } | null }[]).map((s) => ({
       subject_id: s.subject_id,
       subject_name: s.subjects?.name ?? "—",
       professor_id: s.professor_id,
@@ -257,7 +258,7 @@ export default function ClasePage() {
               <AlertTriangle size={18} className="text-orange-500 shrink-0" />
               <p className="text-sm text-orange-700 dark:text-orange-400">
                 Nu există un an școlar activ.{" "}
-                <a href="/admin/an-scolar" className="underline font-medium">Mergi la An Școlar</a>{" "}
+                <Link href="/admin/an-scolar" className="underline font-medium">Mergi la An Școlar</Link>{" "}
                 pentru a activa unul.
               </p>
             </div>

@@ -41,7 +41,9 @@ export default function ClasEleMelePage() {
 
       if (!csRows || csRows.length === 0) { setReady(true); return; }
 
-      const classIds = (csRows as any[]).map((r) => r.class_id);
+      type CsRow = { class_id: string; subject_id: string; subjects?: { name: string } | null; classes?: { id: string; name: string; grade_level: number } | null };
+      const csTyped = csRows as unknown as CsRow[];
+      const classIds = csTyped.map((r) => r.class_id);
       const { data: enrollData } = await supabaseClient
         .from("class_enrollments")
         .select("class_id")
@@ -53,7 +55,7 @@ export default function ClasEleMelePage() {
       }
 
       setCards(
-        (csRows as any[]).map((r) => ({
+        csTyped.map((r) => ({
           classId: r.class_id,
           className: r.classes?.name ?? "—",
           gradeLevel: r.classes?.grade_level ?? 0,

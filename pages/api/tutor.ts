@@ -118,12 +118,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     return res.status(200).json({ response: responseText, sessionId: activeSessionId });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; status?: number; code?: string };
     console.error("[tutor API] full error:", JSON.stringify(error, null, 2));
     return res.status(500).json({
-      error: error?.message ?? "Unknown error",
-      status: error?.status,
-      code: error?.code,
+      error: err?.message ?? "Unknown error",
+      status: err?.status,
+      code: err?.code,
     });
   }
 }

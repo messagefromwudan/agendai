@@ -15,8 +15,6 @@ import {
   Settings,
   Flame,
   Zap,
-  BookMarked,
-  CheckCircle2,
   Layers,
   Activity,
 } from "lucide-react";
@@ -177,7 +175,7 @@ export default function ProgresPage() {
             .gte("date", sinceDate),
         ]);
 
-      if (profileRes.data) setProfile(profileRes.data as any);
+      if (profileRes.data) setProfile(profileRes.data as Profile);
 
       // Group topic_progress by subject
       if (topicProgressRes.data) {
@@ -191,7 +189,7 @@ export default function ProgresPage() {
             total: number;
           }
         > = {};
-        for (const row of topicProgressRes.data as any[]) {
+        for (const row of topicProgressRes.data as unknown as { subject_id: string; subjects?: { name: string } | null; mastery_score: number | null; sessions_count: number | null; cards_mastered: number | null; total_cards: number | null }[]) {
           const sid = row.subject_id;
           if (!subMap[sid]) {
             subMap[sid] = {
@@ -229,7 +227,7 @@ export default function ProgresPage() {
       // Learning events
       if (eventsRes.data) {
         setEvents(
-          (eventsRes.data as any[]).map((e) => ({
+          (eventsRes.data as unknown as { id: string; event_type: string; subjects?: { name: string } | null; topics?: { name: string } | null; created_at: string }[]).map((e) => ({
             id: e.id,
             event_type: e.event_type,
             subject_name: e.subjects?.name ?? null,
@@ -242,7 +240,7 @@ export default function ProgresPage() {
       // Streak log
       if (streakLogRes.data) {
         setActiveDays(
-          new Set((streakLogRes.data as any[]).map((r) => r.date as string))
+          new Set((streakLogRes.data as { date: string }[]).map((r) => r.date))
         );
       }
 

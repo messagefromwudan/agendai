@@ -175,12 +175,12 @@ export default function DashboardPage() {
               .lt("due_date", todayStr)
               .order("due_date", { ascending: true })
               .limit(5)
-          : Promise.resolve({ data: [] as any[], error: null }),
+          : Promise.resolve({ data: [] as unknown as { id: string; title: string; due_date: string; subjects?: { name: string } | null }[], error: null }),
       ]);
 
       if (scheduleRes.data) {
         setSchedule(
-          (scheduleRes.data as any[]).map((item) => ({
+          (scheduleRes.data as unknown as { id: string; start_time: string; end_time: string; room: string | null; subjects?: { name: string } | null }[]).map((item) => ({
             id: item.id,
             subject_name: item.subjects?.name ?? "—",
             start_time: item.start_time,
@@ -191,22 +191,22 @@ export default function DashboardPage() {
       }
 
       if (gradesRes.data && gradesRes.data.length > 0) {
-        const sum = (gradesRes.data as any[]).reduce(
+        const sum = (gradesRes.data as { grade: number }[]).reduce(
           (acc, g) => acc + (g.grade ?? 0),
           0
         );
         setGpa(Math.round((sum / gradesRes.data.length) * 100) / 100);
       }
 
-      setSubjectsCount((subjectsRes as any).count ?? 0);
-      setAiSessionsCount((aiSessionsRes as any).count ?? 0);
-      setTotalAssignments((totalAssignmentsRes as any).count ?? 0);
-      setCompletedAssignments((completedAssignmentsRes as any).count ?? 0);
+      setSubjectsCount(subjectsRes.count ?? 0);
+      setAiSessionsCount(aiSessionsRes.count ?? 0);
+      setTotalAssignments(totalAssignmentsRes.count ?? 0);
+      setCompletedAssignments(completedAssignmentsRes.count ?? 0);
 
-      const overdueData = (overdueRes as any).data;
+      const overdueData = overdueRes.data;
       if (overdueData) {
         setOverdueAssignments(
-          (overdueData as any[]).map((a) => ({
+          (overdueData as unknown as { id: string; title: string; due_date: string; subjects?: { name: string } | null }[]).map((a) => ({
             id: a.id,
             title: a.title,
             subject_name: a.subjects?.name ?? "—",

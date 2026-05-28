@@ -112,7 +112,7 @@ export default function ClasaDetailPage() {
       .select("student_id, profiles(id, full_name)")
       .eq("class_id", cid);
 
-    const students: Student[] = ((enrollData ?? []) as any[]).map((e) => ({
+    const students: Student[] = ((enrollData ?? []) as unknown as { student_id: string; profiles?: { full_name: string } | null }[]).map((e) => ({
       id: e.student_id,
       full_name: e.profiles?.full_name ?? "—",
     })).sort((a, b) => a.full_name.localeCompare(b.full_name, "ro"));
@@ -127,7 +127,7 @@ export default function ClasaDetailPage() {
       .order("created_at", { ascending: false });
 
     const gradesByStudent: Record<string, GradeRow[]> = {};
-    for (const g of (gradesData ?? []) as any[]) {
+    for (const g of (gradesData ?? []) as { id: string; student_id: string; grade: number; grade_type: string | null; semester: number | null; date: string | null; note: string | null; created_at: string }[]) {
       if (!gradesByStudent[g.student_id]) gradesByStudent[g.student_id] = [];
       gradesByStudent[g.student_id].push({
         id: g.id, grade: g.grade, grade_type: g.grade_type ?? "current",
@@ -152,7 +152,7 @@ export default function ClasaDetailPage() {
 
     if (!assignData || assignData.length === 0) { setAssignments([]); return; }
 
-    const ids = (assignData as any[]).map((a) => a.id);
+    const ids = (assignData as { id: string; title: string; description: string | null; due_date: string; is_published: boolean }[]).map((a) => a.id);
     const { data: submCounts } = await supabaseClient
       .from("assignment_submissions")
       .select("assignment_id")
@@ -163,7 +163,7 @@ export default function ClasaDetailPage() {
       countMap[s.assignment_id] = (countMap[s.assignment_id] ?? 0) + 1;
     }
 
-    setAssignments((assignData as any[]).map((a) => ({
+    setAssignments((assignData as { id: string; title: string; description: string | null; due_date: string; is_published: boolean }[]).map((a) => ({
       id: a.id, title: a.title, description: a.description ?? null,
       due_date: a.due_date, is_published: a.is_published ?? false,
       submissionCount: countMap[a.id] ?? 0,
@@ -217,7 +217,7 @@ export default function ClasaDetailPage() {
       .select("id, student_id, submitted_at, grade, profiles(full_name)")
       .eq("assignment_id", assignId)
       .order("submitted_at");
-    const subs: Submission[] = ((data ?? []) as any[]).map((s) => ({
+    const subs: Submission[] = ((data ?? []) as unknown as { id: string; student_id: string; submitted_at: string; grade: number | null; profiles?: { full_name: string } | null }[]).map((s) => ({
       id: s.id, student_id: s.student_id,
       studentName: s.profiles?.full_name ?? "—",
       submitted_at: s.submitted_at, grade: s.grade ?? null,

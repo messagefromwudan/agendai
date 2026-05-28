@@ -154,7 +154,7 @@ export default function OrarPage() {
 
         if (data) {
           setSchedule(
-            (data as any[]).map((item) => ({
+            (data as unknown as { id: string; day_of_week: number; start_time: string; end_time: string; room: string | null; subjects?: { name: string } | null; teacher?: { full_name: string } | null; profiles?: { full_name: string } | null }[]).map((item) => ({
               id: item.id,
               day_of_week: item.day_of_week,
               start_time: item.start_time,

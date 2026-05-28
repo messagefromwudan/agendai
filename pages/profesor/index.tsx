@@ -48,8 +48,10 @@ export default function ProfesorDashboard() {
 
       if (!csRows || csRows.length === 0) { setReady(true); return; }
 
-      const classIds = Array.from(new Set((csRows as any[]).map((r) => r.class_id)));
-      const subjectIds = Array.from(new Set((csRows as any[]).map((r) => r.subject_id)));
+      type CsRow = { class_id: string; subject_id: string; subjects?: { name: string } | null; classes?: { name: string } | null };
+      const csTyped = csRows as unknown as CsRow[];
+      const classIds = Array.from(new Set(csTyped.map((r) => r.class_id)));
+      const subjectIds = Array.from(new Set(csTyped.map((r) => r.subject_id)));
 
       // Enrollments for student count
       const { data: enrollRows } = await supabaseClient
@@ -69,7 +71,7 @@ export default function ProfesorDashboard() {
       setTotalClasses(classIds.length);
 
       // Build class cards
-      const cards: ClassCard[] = (csRows as any[]).map((r) => ({
+      const cards: ClassCard[] = csTyped.map((r) => ({
         classId: r.class_id,
         className: r.classes?.name ?? "—",
         subjectId: r.subject_id,
@@ -112,7 +114,8 @@ export default function ProfesorDashboard() {
           .order("submitted_at", { ascending: false })
           .limit(10);
 
-        const subs = (subData ?? []) as any[];
+        type SubRow = { id: string; assignment_id: string; student_id: string; profiles?: { full_name: string } | null };
+        const subs = (subData ?? []) as unknown as SubRow[];
         setPendingGrading(subs.length);
 
         const assignMap: Record<string, { title: string; class_id: string; subject_id: string }> = {};
@@ -120,7 +123,7 @@ export default function ProfesorDashboard() {
 
         const classNameMap: Record<string, string> = {};
         const subjectNameMap: Record<string, string> = {};
-        for (const r of (csRows as any[])) {
+        for (const r of csTyped) {
           classNameMap[r.class_id] = r.classes?.name ?? "—";
           subjectNameMap[r.subject_id] = r.subjects?.name ?? "—";
         }
@@ -128,7 +131,7 @@ export default function ProfesorDashboard() {
         setPendingItems(
           subs.map((s) => ({
             submissionId: s.id,
-            studentName: (s.profiles as any)?.full_name ?? "—",
+            studentName: s.profiles?.full_name ?? "—",
             assignmentTitle: assignMap[s.assignment_id]?.title ?? "—",
             className: classNameMap[assignMap[s.assignment_id]?.class_id ?? ""] ?? "—",
             subjectName: subjectNameMap[assignMap[s.assignment_id]?.subject_id ?? ""] ?? "—",

@@ -76,7 +76,7 @@ export default function ProfesorOrarPage() {
         .order("start_time");
 
       if (data) {
-        setSchedule((data as any[]).map((item) => ({
+        setSchedule((data as unknown as { id: string; day_of_week: number; start_time: string; end_time: string; room: string | null; subjects?: { name: string } | null; classes?: { name: string } | null }[]).map((item) => ({
           id: item.id,
           day_of_week: item.day_of_week,
           start_time: item.start_time,
