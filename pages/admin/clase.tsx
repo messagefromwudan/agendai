@@ -10,7 +10,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({ weight: ["600", "700"], subsets: ["latin"], variable: "--font-poppins" });
 
-const ADMIN_ROLES = ["admin", "director", "director_adjunct"];
+const ADMIN_ROLES = ["admin", "director", "director_adjunct", "secretary"];
 
 interface AdminProfile { full_name: string; role: string; school_id: string; }
 
@@ -82,7 +82,16 @@ export default function ClasePage() {
       const { data: prof } = await supabaseClient
         .from("profiles").select("full_name, role, school_id").eq("id", session.user.id).single();
 
-      if (!prof || !ADMIN_ROLES.includes(prof.role)) { router.replace("/dashboard"); return; }
+      console.log("[admin/clase] fetched role:", prof?.role ?? null);
+
+      if (!prof) {
+        // Profile fetch returned null — transient error, do not redirect
+        return;
+      }
+      if (!ADMIN_ROLES.includes(prof.role)) {
+        router.replace("/dashboard");
+        return;
+      }
       setProfile(prof);
 
       if (!prof.school_id) {
@@ -100,7 +109,7 @@ export default function ClasePage() {
   async function loadAll(schoolId: string) {
     const [classesRes, teachersRes, studentsRes, subjectsRes, yearRes] = await Promise.all([
       supabaseClient.from("classes").select("id, name, grade_level, class_teacher_id").eq("school_id", schoolId).order("grade_level").order("name"),
-      supabaseClient.from("profiles").select("id, full_name").eq("school_id", schoolId).eq("role", "professor").order("full_name"),
+      supabaseClient.from("profiles").select("id, full_name").eq("school_id", schoolId).in("role", ["teacher", "professor"]).order("full_name"),
       supabaseClient.from("profiles").select("id, full_name").eq("school_id", schoolId).eq("role", "student").order("full_name"),
       supabaseClient.from("subjects").select("id, name").order("name"),
       supabaseClient.from("school_years").select("id, name").eq("school_id", schoolId).eq("is_active", true).single(),

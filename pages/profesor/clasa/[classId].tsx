@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Inter, Poppins } from "next/font/google";
@@ -22,7 +22,7 @@ const GRADE_TYPE_STYLES: Record<string, string> = {
 };
 
 interface Student { id: string; full_name: string; }
-interface GradeRow { id: string; grade: number; grade_type: string; semester: number | null; date: string | null; note: string | null; created_at: string; }
+interface GradeRow { id: string; value: number; grade_type: string; semester: number | null; date: string | null; note: string | null; created_at: string; }
 interface StudentGrades { student: Student; grades: GradeRow[]; average: number | null; }
 interface Assignment { id: string; title: string; description: string | null; due_date: string; is_published: boolean; submissionCount: number; }
 interface Submission { id: string; student_id: string; studentName: string; submitted_at: string; grade: number | null; }
@@ -35,7 +35,7 @@ function formatDate(iso: string) {
 }
 function avg(grades: GradeRow[]) {
   if (!grades.length) return null;
-  return Math.round((grades.reduce((s, g) => s + g.grade, 0) / grades.length) * 100) / 100;
+  return Math.round((grades.reduce((s, g) => s + g.value, 0) / grades.length) * 100) / 100;
 }
 
 export default function ClasaDetailPage() {
@@ -44,6 +44,7 @@ export default function ClasaDetailPage() {
   const subjectId = router.query.subject as string | undefined;
 
   const [ready, setReady] = useState(false);
+  const [profId, setProfId] = useState("");
   const [profName, setProfName] = useState("");
   const [className, setClassName] = useState("");
   const [subjectName, setSubjectName] = useState("");
@@ -79,6 +80,7 @@ export default function ClasaDetailPage() {
       const { data: prof } = await supabaseClient
         .from("profiles").select("full_name, role").eq("id", session.user.id).single();
       if (!prof || !PROF_ROLES.includes(prof.role)) { router.replace("/dashboard"); return; }
+      setProfId(session.user.id);
       setProfName(prof.full_name);
 
       // Load class info
@@ -90,7 +92,7 @@ export default function ClasaDetailPage() {
       let activeSubjectId = subjectId;
       if (!activeSubjectId) {
         const { data: firstCs } = await supabaseClient
-          .from("class_subjects").select("subject_id").eq("class_id", classId).eq("teacher_id", session.user.id).limit(1).single();
+          .from("class_subjects").select("subject_id").eq("class_id", classId).eq("professor_id", session.user.id).limit(1).single();
         activeSubjectId = firstCs?.subject_id;
       }
       if (activeSubjectId) {
@@ -107,30 +109,38 @@ export default function ClasaDetailPage() {
   }, [classId, subjectId, router]);
 
   async function loadStudentGrades(cid: string, sid: string) {
-    const { data: enrollData } = await supabaseClient
+    console.log("[clasa] loadStudentGrades called — cid:", cid, "sid:", sid);
+    const enrollResponse = await supabaseClient
       .from("class_enrollments")
-      .select("student_id, profiles(id, full_name)")
+      .select("student_id")
       .eq("class_id", cid);
+    console.log("[clasa] enrollments:", JSON.stringify(enrollResponse));
 
-    const students: Student[] = ((enrollData ?? []) as unknown as { student_id: string; profiles?: { full_name: string } | null }[]).map((e) => ({
-      id: e.student_id,
-      full_name: e.profiles?.full_name ?? "—",
-    })).sort((a, b) => a.full_name.localeCompare(b.full_name, "ro"));
+    const enrollments = (enrollResponse.data ?? []) as { student_id: string }[];
+    if (enrollments.length === 0) { setStudentGrades([]); return; }
+
+    const studentsRes = await fetch(`/api/profesor/class-students?classId=${cid}`);
+    const studentsJson = await studentsRes.json();
+    console.log("[clasa] profiles via API:", studentsJson);
+
+    const students: Student[] = ((studentsJson.students ?? []) as { id: string; full_name: string }[])
+      .map((p) => ({ id: p.id, full_name: p.full_name ?? "—" }))
+      .sort((a, b) => a.full_name.localeCompare(b.full_name, "ro"));
 
     if (students.length === 0) { setStudentGrades([]); return; }
 
     const { data: gradesData } = await supabaseClient
       .from("grades")
-      .select("id, student_id, grade, grade_type, semester, date, note, created_at")
+      .select("id, student_id, value, grade_type, semester, date, note, created_at")
       .eq("subject_id", sid)
       .in("student_id", students.map((s) => s.id))
       .order("created_at", { ascending: false });
 
     const gradesByStudent: Record<string, GradeRow[]> = {};
-    for (const g of (gradesData ?? []) as { id: string; student_id: string; grade: number; grade_type: string | null; semester: number | null; date: string | null; note: string | null; created_at: string }[]) {
+    for (const g of (gradesData ?? []) as { id: string; student_id: string; value: number; grade_type: string | null; semester: number | null; date: string | null; note: string | null; created_at: string }[]) {
       if (!gradesByStudent[g.student_id]) gradesByStudent[g.student_id] = [];
       gradesByStudent[g.student_id].push({
-        id: g.id, grade: g.grade, grade_type: g.grade_type ?? "current",
+        id: g.id, value: g.value, grade_type: g.grade_type ?? "current",
         semester: g.semester ?? null, date: g.date ?? null, note: g.note ?? null, created_at: g.created_at,
       });
     }
@@ -179,8 +189,10 @@ export default function ClasaDetailPage() {
     const activeSubjectId = subjectId ?? "";
     const { error } = await supabaseClient.from("grades").insert({
       student_id: studentId,
+      class_id: classId,
       subject_id: activeSubjectId,
-      grade: val,
+      professor_id: profId,
+      value: val,
       grade_type: gradeForm.grade_type,
       semester: parseInt(gradeForm.semester),
       date: gradeForm.date || null,
@@ -198,12 +210,17 @@ export default function ClasaDetailPage() {
     if (!newTitle || !newDueDate) { setAssignError("Completați titlul și termenul limită."); return; }
     setSavingAssignment(true); setAssignError(null);
     const activeSubjectId = subjectId ?? "";
-    const { error } = await supabaseClient.from("assignments").insert({
-      title: newTitle, description: newDesc || null,
-      due_date: newDueDate, is_published: newPublished,
-      class_id: classId, subject_id: activeSubjectId,
+    const res = await fetch("/api/profesor/create-assignment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: newTitle, description: newDesc || null,
+        due_date: newDueDate, is_published: newPublished,
+        class_id: classId, subject_id: activeSubjectId,
+      }),
     });
-    if (error) { setAssignError(error.message); } else {
+    const json = await res.json();
+    if (!res.ok) { setAssignError(json.error ?? "Eroare necunoscută"); } else {
       setShowNewAssignment(false);
       setNewTitle(""); setNewDesc(""); setNewDueDate(""); setNewPublished(false);
       await loadAssignments(classId, activeSubjectId);
@@ -212,16 +229,9 @@ export default function ClasaDetailPage() {
   }
 
   async function loadSubmissions(assignId: string) {
-    const { data } = await supabaseClient
-      .from("assignment_submissions")
-      .select("id, student_id, submitted_at, grade, profiles(full_name)")
-      .eq("assignment_id", assignId)
-      .order("submitted_at");
-    const subs: Submission[] = ((data ?? []) as unknown as { id: string; student_id: string; submitted_at: string; grade: number | null; profiles?: { full_name: string } | null }[]).map((s) => ({
-      id: s.id, student_id: s.student_id,
-      studentName: s.profiles?.full_name ?? "—",
-      submitted_at: s.submitted_at, grade: s.grade ?? null,
-    }));
+    const res = await fetch(`/api/profesor/submissions?assignmentId=${assignId}`);
+    const json = await res.json();
+    const subs: Submission[] = (json.submissions ?? []) as Submission[];
     setSubmissions(subs);
     const initGrades: Record<string, string> = {};
     for (const s of subs) if (s.grade !== null) initGrades[s.id] = String(s.grade);
@@ -238,7 +248,11 @@ export default function ClasaDetailPage() {
     const val = parseInt(submissionGrades[submId] ?? "");
     if (isNaN(val) || val < 1 || val > 10) return;
     setSavingSubmission(submId);
-    await supabaseClient.from("assignment_submissions").update({ grade: val }).eq("id", submId);
+    await fetch("/api/profesor/grade-submission", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ submissionId: submId, grade: val }),
+    });
     await loadSubmissions(gradingAssignId!);
     setSavingSubmission(null);
   }
@@ -305,8 +319,8 @@ export default function ClasaDetailPage() {
                   </thead>
                   <tbody>
                     {studentGrades.map(({ student, grades, average }) => (
-                      <>
-                        <tr key={student.id} className="border-b border-gray-50 dark:border-gray-700/50 last:border-0">
+                      <React.Fragment key={student.id}>
+                        <tr className="border-b border-gray-50 dark:border-gray-700/50 last:border-0">
                           <td className="px-5 py-3.5 font-medium text-gray-900 dark:text-white">{student.full_name}</td>
                           <td className="px-5 py-3.5">
                             {grades.length === 0 ? (
@@ -315,7 +329,7 @@ export default function ClasaDetailPage() {
                               <div className="flex flex-wrap gap-1.5">
                                 {grades.map((g) => (
                                   <span key={g.id} className={`text-xs font-bold px-2 py-0.5 rounded-full ${GRADE_TYPE_STYLES[g.grade_type] ?? GRADE_TYPE_STYLES.current}`}>
-                                    {g.grade}
+                                    {g.value}
                                   </span>
                                 ))}
                               </div>
@@ -418,7 +432,7 @@ export default function ClasaDetailPage() {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </React.Fragment>
                     ))}
                   </tbody>
                 </table>

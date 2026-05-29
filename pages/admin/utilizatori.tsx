@@ -9,7 +9,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({ weight: ["600", "700"], subsets: ["latin"], variable: "--font-poppins" });
 
-const ADMIN_ROLES = ["admin", "director", "director_adjunct"];
+const ADMIN_ROLES = ["admin", "director", "director_adjunct", "secretary"];
 
 interface AdminProfile {
   full_name: string;
@@ -62,7 +62,16 @@ export default function UtilizatoriPage() {
         .eq("id", session.user.id)
         .single();
 
-      if (!prof || !ADMIN_ROLES.includes(prof.role)) { router.replace("/dashboard"); return; }
+      console.log("[admin/utilizatori] fetched role:", prof?.role ?? null);
+
+      if (!prof) {
+        // Profile fetch returned null — transient error, do not redirect
+        return;
+      }
+      if (!ADMIN_ROLES.includes(prof.role)) {
+        router.replace("/dashboard");
+        return;
+      }
 
       setProfile(prof);
 
@@ -91,7 +100,7 @@ export default function UtilizatoriPage() {
         .from("profiles")
         .select("id, full_name, email, created_at, grade")
         .eq("school_id", schoolId)
-        .eq("role", "professor")
+        .in("role", ["teacher", "professor"])
         .order("full_name"),
     ]);
     console.log("[utilizatori] studentsRes:", { data: studentsRes.data, error: studentsRes.error });

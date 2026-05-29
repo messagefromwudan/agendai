@@ -34,33 +34,42 @@ export default function ClasEleMelePage() {
       if (!prof || !PROF_ROLES.includes(prof.role)) { router.replace("/dashboard"); return; }
       setProfile(prof);
 
-      const { data: csRows } = await supabaseClient
+      const csRes = await supabaseClient
         .from("class_subjects")
-        .select("class_id, subject_id, subjects(name), classes(id, name, grade_level)")
-        .eq("teacher_id", session.user.id);
+        .select("class_id, subject_id")
+        .eq("professor_id", session.user.id);
 
-      if (!csRows || csRows.length === 0) { setReady(true); return; }
+      const csRows = (csRes.data ?? []) as { class_id: string; subject_id: string }[];
+      if (csRows.length === 0) { setReady(true); return; }
 
-      type CsRow = { class_id: string; subject_id: string; subjects?: { name: string } | null; classes?: { id: string; name: string; grade_level: number } | null };
-      const csTyped = csRows as unknown as CsRow[];
-      const classIds = csTyped.map((r) => r.class_id);
-      const { data: enrollData } = await supabaseClient
-        .from("class_enrollments")
-        .select("class_id")
-        .in("class_id", classIds);
+      const classIds = Array.from(new Set(csRows.map((r) => r.class_id)));
+      const subjectIds = Array.from(new Set(csRows.map((r) => r.subject_id)));
+
+      const [classesRes, subjectsRes, enrollRes] = await Promise.all([
+        supabaseClient.from("classes").select("id, name, grade_level").in("id", classIds),
+        supabaseClient.from("subjects").select("id, name").in("id", subjectIds),
+        supabaseClient.from("class_enrollments").select("class_id").in("class_id", classIds),
+      ]);
+
+      const classMap: Record<string, { name: string; grade_level: number }> = {};
+      for (const c of (classesRes.data ?? []) as { id: string; name: string; grade_level: number }[])
+        classMap[c.id] = { name: c.name, grade_level: c.grade_level };
+
+      const subjectMap: Record<string, string> = {};
+      for (const s of (subjectsRes.data ?? []) as { id: string; name: string }[])
+        subjectMap[s.id] = s.name;
 
       const countMap: Record<string, number> = {};
-      for (const e of (enrollData ?? []) as { class_id: string }[]) {
+      for (const e of (enrollRes.data ?? []) as { class_id: string }[])
         countMap[e.class_id] = (countMap[e.class_id] ?? 0) + 1;
-      }
 
       setCards(
-        csTyped.map((r) => ({
+        csRows.map((r) => ({
           classId: r.class_id,
-          className: r.classes?.name ?? "—",
-          gradeLevel: r.classes?.grade_level ?? 0,
+          className: classMap[r.class_id]?.name ?? "—",
+          gradeLevel: classMap[r.class_id]?.grade_level ?? 0,
           subjectId: r.subject_id,
-          subjectName: r.subjects?.name ?? "—",
+          subjectName: subjectMap[r.subject_id] ?? "—",
           studentCount: countMap[r.class_id] ?? 0,
         })).sort((a, b) => a.gradeLevel - b.gradeLevel || a.className.localeCompare(b.className))
       );

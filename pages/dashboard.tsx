@@ -144,7 +144,7 @@ export default function DashboardPage() {
         overdueRes,
       ] = await Promise.all([
         scheduleQuery,
-        supabaseClient.from("grades").select("grade").eq("student_id", userId),
+        supabaseClient.from("grades").select("value").eq("student_id", userId),
         classId
           ? supabaseClient
               .from("class_subjects")
@@ -163,7 +163,7 @@ export default function DashboardPage() {
               .eq("is_published", true)
           : Promise.resolve({ count: 0, error: null }),
         supabaseClient
-          .from("submissions")
+          .from("assignment_submissions")
           .select("id", { count: "exact", head: true })
           .eq("student_id", userId),
         classId
@@ -191,8 +191,8 @@ export default function DashboardPage() {
       }
 
       if (gradesRes.data && gradesRes.data.length > 0) {
-        const sum = (gradesRes.data as { grade: number }[]).reduce(
-          (acc, g) => acc + (g.grade ?? 0),
+        const sum = (gradesRes.data as { value: number }[]).reduce(
+          (acc, g) => acc + (g.value ?? 0),
           0
         );
         setGpa(Math.round((sum / gradesRes.data.length) * 100) / 100);

@@ -9,7 +9,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const poppins = Poppins({ weight: ["600", "700"], subsets: ["latin"], variable: "--font-poppins" });
 
-const ADMIN_ROLES = ["admin", "director", "director_adjunct"];
+const ADMIN_ROLES = ["admin", "director", "director_adjunct", "secretary"];
 
 interface AdminProfile {
   full_name: string;
@@ -38,7 +38,13 @@ export default function AdminDashboard() {
         .eq("id", session.user.id)
         .single();
 
-      if (!prof || !ADMIN_ROLES.includes(prof.role)) {
+      console.log("[admin/index] fetched role:", prof?.role ?? null);
+
+      if (!prof) {
+        // Profile fetch returned null — transient error, do not redirect
+        return;
+      }
+      if (!ADMIN_ROLES.includes(prof.role)) {
         router.replace("/dashboard");
         return;
       }

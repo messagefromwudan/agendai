@@ -35,23 +35,43 @@ export default function ProfesorDashboard() {
       const { data: prof } = await supabaseClient
         .from("profiles").select("full_name, role, school_id").eq("id", session.user.id).single();
 
-      if (!prof || !PROF_ROLES.includes(prof.role)) { router.replace("/dashboard"); return; }
+      console.log("[profesor/index] fetched role:", prof?.role ?? null);
+
+      if (!prof) {
+        // Profile fetch returned null — transient error, do not redirect
+        return;
+      }
+      if (!PROF_ROLES.includes(prof.role)) {
+        router.replace("/dashboard");
+        return;
+      }
       setProfile(prof);
 
       const userId = session.user.id;
+      console.log("[profesor/index] auth user id:", userId);
 
-      // Get all class_subjects the professor teaches
-      const { data: csRows } = await supabaseClient
+      // Get all class_subjects the professor teaches (no joins — fetch names separately)
+      const csResponse = await supabaseClient
         .from("class_subjects")
-        .select("class_id, subject_id, subjects(name), classes(name)")
-        .eq("teacher_id", userId);
+        .select("class_id, subject_id")
+        .eq("professor_id", userId);
+      console.log("[profesor/index] class_subjects response:", csResponse);
+      const csRows = (csResponse.data ?? []) as { class_id: string; subject_id: string }[];
 
-      if (!csRows || csRows.length === 0) { setReady(true); return; }
+      if (csRows.length === 0) { setReady(true); return; }
 
-      type CsRow = { class_id: string; subject_id: string; subjects?: { name: string } | null; classes?: { name: string } | null };
-      const csTyped = csRows as unknown as CsRow[];
-      const classIds = Array.from(new Set(csTyped.map((r) => r.class_id)));
-      const subjectIds = Array.from(new Set(csTyped.map((r) => r.subject_id)));
+      const classIds = Array.from(new Set(csRows.map((r) => r.class_id)));
+      const subjectIds = Array.from(new Set(csRows.map((r) => r.subject_id)));
+
+      // Fetch class and subject names separately
+      const [classesRes, subjectsRes] = await Promise.all([
+        supabaseClient.from("classes").select("id, name").in("id", classIds),
+        supabaseClient.from("subjects").select("id, name").in("id", subjectIds),
+      ]);
+      const classNameMap: Record<string, string> = {};
+      for (const c of (classesRes.data ?? []) as { id: string; name: string }[]) classNameMap[c.id] = c.name;
+      const subjectNameMap: Record<string, string> = {};
+      for (const s of (subjectsRes.data ?? []) as { id: string; name: string }[]) subjectNameMap[s.id] = s.name;
 
       // Enrollments for student count
       const { data: enrollRows } = await supabaseClient
@@ -71,11 +91,11 @@ export default function ProfesorDashboard() {
       setTotalClasses(classIds.length);
 
       // Build class cards
-      const cards: ClassCard[] = csTyped.map((r) => ({
+      const cards: ClassCard[] = csRows.map((r) => ({
         classId: r.class_id,
-        className: r.classes?.name ?? "—",
+        className: classNameMap[r.class_id] ?? "—",
         subjectId: r.subject_id,
-        subjectName: r.subjects?.name ?? "—",
+        subjectName: subjectNameMap[r.subject_id] ?? "—",
         studentCount: countPerClass[r.class_id] ?? 0,
       }));
       setClassCards(cards);
@@ -84,13 +104,13 @@ export default function ProfesorDashboard() {
       if (allStudentIds.size > 0 && subjectIds.length > 0) {
         const { data: gradesData } = await supabaseClient
           .from("grades")
-          .select("grade")
+          .select("value")
           .in("subject_id", subjectIds)
           .in("student_id", Array.from(allStudentIds));
 
-        const grades = (gradesData ?? []) as { grade: number }[];
+        const grades = (gradesData ?? []) as { value: number }[];
         if (grades.length > 0) {
-          const sum = grades.reduce((s, g) => s + g.grade, 0);
+          const sum = grades.reduce((s, g) => s + g.value, 0);
           setAvgGrade(Math.round((sum / grades.length) * 100) / 100);
         }
       }
@@ -108,30 +128,30 @@ export default function ProfesorDashboard() {
       if (assignIds.length > 0) {
         const { data: subData } = await supabaseClient
           .from("assignment_submissions")
-          .select("id, assignment_id, student_id, profiles(full_name)")
+          .select("id, assignment_id, student_id")
           .in("assignment_id", assignIds)
           .is("grade", null)
           .order("submitted_at", { ascending: false })
           .limit(10);
 
-        type SubRow = { id: string; assignment_id: string; student_id: string; profiles?: { full_name: string } | null };
-        const subs = (subData ?? []) as unknown as SubRow[];
+        const subs = (subData ?? []) as { id: string; assignment_id: string; student_id: string }[];
         setPendingGrading(subs.length);
 
         const assignMap: Record<string, { title: string; class_id: string; subject_id: string }> = {};
         for (const a of assignments) assignMap[a.id] = a;
 
-        const classNameMap: Record<string, string> = {};
-        const subjectNameMap: Record<string, string> = {};
-        for (const r of csTyped) {
-          classNameMap[r.class_id] = r.classes?.name ?? "—";
-          subjectNameMap[r.subject_id] = r.subjects?.name ?? "—";
-        }
+        // Fetch student names for pending submissions
+        const pendingStudentIds = Array.from(new Set(subs.map((s) => s.student_id)));
+        const { data: studentProfiles } = pendingStudentIds.length > 0
+          ? await supabaseClient.from("profiles").select("id, full_name").in("id", pendingStudentIds)
+          : { data: [] };
+        const studentNameMap: Record<string, string> = {};
+        for (const p of (studentProfiles ?? []) as { id: string; full_name: string }[]) studentNameMap[p.id] = p.full_name;
 
         setPendingItems(
           subs.map((s) => ({
             submissionId: s.id,
-            studentName: s.profiles?.full_name ?? "—",
+            studentName: studentNameMap[s.student_id] ?? "—",
             assignmentTitle: assignMap[s.assignment_id]?.title ?? "—",
             className: classNameMap[assignMap[s.assignment_id]?.class_id ?? ""] ?? "—",
             subjectName: subjectNameMap[assignMap[s.assignment_id]?.subject_id ?? ""] ?? "—",
